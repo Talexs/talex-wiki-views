@@ -1,11 +1,42 @@
-import {h, VNode, createApp} from 'vue'
+import { createApp } from 'vue'
 
 import WikiTip from './../components/common/message/WikiTip.vue'
-import {ElMessage} from 'element-plus'
-import {messageTypes} from 'element-plus/es/components/message/src/message'
+import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
 
 export enum TipType {
     ERROR, WARNING, INFO, SUCCESS, DEFAULT
+}
+
+export async function forWikiDialogTip(title: String, message: String, stay: Number, type: TipType | null = null, loading: boolean = false) {
+
+    const root: HTMLDivElement = document.createElement('div');
+
+    let index: number = 0;
+
+    while( document.getElementById('wiki-dialog-tip-' + index) ) {
+
+        index++;
+
+    }
+
+    root.id = 'wiki-dialog-tip-' + index;
+
+    root.style.zIndex = `${100 + index}`
+
+    const app = createApp(WikiDialogTip, {
+        message, stay, index, type, loading, title,
+        close: async () => {
+
+            app.unmount();
+
+            document.body.removeChild(root);
+
+        }
+    })
+
+    document.body.appendChild(root);
+    app.mount(root);
+
 }
 
 export async function forWikiTip(message: String, stay: Number, type: TipType | null = null, loading: boolean = false) {

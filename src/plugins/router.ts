@@ -1,0 +1,34 @@
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+import { $userToken } from './store/user'
+
+import {forWikiTip, TipType} from './Common'
+
+const routes = [
+    {
+        path: "/docs/:uid",
+        name: "文档",
+        component: () => import('./../view/DocumentView.vue')
+    }
+]
+
+const router = createRouter({
+    history: createWebHashHistory(),
+    routes
+})
+
+router.beforeEach(async (to, from, next) => {
+
+    if( !to?.meta?.loginRequired ) return next()
+
+    if( !$userToken.token?.isLogin ) {
+
+        await forWikiTip('请先登录!', 4200, TipType.WARNING)
+
+        return router.back()
+
+    }
+
+})
+
+export default router

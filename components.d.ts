@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     LoadingIcon: typeof import('./src/components/common/icon/LoadingIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']
     WikiTip: typeof import('./src/components/common/message/WikiTip.vue')['default']
   }
 }

@@ -4,10 +4,10 @@
       <Header />
     </div>
     <div class="App-Main-Main">
-      <Loading />
+      <router-view></router-view>
     </div>
     <div class="App-Footer-Main">
-
+      <Loading />
     </div>
   </div>
 
@@ -16,9 +16,9 @@
 <script setup lang="ts">
 import Header from './components/common/layout/Header.vue'
 import Loading from './components/common/icon/LoadingIcon.vue'
-import {forWikiTip, TipType} from './plugins/Common'
+import {forWikiDialogTip, forWikiTip, TipType} from './plugins/Common'
 
-forWikiTip("您没有浏览此文档的权限，请联系作者授权！", 60000, TipType.ERROR)
+forWikiDialogTip("访问限制","您没有浏览此文档的权限，请联系作者授权！", 0)
 
 </script>
 
