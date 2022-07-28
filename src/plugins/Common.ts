@@ -44,6 +44,7 @@ export async function forWikiDialogTip(title: String, message: String, btns: Dia
     })
 
     document.body.appendChild(root);
+
     app.mount(root);
 
 }

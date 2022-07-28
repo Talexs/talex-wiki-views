@@ -9,11 +9,11 @@ const count = ref(0)
 
 const click = ref(() => {
 
-    forWikiTip("这是错误信息!", 3000, TipType.ERROR);
-    forWikiTip("这是对你的警告~", 3000, TipType.WARNING);
-    forWikiTip("这是提示信息QWQ", 3000, TipType.INFO);
-    forWikiTip("保存成功，在个人页面查看即可。", 3000, TipType.SUCCESS);
-    forWikiTip("这是默认TIP", 3000, TipType.DEFAULT);
+    // forWikiTip("这是错误信息!", 3000, TipType.ERROR);
+    // forWikiTip("这是对你的警告~", 3000, TipType.WARNING);
+    // forWikiTip("这是提示信息QWQ", 3000, TipType.INFO);
+    // forWikiTip("保存成功，在个人页面查看即可。", 3000, TipType.SUCCESS);
+    // forWikiTip("这是默认TIP", 3000, TipType.DEFAULT);
 
 })
 

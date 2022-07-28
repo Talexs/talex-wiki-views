@@ -9,6 +9,11 @@ const routes = [
         path: "/docs/:uid",
         name: "文档",
         component: () => import('./../view/DocumentView.vue')
+    },
+    {
+        path: "/guide/ref",
+        name: "Guide # Ref",
+        component: () => import('./../components/common/GuideRef.vue')
     }
 ]
 

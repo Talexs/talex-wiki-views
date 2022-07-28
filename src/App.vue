@@ -18,22 +18,22 @@ import Header from './components/common/layout/Header.vue'
 import Loading from './components/common/icon/LoadingIcon.vue'
 import {forWikiDialogTip, sleep, TipType} from './plugins/Common'
 
-forWikiDialogTip("访问限制","您没有浏览此文档的权限，请联系作者授权！\n\n是否发送请求？", [
-    {
-        content: "确定",
-        type: TipType.INFO,
-        onClick: () => {
-            return true
-        }
-    },
-    {
-        content: "取消",
-        type: TipType.ERROR,
-        onClick: () => {
-            return true
-        }
-    }
-])
+// forWikiDialogTip("访问限制","您没有浏览此文档的权限，请联系作者授权！\n\n是否发送请求？", [
+//     {
+//         content: "确定",
+//         type: TipType.INFO,
+//         onClick: () => {
+//             return true
+//         }
+//     },
+//     {
+//         content: "取消",
+//         type: TipType.ERROR,
+//         onClick: () => {
+//             return true
+//         }
+//     }
+// ])
 
 </script>
 
