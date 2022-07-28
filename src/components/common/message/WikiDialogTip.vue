@@ -1,36 +1,130 @@
 <template>
-  <div :message="message" class="WikiDialogTip-Container"
-       :class="{ 'info-tip': type === TipType.INFO,
+  <div class="WikiDialogTip-Wrapper">
+    <div class="WikiDialogTip-Container" ref="wholeDom"
+         :class="{ 'info-tip': type === TipType.INFO,
         'warn-tip': type === TipType.WARNING,
         'error-tip': type === TipType.ERROR,
         'success-tip': type === TipType.SUCCESS, 'loading-tip': loading }">
-    <h1>{{ title }}</h1>
-    <div class="WikiDialogTip-Loading-Wrapper">
-      <Loading v-if="loading" />
-    </div>
-    <div class="WikiDialogTip-Btn">
-      <span>确定</span>
+      <div class="WikiDialogTip-Main-Wrapper">
+      </div>
+
+      <h1>{{ title }}</h1>
+      <span class="WikiDialogTip-Content" v-html="message.replace('\n', '<br /><br />')">
+      </span>
+      <div class="WikiDialogTip-Loading-Wrapper">
+        <Loading v-if="loading" />
+      </div>
+      <div class="WikiDialogTip-Btn">
+      <span v-for="(btn, index) in btnArray" :key="index"
+            @click="clickBtn(btn)" :class="{ 'info-tip': btn.value?.type === TipType.INFO,
+        'warn-tip': btn.value?.type === TipType.WARNING,
+        'error-tip': btn.value?.type === TipType.ERROR,
+        'success-tip': btn.value?.type === TipType.SUCCESS, 'loading-tip': btn.value.loading }"
+            class="WikiDialogTip-Btn-Item">
+        <span class="WikiDialogTip-Btn-Item-Loading">
+          <Loading />
+        </span>
+        <span class="WikiDialogTip-Container-Btn-Item-Text">{{ btn.value.content }}</span>
+      </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import Loading from './../icon/LoadingIcon.vue'
-import { defineProps, onMounted } from 'vue'
+import { defineProps, onBeforeMount, onMounted, ref, watchEffect } from 'vue'
 import { sleep, TipType } from './../../../plugins/Common.ts'
 
 const props = defineProps({
-  message: String, stay: Number, close: Function,
-  type: TipType, loading: Boolean, title: String
+  title: String, message: String, stay: Number, close: Function,
+  btns: Array
 })
 
-onMounted(async () => {
+const btnArray = ref([])
 
-  if( props.stay <= 0 ) return
+const wholeDom = ref(null)
 
-  await sleep(props.stay)
+const forClose = ref(async () => {
+
+  const style = wholeDom.value?.style
+
+  // style.animation = 'enter .2s ease-in-out reverse'
+
+  style.transform = 'translate(-50%, -50%) scale(1.15)'
+
+  await sleep(150)
+
+  style.transform = 'translate(-50%, -50%) scale(.35)'
+  style.opacity = '0'
+
+  await sleep(300)
 
   props.close()
+
+  window.removeEventListener('scroll', listener)
+
+})
+
+watchEffect(() => {
+
+  const array = [];
+
+  ([ ...props.btns ]).forEach(btn => {
+
+    const obj = ref({
+      loading: false,
+      ...btn
+    })
+
+    if( btn.loading ) {
+
+      obj.value.loading = true
+
+      btn.loading(() => {
+
+        obj.value.loading = false
+
+      })
+
+    }
+
+    array.push(obj)
+
+  })
+
+  btnArray.value = array
+
+})
+
+const clickBtn = ref(async (btn) => {
+
+  if( btn.value.onClick() ) {
+
+    btn.value.loading = true
+
+    await sleep(1200)
+
+    forClose.value()
+
+    btn.value.loading = false
+
+  }
+
+})
+
+// couldn't move
+let listener = (e) => {
+
+  window.scrollTo({
+    top: 0
+  })
+
+}
+
+onMounted(() => {
+
+  window.addEventListener('scroll', listener)
 
 })
 
@@ -44,20 +138,99 @@ export default {
 
 <style lang="scss" scoped>
 
-.WikiDialogTip-Container {
+.WikiDialogTip-Wrapper {
+  z-index: 1000;
+  position: absolute;
 
-  .WikiDialogTip-Loading-Wrapper {
+  width: 100%;
+  height: 100%;
+
+  top: 0;
+  left: 0;
+
+  &:before {
+    z-index: 0;
+    content: "";
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: var(--el-overlay-color);
+    opacity: .45;
+
+  }
+}
+
+.WikiDialogTip-Main-Wrapper {
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  top: 50%;
+  left: 50%;
+
+  border-radius: 2px;
+  background-image: radial-gradient(transparent 1px, var(--el-bg-color) 1px);
+  //opacity: .75;
+  backdrop-filter: contrast(150%) saturate(100%) blur(10px);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  &:before {
+    content: "Tip";
+    position: absolute;
+
+    bottom: 10px;
+    left: -5px;
+
+    width: 72px;
+    height: 72px;
+    line-height: 72px;
+
+    opacity: .45;
+
+    color: #fff;
+    text-align: center;
+    font-size: 35px;
+
+    background-color: var(--el-color-primary);
+    transform: rotate(45deg);
+  }
+}
+
+.WikiDialogTip-Content {
+  position: absolute;
+
+  top: 70px;
+  left: 10%;
+
+  height: auto;
+  width: 80%;
+  max-height: calc(100% - 120px);
+
+  text-align: center;
+}
+
+.WikiDialogTip-Container {
+  .WikiDialogTip-Btn-Item-Loading {
     position: relative;
     display: inline-block;
+    margin: -8px;
 
-    top: -2px;
-    left: 10px;
+    top: -10px;
+    left: 50%;
 
     width: 16px;
     height: 16px;
 
-    transform: scale(.5);
+    transform: scale(0) translateX(-50%);
+    opacity: 0;
     --bg-color: var(--theme-color);
+    transition: all .25s;
   }
   h1 {
     position: absolute;
@@ -70,15 +243,16 @@ export default {
     height: 32px;
     line-height: 32px;
 
+    color: var(--theme-color, var(--el-text-color-secondary));
     font-size: 18px;
     font-weight: bold;
     transform: translate(-50%, 0);
-
   }
   .WikiDialogTip-Btn {
     position: absolute;
+    display: flex;
+    justify-content: space-around;
     padding: 8px 0;
-    display: inline-block;
 
     bottom: 0;
     left: 5%;
@@ -91,57 +265,86 @@ export default {
     border-top: 1px solid #e1dfdf;
     font-weight: 400;
     text-align: center;
+    cursor: pointer;
+    user-select: none;
+    .WikiDialogTip-Btn-Item {
 
+      padding: 0 24px;
+
+    }
   }
-  &:before {
-    z-index: 0;
-    content: "";
-    position: absolute;
-
-    width: 100%;
-    height: 100%;
-
-    top: 0;
-    left: 0;
-
-    border-radius: 4px;
-    filter: invert(5%);
-    backdrop-filter: contrast(200%) saturate(180%) blur(10px);
-  }
-
-  &:after {
-    z-index: 10;
-    content: attr(message);
-    position: absolute;
-
-    width: 60%;
-    height: auto;
-
-    top: 50%;
-    left: 20%;
-
-    line-height: 24px;
-    text-align: center;
-
-    transform: translate(0, -50%) translateY(-10px);
-
-  }
+  //&:after {
+  //  z-index: 10;
+  //  content: attr(message);
+  //  position: absolute;
+  //
+  //  width: 70%;
+  //  height: 120px;
+  //
+  //  top: 40%;
+  //  left: 50%;
+  //
+  //  line-height: 24px;
+  //  text-align: center;
+  //
+  //  transform: translate(-50%, 0) translateY(-10px);
+  //
+  //}
 
   position: absolute;
-  padding: 4px 40px 4px 6px;
 
   left: 50%;
   top: 50%;
 
-  width: 320px;
-  height: 180px;
+  min-width: 460px;
+  min-height: 260px;
   line-height: 30px;
 
   color: var(--theme-color, var(--el-text-color-primary));
+  box-shadow: 0 0 16px 32px var(--el-box-shadow);
 
   transform: translate(-50%, -50%);
+  transition: all .25s;
   animation: enter .2s ease-in-out;
 
+}
+
+.loading-tip {
+
+  .WikiDialogTip-Btn-Item-Loading {
+
+    opacity: 1;
+
+    transform: scale(.5) translateX(-50%);
+
+  }
+
+  .WikiDialogTip-Container-Btn-Item-Text {
+
+    opacity: .25;
+
+    transform: scale(.65);
+
+  }
+
+  pointer-events: none;
+
+}
+
+.WikiDialogTip-Container-Btn-Item-Text {
+
+  position: relative;
+
+  left: 0;
+  top: 0;
+
+  width: 320px;
+  height: 180px;
+
+  text-align: center;
+
+  color: var(--theme-color, var(--el-text-color-regular));
+  transition: all .25s;
 }
 
 @keyframes enter {
@@ -181,13 +384,6 @@ export default {
 .error-tip {
 
   --theme-color: #d0493c;
-
-}
-
-.loading-tip {
-
-  //box-shadow: 0 0 4px 1px var(--theme-color) inset,
-  //           0 0 8px 2px var(--theme-color);
 
 }
 

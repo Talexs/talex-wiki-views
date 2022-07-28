@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     Header: typeof import('./src/components/common/layout/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LoadingIcon: typeof import('./src/components/common/icon/LoadingIcon.vue')['default']
+    Logo: typeof import('./src/components/common/icon/Logo.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']

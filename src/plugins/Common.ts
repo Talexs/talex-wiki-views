@@ -7,7 +7,16 @@ export enum TipType {
     ERROR, WARNING, INFO, SUCCESS, DEFAULT
 }
 
-export async function forWikiDialogTip(title: String, message: String, stay: Number, type: TipType | null = null, loading: boolean = false) {
+export interface DialogBtn {
+
+    content: string
+    type?: TipType
+    onClick: () => Boolean; // return true for close, false for deny
+    loading?: (func: Function) => Promise<void>; // 1 param argument for loading function, call for stop loading
+
+}
+
+export async function forWikiDialogTip(title: String, message: String, btns: DialogBtn[] = [ { content: "确定", type: TipType.INFO, onClick: () => true } ]) {
 
     const root: HTMLDivElement = document.createElement('div');
 
@@ -24,7 +33,7 @@ export async function forWikiDialogTip(title: String, message: String, stay: Num
     root.style.zIndex = `${100 + index}`
 
     const app = createApp(WikiDialogTip, {
-        message, stay, index, type, loading, title,
+        message, index, title, btns,
         close: async () => {
 
             app.unmount();

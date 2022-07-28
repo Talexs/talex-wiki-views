@@ -35,30 +35,42 @@ export default {
 .Document-Container {
   position: relative;
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  flex-direction: row;
+
+  width: 80%;
   height: 100%;
+
+  left: 10%;
+
   background-color: var(--el-bg-color-page);
 
   .Document-List {
     position: relative;
 
-    width: 300px;
-    height: 400px;
+    left: -30px;
 
+    width: 300px;
+    height: 1000px;
+
+    border-radius: 0 4px 4px 0;
     background-color: red;
   }
   .Document-Main {
     position: relative;
     flex: 1;
+
+    border-radius: 4px;
     background-color: green;
   }
   .Document-Aside {
     position: relative;
 
-    width: 300px;
-    height: 400px;
+    right: -30px;
 
+    width: 300px;
+    height: 1000px;
+
+    border-radius: 4px 0 0 4px;
     background-color: pink;
   }
 }
