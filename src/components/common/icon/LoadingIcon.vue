@@ -25,7 +25,6 @@ export default {
     width: 8px;
     height: 8px;
 
-    opacity: .65;
     border-radius: 50%;
     background-color: var(--bg-color, var(--el-text-color-regular));
   }

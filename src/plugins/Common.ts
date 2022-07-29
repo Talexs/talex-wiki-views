@@ -93,6 +93,14 @@ export async function forWikiTip(message: String, stay: Number, type: TipType | 
 
 }
 
+import { computed } from 'vue'
+
+export function useModelWrapper(props: any, emit: any, name = 'modelValue') {
+    return computed({
+        get: () => props[name],
+        set: (value) => emit(`update:${name}`, value)
+    })
+}
 
 export async function sleep(time: number) {
     return new Promise((resolve) => setTimeout(() => resolve(time), time))

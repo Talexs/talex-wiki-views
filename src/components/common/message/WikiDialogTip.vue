@@ -33,7 +33,7 @@
 
 <script setup>
 import Loading from './../icon/LoadingIcon.vue'
-import { defineProps, onBeforeMount, onMounted, ref, watchEffect } from 'vue'
+import { defineProps, onMounted, ref, watchEffect } from 'vue'
 import { sleep, TipType } from './../../../plugins/Common.ts'
 
 const props = defineProps({

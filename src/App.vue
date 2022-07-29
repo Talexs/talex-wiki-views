@@ -7,13 +7,15 @@
       <router-view></router-view>
     </div>
     <div class="App-Footer-Main">
-      <Loading />
+      <FlatInput />
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
+import FlatInput from './components/common/input/FlatInput.vue'
+import Logo from './components/common/icon/Logo.vue'
 import Header from './components/common/layout/Header.vue'
 import Loading from './components/common/icon/LoadingIcon.vue'
 import {forWikiDialogTip, sleep, TipType} from './plugins/Common'
@@ -53,7 +55,6 @@ import {forWikiDialogTip, sleep, TipType} from './plugins/Common'
 
     height: 120px;
 
-    background-color: blue;
   }
   .App-Main-Main {
     position: relative;

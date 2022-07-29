@@ -46,8 +46,12 @@ export default {
     left: -5px;
     top: -9px;
 
-    color: #2979ff;
+    //color: #2979ff;
     font-size: 15px;
+
+    background: linear-gradient(to left top, #2979ff, #e1dfdf, #2979ff, #2979ff, #e1dfdf, #2979ff, #e1dfdf);
+    -webkit-background-clip: text;
+    color: transparent;
 
     transform: scale(.2);
   }
@@ -61,21 +65,23 @@ export default {
   width: 20px;
   height: 5px;
 
-  right: 0;
-  bottom: 3px;
+  right: 5px;
+  bottom: 10px;
 
   border-radius: 50% 0 50% 1%;
-  transform: scale(2.5);
+  transform: scale(5.25);
   overflow: hidden;
 }
 
 .Logo-Content {
+  z-index: 2;
   position: relative;
 
   top: calc(50% + 1px);
 
   color: #e1dfdf;
-  font-size: 50px;
+  opacity: .85;
+  font-size: 60px;
   text-align: center;
 
   transform: translateY(-50%);

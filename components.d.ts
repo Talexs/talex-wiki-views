@@ -7,11 +7,14 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ElInput: typeof import('element-plus/es')['ElInput']
+    FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
     GuideRef: typeof import('./src/components/common/GuideRef.vue')['default']
     Header: typeof import('./src/components/common/layout/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LoadingIcon: typeof import('./src/components/common/icon/LoadingIcon.vue')['default']
     Logo: typeof import('./src/components/common/icon/Logo.vue')['default']
+    LogoNew: typeof import('./src/components/common/icon/LogoNew.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']
