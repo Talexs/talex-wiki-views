@@ -14,6 +14,11 @@ const routes = [
         path: "/guide/ref",
         name: "Guide # Ref",
         component: () => import('./../components/common/GuideRef.vue')
+    },
+    {
+        path: "/user/login",
+        name: "登录",
+        component: () => import('./../view/base/Login.vue')
     }
 ]
 

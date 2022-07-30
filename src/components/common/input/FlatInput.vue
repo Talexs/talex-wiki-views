@@ -5,7 +5,7 @@
       <div @click="inputFocus"
            :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
            v-if="pass" class="FlatInput-Mode-Pass">
-        <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, 18)" class="FlatInput-Mode-Pass__ball">
+        <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
         </div>
         <div class="FlatInput-Mode-Pass__selector">
 
@@ -13,7 +13,7 @@
       </div>
 
       <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': pass && passFocus }">
-        <input ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
+        <input :placeholder="placeholder" ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
       </div>
 
       <!--    // div: const emits = defineEmits(['click']);-->
@@ -37,15 +37,9 @@ import ViewEye from './../icon/ViewEye.vue'
 import { debounceRef, useModelWrapper } from './../../../plugins/Common'
 
 const emits = defineEmits(['update:modelValue', 'click', 'jinitaimei'])
-const props = defineProps({ modelValue: String, pass: Boolean })
+const props = defineProps({ modelValue: String, pass: Boolean, placeholder: String, maxPassDotNum: { type: Number, default: 18 } })
 
 const content = useModelWrapper(props, emits)
-
-const click = ref(() => {
-
-  emits("click", { a: 1, b: 2 })
-
-})
 
 const passFocus = ref(false)
 const passEye = debounceRef(true, 300)
@@ -151,7 +145,20 @@ export default {
     font-size: 15px;
     outline: none;
     border: none;
+    &:empty {
+      &:before {
+        content: attr(placeholder);
+        position: absolute;
 
+        left: 0;
+        top: 0;
+
+        width: max-content;
+
+        opacity: .75;
+
+      }
+    }
   }
 }
 
@@ -244,8 +251,6 @@ export default {
   }
   position: relative;
   display: inline-block;
-
-  left: 50%;
 
   width: 200px;
   height: 28px;

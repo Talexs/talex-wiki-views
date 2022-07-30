@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
+    FlatButton: typeof import('./src/components/common/btn/FlatButton.vue')['default']
     FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
     GuideRef: typeof import('./src/components/common/GuideRef.vue')['default']
     Header: typeof import('./src/components/common/layout/Header.vue')['default']

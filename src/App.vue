@@ -8,23 +8,6 @@
     </div>
     <div class="App-Footer-Main">
 
-      <FlatInput v-model="content" pass>
-        <template #suffix>
-          <el-icon><Hide /></el-icon>
-        </template>
-      </FlatInput>
-
-      <FlatInput v-model="content">
-        <template #suffix>
-          <el-icon><Hide /></el-icon>
-        </template>
-      </FlatInput>
-
-      <FlatInput v-model="content">
-      </FlatInput>
-
-      <ViewEye />
-
 
     </div>
   </div>
@@ -40,8 +23,28 @@ import Header from './components/common/layout/Header.vue'
 import Loading from './components/common/icon/LoadingIcon.vue'
 import ViewEye from './components/common/icon/ViewEye.vue'
 import { ref } from 'vue'
+import { forWikiDialogTip, TipType } from './plugins/Common'
 
 const content = ref('')
+
+forWikiDialogTip("是这样滴", "QWQ AWA", [
+ {
+  content: "确定",
+  type: TipType.INFO,
+  onClick: () => {
+
+    return true;
+
+  },
+  loading: async (func) => {
+
+    setTimeout(() => {
+      func()
+    }, 10000)
+
+  }
+ } 
+])
 
 </script>
 
@@ -57,27 +60,26 @@ const content = ref('')
   background-color: var(--el-bg-color-page);
   .App-Footer-Main {
     position: relative;
-    margin-top: 120px;
 
     height: 120px;
+    background-color: var(--el-color-primary);
 
   }
   .App-Main-Main {
     position: relative;
+    padding: 4px 8px;
     flex: 1;
 
   }
   .App-Header-Main {
     z-index: 100;
     position: sticky;
-    margin-bottom: 20px;
 
     top: 0;
     left: 0;
 
     width: 100%;
     height: 50px;
-
 
   }
 
