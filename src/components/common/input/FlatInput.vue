@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': passFocus }">
+      <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': pass && passFocus }">
         <input ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
       </div>
 
@@ -134,7 +134,6 @@ export default {
     background-color: rgba(0, 0, 0, 0);
 
   }
-
 }
 
 .FlatInput-Input-Container__inner {
