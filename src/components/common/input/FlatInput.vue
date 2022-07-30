@@ -1,27 +1,63 @@
 <template>
-  <div class="FlatInput-Container">
+  <div class="FlatInput-Wrapper">
+    <div class="FlatInput-Container">
 
-    <div class="FlatInput-Input-Container__inner">
-      <input class="FlatInput-Input" type="text" v-model="content" />
-    </div>
+      <div @click="inputFocus"
+           :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
+           v-if="pass" class="FlatInput-Mode-Pass">
+        <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, 18)" class="FlatInput-Mode-Pass__ball">
+<!--          {{ i }}-->
+        </div>
+        <div class="FlatInput-Mode-Pass__selector">
 
-    <div class="FlatInput-Icon-Container">
-      <div class="FlatInput-Icon">
-
+        </div>
       </div>
-    </div>
 
+      <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': passFocus }">
+        <input ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
+      </div>
+
+      <!--    // div: const emits = defineEmits(['click']);-->
+      <div class="FlatInput-Icon-Container">
+        <div v-if="pass" @click="passEye = !passEye" class="FlatInput-Suffix">
+          <ViewEye :visible="passEye" />
+        </div>
+        <div v-else class="FlatInput-Suffix">
+          <slot name="suffix"></slot>
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
-import { useModelWrapper } from './../../../plugins/Common'
+import { ref, computed } from 'vue'
+import ViewEye from './../icon/ViewEye.vue'
 
-const emits = defineEmits(['update:modelValue'])
-const props = defineProps({ value: String })
+import { debounceRef, useModelWrapper } from './../../../plugins/Common'
+
+const emits = defineEmits(['update:modelValue', 'click', 'jinitaimei'])
+const props = defineProps({ modelValue: String, pass: Boolean })
 
 const content = useModelWrapper(props, emits)
+
+const click = ref(() => {
+
+  emits("click", { a: 1, b: 2 })
+
+})
+
+const passFocus = ref(false)
+const passEye = debounceRef(true, 300)
+
+const inputRef = ref(null)
+
+const inputFocus = ref(() => {
+
+  inputRef.value?.focus()
+
+})
 
 </script>
 
@@ -32,9 +68,83 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.FlatInput-Mode-Pass {
+  z-index: 100;
+  .FlatInput-Mode-Pass__ball {
+    position: relative;
+    //display: inline-block;
+    margin-right: 1px;
+
+    left: 1px;
+    top: 50%;
+
+    height: 8px;
+    width: 8px;
+
+    background-color: #212121;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    transition: var(--delay);
+  }
+  position: absolute;
+  display: flex;
+  padding: 2px 4px;
+
+  left: 0;
+  top: 0;
+
+  max-width: calc(100% - 32px);
+  height: calc(100% - 4px);
+  font-size: 15px;
+  background-color: var(--input-bg, var(--el-bg-color));
+  transition: all .125s;
+}
+
+.FlatInput-Icon-Container {
+  .FlatInput-Suffix {
+    :deep(.el-icon) {
+      position: relative;
+      margin-left: 8px;
+
+      top: 6px;
+      right: 9px;
+
+    }
+    :deep(.ViewEye-Container) {
+
+      margin-left: 7px;
+
+      top: 4px;
+      right: 7px;
+
+    }
+    position: relative;
+
+    height: 100%;
+
+    background-color: var(--input-bg, var(--el-bg-color));
+
+  }
+  position: relative;
+  cursor: pointer;
+}
+
+.FlatInput-Input-Container__inner.mode-pass-focus {
+  input::selection {
+
+    background-color: rgba(0, 0, 0, 0);
+
+  }
+
+}
+
 .FlatInput-Input-Container__inner {
+  position: relative;
+
+  flex: 1;
+
   .FlatInput-Input {
-    position: absolute;
+    position: relative;
     padding: 2px 4px;
 
     width: calc(100% - 8px);
@@ -47,12 +157,92 @@ export default {
   }
 }
 
+@keyframes selectorShave {
+
+  0% {
+
+    transform: rotate(0) scaleY(0.25);
+
+  }
+
+  25%, 100% {
+
+    transform: rotate(180deg) scaleY(1);
+
+  }
+
+}
+
+.FlatInput-Mode-Pass__selector {
+  z-index: 100;
+  position: relative;
+
+  left: -2px;
+  top: 10%;
+
+  width: 1px;
+  height: 80%;
+
+  opacity: 0;
+  background-color: var(--el-color-primary);
+  animation: selectorShave 1s linear infinite;
+  transition: all .25s;
+}
+
 .FlatInput-Container {
+  .mode-pass-focus {
+    .FlatInput-Mode-Pass__selector {
+
+      left: 1px;
+
+      opacity: 1;
+    }
+
+  }
+  .FlatInput-Mode-Pass.mode-pass-view {
+    opacity: 0;
+    transition: all .25s .3s;
+  }
+  .mode-pass-view {
+    .FlatInput-Mode-Pass__ball {
+
+      transform: translateY(-50%) scale(0);
+
+    }
+  }
+  position: relative;
+  display: flex;
+  flex-direction: row;
+
+  width: 100%;
+  height: 100%;
+
+}
+
+.FlatInput-Wrapper {
   &:hover, &:active {
 
-    opacity: 1;
-    border: 2px solid var(--el-color-primary);
+    .FlatInput-Container:before {
 
+      opacity: 1;
+
+    }
+
+  }
+  .FlatInput-Container:before {
+    content: "";
+    position: absolute;
+
+    left: -2px;
+    top: -2px;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: .25;
+    border-radius: 4px;
+    border: 2px solid var(--el-color-primary);
+    transition: all .25s;
   }
   position: relative;
   display: inline-block;
@@ -62,11 +252,7 @@ export default {
   width: 200px;
   height: 28px;
 
-  opacity: .25;
-  border: 2px solid var(--el-color-primary);
-  border-radius: 4px;
-  background-color: green;
+  background-color: var(--input-bg, var(--el-bg-color));
   transition: all .25s;
-  overflow: hidden;
 }
 </style>

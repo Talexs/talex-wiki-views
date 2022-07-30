@@ -6,7 +6,7 @@ import { $userToken } from './store/user'
 import { useRouter } from 'vue-router'
 
 const service = axios.create({
-    baseURL: '//' + window.location.hostname + ":9981/",
+    baseURL: '//' + window.location.hostname + ":5173/api/",
     timeout: 60000,
     withCredentials: true,
     headers: {

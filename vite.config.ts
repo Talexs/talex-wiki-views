@@ -18,6 +18,15 @@ export default defineConfig({
       },
     },
   },*/
+  server :{
+    proxy: {
+      "/api": {
+        target: "http://test.pvpin.net:9981",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "")
+      }
+    }
+  },
   plugins: [
     AutoImport({
       resolvers: [ElementPlusResolver()],

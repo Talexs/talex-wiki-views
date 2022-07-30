@@ -4,10 +4,14 @@
     <button @click="func">
       你点了我 {{ number }} 次
     </button>
+
+    <Loading style="left: 50%;top: 50px" />
   </div>
 </template>
 
 <script setup>
+import Loading from './../common/icon/LoadingIcon.vue'
+
 
 // ---------------------
 

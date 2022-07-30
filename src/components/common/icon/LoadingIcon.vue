@@ -13,10 +13,7 @@ export default {
 <style lang="scss" scoped>
 .LoadingIcon-Container {
 
-  //--bg-color: var(--el-text-color-regular);
-
   .LoadingIcon-Floater {
-    content: "";
     position: absolute;
 
     top: 0;
@@ -73,13 +70,13 @@ export default {
 
 @keyframes rotate {
 
-  from {
+  0% {
 
     transform: rotate(0deg);
 
   }
 
-  to {
+  100% {
 
     transform: rotate(360deg);
 

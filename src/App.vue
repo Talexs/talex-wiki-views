@@ -7,35 +7,44 @@
       <router-view></router-view>
     </div>
     <div class="App-Footer-Main">
-      <FlatInput />
+
+      <FlatInput v-model="content" pass>
+        <template #suffix>
+          <el-icon><Hide /></el-icon>
+        </template>
+      </FlatInput>
+
+      <FlatInput v-model="content">
+        <template #suffix>
+          <el-icon><Hide /></el-icon>
+        </template>
+      </FlatInput>
+
+      <FlatInput v-model="content">
+        <template #suffix>
+          <el-icon><Hide /></el-icon>
+        </template>
+      </FlatInput>
+
+      <ViewEye />
+
+
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
+import { Hide } from '@element-plus/icons-vue'
+import { ElIcon } from 'element-plus'
+
 import FlatInput from './components/common/input/FlatInput.vue'
-import Logo from './components/common/icon/Logo.vue'
 import Header from './components/common/layout/Header.vue'
 import Loading from './components/common/icon/LoadingIcon.vue'
-import {forWikiDialogTip, sleep, TipType} from './plugins/Common'
+import ViewEye from './components/common/icon/ViewEye.vue'
+import { ref } from 'vue'
 
-// forWikiDialogTip("访问限制","您没有浏览此文档的权限，请联系作者授权！\n\n是否发送请求？", [
-//     {
-//         content: "确定",
-//         type: TipType.INFO,
-//         onClick: () => {
-//             return true
-//         }
-//     },
-//     {
-//         content: "取消",
-//         type: TipType.ERROR,
-//         onClick: () => {
-//             return true
-//         }
-//     }
-// ])
+const content = ref('')
 
 </script>
 

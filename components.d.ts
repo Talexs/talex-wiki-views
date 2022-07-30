@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
     FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
     GuideRef: typeof import('./src/components/common/GuideRef.vue')['default']
@@ -15,8 +16,11 @@ declare module '@vue/runtime-core' {
     LoadingIcon: typeof import('./src/components/common/icon/LoadingIcon.vue')['default']
     Logo: typeof import('./src/components/common/icon/Logo.vue')['default']
     LogoNew: typeof import('./src/components/common/icon/LogoNew.vue')['default']
+    ProgressBar: typeof import('./src/components/common/bar/ProgressBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SliderCaptcha: typeof import('./src/components/common/slider/SliderCaptcha.vue')['default']
+    ViewEye: typeof import('./src/components/common/icon/ViewEye.vue')['default']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']
     WikiTip: typeof import('./src/components/common/message/WikiTip.vue')['default']
   }

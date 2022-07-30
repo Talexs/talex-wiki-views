@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, customRef } from 'vue'
 
 import WikiTip from './../components/common/message/WikiTip.vue'
 import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
@@ -100,6 +100,29 @@ export function useModelWrapper(props: any, emit: any, name = 'modelValue') {
         get: () => props[name],
         set: (value) => emit(`update:${name}`, value)
     })
+}
+
+export function debounceRef(value: any, delay: number) {
+
+    let timer
+
+    return customRef((track, trigger) => {
+       return {
+           get() {
+               track()
+               return value
+           },
+           set(newValue) {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                  value = newValue
+                  track()
+                  trigger()
+                }, delay)
+           }
+       }
+    })
+
 }
 
 export async function sleep(time: number) {
