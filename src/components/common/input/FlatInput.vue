@@ -6,7 +6,6 @@
            :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
            v-if="pass" class="FlatInput-Mode-Pass">
         <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, 18)" class="FlatInput-Mode-Pass__ball">
-<!--          {{ i }}-->
         </div>
         <div class="FlatInput-Mode-Pass__selector">
 
@@ -32,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import ViewEye from './../icon/ViewEye.vue'
 
 import { debounceRef, useModelWrapper } from './../../../plugins/Common'

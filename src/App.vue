@@ -21,9 +21,6 @@
       </FlatInput>
 
       <FlatInput v-model="content">
-        <template #suffix>
-          <el-icon><Hide /></el-icon>
-        </template>
       </FlatInput>
 
       <ViewEye />
