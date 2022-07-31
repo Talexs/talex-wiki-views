@@ -32,7 +32,6 @@ const handleClick = ref((e) => {
 
 <style lang="scss" scoped>
 .FlatButton-Wrapper {
-
   position: relative;
 
   width: 200px;
@@ -80,8 +79,11 @@ const handleClick = ref((e) => {
 
 .plain-btn {
 
+  padding: 2px;
+
   &:hover {
 
+    border: 2px solid var(--el-color-primary);
     background-color: var(--el-color-primary);
 
     color: var(--el-bg-color-page);
@@ -92,8 +94,8 @@ const handleClick = ref((e) => {
   width: calc(100% - 4px);
   height: calc(100% - 4px);
 
-  border: 2px solid var(--el-color-primary);
+  border-radius: var(--border-radius, 8px);
   background-color: rgba(0, 0, 0, 0);
-
+  border: 2px solid var(--el-color-primary-light-3);
 }
 </style>

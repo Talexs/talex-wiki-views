@@ -90,11 +90,6 @@ export default {
   top: 10%;
 
   width: 80%;
-  * {
-
-    width: 100%;
-
-  }
 }
 
 .Login-Container-Footer {
@@ -110,6 +105,8 @@ export default {
   :deep(.FlatInput-Wrapper) {
     display: block;
     margin: 30px 0;
+
+    width: 100%;
   }
   &:before {
     content: '';
@@ -123,7 +120,7 @@ export default {
 
     opacity: .75;
     //backdrop-filter: saturate(180%) blur(10px);
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: var(--el-bg-color-page);
   }
   position: absolute;
@@ -141,7 +138,7 @@ export default {
   height: 480px;
 
   backdrop-filter: saturate(180%) blur(10px);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -60%);
   animation: loadIn-Trans .25s;
 }
 
@@ -164,7 +161,7 @@ export default {
     content: "";
     position: absolute;
 
-    top: 0;
+    top: -10%;
     left: 50%;
 
     width: 400px;
