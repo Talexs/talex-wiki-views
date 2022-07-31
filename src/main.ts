@@ -6,6 +6,7 @@ import axios from './plugins/axios'
 import router from './plugins/router'
 import VWave from 'v-wave'
 
+import './styles/animation/main.scss'
 import './styles/element/index.scss'
 
 // &

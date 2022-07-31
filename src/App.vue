@@ -32,18 +32,18 @@ const content = ref('')
 //   content: "确定",
 //   type: TipType.INFO,
 //   onClick: () => {
-
+//
 //     return true;
-
+//
 //   },
 //   loading: async (func) => {
-
+//
 //     setTimeout(() => {
 //       func()
-//     }, 10000)
-
+//     }, 1000)
+//
 //   }
-//  } 
+//  }
 // ])
 
 </script>
@@ -61,8 +61,8 @@ const content = ref('')
   .App-Footer-Main {
     position: relative;
 
-    height: 120px;
-    background-color: var(--el-color-primary);
+    //height: 120px;
+    //background-color: var(--el-color-primary);
 
   }
   .App-Main-Main {

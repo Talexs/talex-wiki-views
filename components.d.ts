@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     SliderCaptcha: typeof import('./src/components/common/slider/SliderCaptcha.vue')['default']
     ViewEye: typeof import('./src/components/common/icon/ViewEye.vue')['default']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']
+    WikiMentioner: typeof import('./src/components/common/message/WikiMentioner.vue')['default']
     WikiTip: typeof import('./src/components/common/message/WikiTip.vue')['default']
   }
 }

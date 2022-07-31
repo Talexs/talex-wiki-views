@@ -1,37 +1,35 @@
 <template>
-  <div class="FlatInput-Wrapper">
-    <div class="FlatInput-Container">
+  <div class="FlatInput-Container">
 
-      <div @click="inputFocus"
-           :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
-           v-if="pass" class="FlatInput-Mode-Pass">
-        <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
-        </div>
-        <div class="FlatInput-Mode-Pass__selector">
-
-        </div>
+    <div @click="inputFocus"
+         :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
+         v-if="pass" class="FlatInput-Mode-Pass">
+      <div :style="`--delay: all .25s ${i * 10}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
       </div>
+      <div class="FlatInput-Mode-Pass__selector">
 
-      <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': pass && passFocus }">
-        <input :placeholder="placeholder" ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
       </div>
-
-      <!--    // div: const emits = defineEmits(['click']);-->
-      <div class="FlatInput-Icon-Container">
-        <div v-if="pass" @click="passEye = !passEye" class="FlatInput-Suffix">
-          <ViewEye :visible="passEye" />
-        </div>
-        <div v-else class="FlatInput-Suffix">
-          <slot name="suffix"></slot>
-        </div>
-      </div>
-
     </div>
+
+    <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': pass && passFocus }">
+      <input :placeholder="placeholder" ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
+    </div>
+
+    <!--    // div: const emits = defineEmits(['click']);-->
+    <div class="FlatInput-Icon-Container">
+      <div v-if="pass" @click="passEye = !passEye" class="FlatInput-Suffix">
+        <ViewEye :visible="passEye" />
+      </div>
+      <div v-else class="FlatInput-Suffix">
+        <slot name="suffix"></slot>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import ViewEye from './../icon/ViewEye.vue'
 
 import { debounceRef, useModelWrapper } from './../../../plugins/Common'
@@ -68,7 +66,7 @@ export default {
     //display: inline-block;
     margin-right: 1px;
 
-    left: 1px;
+    left: 3px;
     top: 50%;
 
     height: 8px;
@@ -86,9 +84,10 @@ export default {
   left: 0;
   top: 0;
 
-  max-width: calc(100% - 32px);
+  max-width: calc(100% - 36px);
   height: calc(100% - 4px);
   font-size: 15px;
+  border-radius: var(--border-radius-inner, 8px);
   background-color: var(--input-bg, var(--el-bg-color));
   transition: all .125s;
 }
@@ -107,7 +106,7 @@ export default {
 
       margin-left: 7px;
 
-      top: 4px;
+      top: 6px;
       right: 7px;
 
     }
@@ -116,7 +115,7 @@ export default {
     height: 100%;
 
     background-color: var(--input-bg, var(--el-bg-color));
-
+    border-radius: var(--border-radius-inner, 8px);
   }
   position: relative;
   cursor: pointer;
@@ -125,7 +124,10 @@ export default {
 .FlatInput-Input-Container__inner.mode-pass-focus {
   input::selection {
 
-    background-color: rgba(0, 0, 0, 0);
+    color: rgba(0, 0, 0, 0);
+    background-color: currentColor;
+
+    opacity: 0;
 
   }
 }
@@ -139,25 +141,40 @@ export default {
     position: relative;
     padding: 2px 4px;
 
-    width: calc(100% - 8px);
+    width: calc(100% - 16px);
     height: calc(100% - 4px);
 
     font-size: 15px;
     outline: none;
     border: none;
+    border-radius: var(--border-radius-inner, 8px);
+    transition: all .25s;
+    &:before {
+      content: v-bind(placeholder);//attr(placeholder);
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      width: max-content;
+
+      opacity: 0;
+      transform: translateX(3px);
+      transition: all .25s;
+    }
     &:empty {
+
+      width: calc(100% - 16px);
+
+      left: 3px;
+
       &:before {
-        content: attr(placeholder);
-        position: absolute;
-
-        left: 0;
-        top: 0;
-
-        width: max-content;
 
         opacity: .75;
+        transform: translateX(0);
 
       }
+
     }
   }
 }
@@ -182,7 +199,7 @@ export default {
   z-index: 100;
   position: relative;
 
-  left: -2px;
+  left: -1px;
   top: 10%;
 
   width: 1px;
@@ -195,10 +212,15 @@ export default {
 }
 
 .FlatInput-Container {
+  &:hover, &:focus {
+
+    border: 2px solid var(--el-color-primary);
+
+  }
   .mode-pass-focus {
     .FlatInput-Mode-Pass__selector {
 
-      left: 1px;
+      left: 4px;
 
       opacity: 1;
     }
@@ -216,45 +238,16 @@ export default {
     }
   }
   position: relative;
-  display: flex;
+  margin: 15px 0;
+  display: inline-flex;
   flex-direction: row;
 
   width: 100%;
   height: 100%;
+  max-height: 32px;
 
-}
-
-.FlatInput-Wrapper {
-  &:hover, &:active {
-
-    .FlatInput-Container:before {
-
-      opacity: 1;
-
-    }
-
-  }
-  .FlatInput-Container:before {
-    content: "";
-    position: absolute;
-
-    left: -2px;
-    top: -2px;
-
-    width: 100%;
-    height: 100%;
-
-    opacity: .25;
-    border-radius: 4px;
-    border: 2px solid var(--el-color-primary);
-    transition: all .25s;
-  }
-  position: relative;
-  display: inline-block;
-
-  width: 200px;
-  height: 28px;
-
+  border: 2px solid var(--el-color-primary-light-3);
+  border-radius: var(--border-radius-inner, 8px);
   background-color: var(--input-bg, var(--el-bg-color));
   transition: all .25s;
 }
