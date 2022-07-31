@@ -27,24 +27,24 @@ import { forWikiDialogTip, TipType } from './plugins/Common'
 
 const content = ref('')
 
-forWikiDialogTip("是这样滴", "QWQ AWA", [
- {
-  content: "确定",
-  type: TipType.INFO,
-  onClick: () => {
-
-    return true;
-
-  },
-  loading: async (func) => {
-
-    setTimeout(() => {
-      func()
-    }, 10000)
-
-  }
- } 
-])
+// forWikiDialogTip("是这样滴", "QWQ AWA", [
+//  {
+//   content: "确定",
+//   type: TipType.INFO,
+//   onClick: () => {
+//
+//     return true;
+//
+//   },
+//   loading: async (func) => {
+//
+//     setTimeout(() => {
+//       func()
+//     }, 1000)
+//
+//   }
+//  }
+// ])
 
 </script>
 
@@ -61,8 +61,8 @@ forWikiDialogTip("是这样滴", "QWQ AWA", [
   .App-Footer-Main {
     position: relative;
 
-    height: 120px;
-    background-color: var(--el-color-primary);
+    //height: 120px;
+    //background-color: var(--el-color-primary);
 
   }
   .App-Main-Main {

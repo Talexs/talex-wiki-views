@@ -1,6 +1,6 @@
 <template >
-  <div class="FlatButton-Wrapper" @click="handleClick" @keyup.enter="handleClick">
-  
+  <div class="FlatButton-Wrapper" :class="{ 'plain-btn': plain }" @click="handleClick" @keyup.enter="handleClick">
+
     <div class="FlatButton-Container">
       <div class="FlatButton-Loading">
         <Loading />
@@ -17,7 +17,7 @@ import Loading from '../icon/LoadingIcon.vue';
 import { ref, defineEmits } from 'vue'
 
 const emits = defineEmits([ 'click' ])
-const props = defineProps({ loadingFlag: Boolean })
+const props = defineProps({ loadingFlag: Boolean, plain: Boolean })
 
 
 const handleClick = ref((e) => {
@@ -32,11 +32,12 @@ const handleClick = ref((e) => {
 
 <style lang="scss" scoped>
 .FlatButton-Wrapper {
-    
+
   position: relative;
 
   width: 200px;
-  height: 32px;
+  height: 28px;
+  max-height: 28px;
 
   margin: 16px 0;
 
@@ -52,7 +53,7 @@ const handleClick = ref((e) => {
     cursor: pointer;
 
     opacity: .95;
-    transform: scale(1.1, 1.05);
+    transform: scale(1.035, 1.025);
   }
 
   .FlatButton-Container {
@@ -75,5 +76,24 @@ const handleClick = ref((e) => {
 
     }
   }
+}
+
+.plain-btn {
+
+  &:hover {
+
+    background-color: var(--el-color-primary);
+
+    color: var(--el-bg-color-page);
+    --bg-color: var(--el-bg-color-page)
+
+  }
+
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+
+  border: 2px solid var(--el-color-primary);
+  background-color: rgba(0, 0, 0, 0);
+
 }
 </style>

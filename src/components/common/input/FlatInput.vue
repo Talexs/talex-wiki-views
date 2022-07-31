@@ -5,7 +5,7 @@
       <div @click="inputFocus"
            :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
            v-if="pass" class="FlatInput-Mode-Pass">
-        <div :style="`--delay: all .25s ${i * 20}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
+        <div :style="`--delay: all .25s ${i * 10}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
         </div>
         <div class="FlatInput-Mode-Pass__selector">
 
@@ -125,7 +125,10 @@ export default {
 .FlatInput-Input-Container__inner.mode-pass-focus {
   input::selection {
 
-    background-color: rgba(0, 0, 0, 0);
+    color: rgba(0, 0, 0, 0);
+    background-color: currentColor;
+
+    opacity: 0;
 
   }
 }
@@ -145,7 +148,13 @@ export default {
     font-size: 15px;
     outline: none;
     border: none;
+    transition: all .25s;
     &:empty {
+
+      width: calc(100% - 11px);
+
+      left: 3px;
+
       &:before {
         content: attr(placeholder);
         position: absolute;
@@ -158,6 +167,7 @@ export default {
         opacity: .75;
 
       }
+
     }
   }
 }
@@ -182,7 +192,7 @@ export default {
   z-index: 100;
   position: relative;
 
-  left: -2px;
+  left: 0px;
   top: 10%;
 
   width: 1px;
