@@ -5,7 +5,7 @@
       <FlatInput class="Width-80" placeholder="请输入账号" v-model="formModel.username"></FlatInput>
       <FlatInput class="Width-80" placeholder="请输入密码" v-model="formModel.password" pass></FlatInput>
       
-      <FlatButton class="Width-80">登录</FlatButton>
+      <FlatButton class="Width-80" :loadingFlag="loadingFlag" @click="handleClick">登 录</FlatButton>
 
     </div>
     <div class="Login-Mentioner">
@@ -27,7 +27,16 @@ const formModel = reactive({
   username: '',
   password: ''
 })
+const loadingFlag = ref(true)
 
+const handleClick = ref((e) => {
+  loadingFlag.value = true
+  setTimeout(() => {
+
+    loadingFlag.value = false
+
+  }, 3000)
+})
 
 </script>
 
