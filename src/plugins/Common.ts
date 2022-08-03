@@ -7,6 +7,46 @@ export enum TipType { // 提示类型
     ERROR, WARNING, INFO, SUCCESS, DEFAULT
 } // => const TipType = [{ERROR:0, WARNING: 1}]
 
+// // oop: 封装 继承 多态
+// // oop: 万物皆(对象) => 属性 动作
+// // interface 相似 动作/属性对象 => 共有
+//
+// interface IPerson {
+//
+//     name: String
+//     eat: () => void
+//
+// }
+//
+// interface IStudent extends IPerson {
+//
+//     school: String
+//
+// }
+//
+// interface IWorker extends IPerson {
+//
+//     company: String
+//
+// }
+//
+// class People implements IStudent, IWorker {
+//
+//     company: String = "ABCD"
+//     school: String = "新希望"
+//
+//     eat(): void {
+//
+//         console.log('我吃了')
+//
+//     }
+//     name: String = "张三"
+//
+//
+// }
+//
+// const person: IStudent = new People()
+
 export interface DialogBtn {
 
     content: string
@@ -161,4 +201,64 @@ export async function sleep(time: number) {
     return new Promise((resolve) => setTimeout(() => resolve(time), time))
 }
 
-
+// class Animal {
+//
+//     private name: String
+//     private readonly age: Number
+//
+//     constructor(name: String, age: Number) {
+//
+//         this.name = name
+//         this.age = age
+//
+//     }
+//
+//     public getName(): String {
+//
+//         return this.name;
+//
+//     }
+//
+//     public getAge(): Number {
+//
+//         return this.age;
+//
+//     }
+//
+//     public setName(name: String): void {
+//
+//         this.name = name
+//
+//     }
+//
+// }
+//
+// class Dog extends Animal {
+//
+//     private gender: String
+//
+//     constructor(name: String, age: Number, gender: String) {
+//         super(name, age);
+//
+//         this.gender = gender
+//
+//     }
+//
+//
+// }
+//
+// // class Cat extends Animal {
+// //
+// //     private name: String
+// //
+// //     constructor(name: String) {
+// //
+// //         this.name = name
+// //
+// //     }
+// //
+// // }
+//
+// // 多态
+//
+// const dog: Animal = new Dog("旺财", 2, "雄")

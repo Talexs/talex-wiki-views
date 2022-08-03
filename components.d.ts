@@ -8,8 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     CheckBox: typeof import('./src/components/common/checkbox/CheckBox.vue')['default']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElInput: typeof import('element-plus/es')['ElInput']
     Email: typeof import('./src/components/common/icon/Email.vue')['default']
     FlatButton: typeof import('./src/components/common/btn/FlatButton.vue')['default']
     FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
