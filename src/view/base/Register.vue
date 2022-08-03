@@ -1,36 +1,37 @@
 <template>
-  <div class="Login-Wrapper">
-    <div class="Login-Container">
+  <div class="Register-Wrapper">
+    <div class="Register-Container">
 
-      <div class="Login-Container-Header">
+      <div class="Register-Container-Header">
 
         <h1 style="animation: loadIn .15s .1s backwards">TalexWiki</h1>
         <p style="animation: loadIn .15s .2s backwards">写你所想，享你所写</p>
 
       </div>
 
-      <div class="Login-Container-Main">
+      <div class="Register-Container-Main">
 
-        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="账号 / 邮箱 / UID" v-model="formModel.username">
+        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="请输入邮箱" v-model="formModel.email">
+          <template #suffix>
+            <Email open ></Email>
+          </template>
+        </FlatInput>
+        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .4s backwards" placeholder="请输入昵称" v-model="formModel.username">
           <template #suffix>
             <UserAnimate :parent-amo="3" />
           </template>
         </FlatInput>
-        <FlatInput style="animation: loadIn .15s .4s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>
+        <FlatInput style="animation: loadIn .15s .5s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>
 
-        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">登 录</FlatButton>
+        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">注 册</FlatButton>
 
       </div>
 
-      <div class="Login-Container-Footer">
+      <div class="Register-Container-Footer">
 
-        <div style="animation: loadIn .15s .6s backwards" class="Login-Footer-Mention">
+        <div class="Register-Footer-Mention" style="animation: loadIn .15s .6s backwards">
 
-          <CheckBox title="记住密码" v-model="formModel.remember">
-
-          </CheckBox>
-
-          <span @click="goRegister">立即注册</span>
+          <span @click="goLogin">立即登录</span>
 
         </div>
 
@@ -43,22 +44,22 @@
 </template>
 
 <script setup>
+import Email from './../../components/common/icon/Email.vue'
 import UserAnimate from './../../components/common/icon/UserAnimate.vue'
 import FlatInput from './../../components/common/input/FlatInput.vue'
 import FlatButton from './../../components/common/btn/FlatButton.vue'
-import CheckBox from './../../components/common/checkbox/CheckBox.vue'
 import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'
 
-import { forWikiDialogTip, forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common.ts'
+import { forMentionTip, TipType, sleep } from './../../plugins/Common.ts'
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const sliderVisible = ref(false)
 
 const formModel = reactive({
+  email: '',
   username: '',
-  password: '',
-  remember: false
+  password: ''
 })
 
 const loadings = reactive({
@@ -67,61 +68,25 @@ const loadings = reactive({
 
 const router = useRouter()
 
-const goRegister = ref(() => {
+const goLogin = ref(() => {
 
-  router.push("/user/register")
+  router.push("/user/login")
 
 })
-
-// forWikiDialogTip("啊，糟糕", "您没有浏览此页面的权限，是否申请？", [
-//   {
-//     content: "取消",
-//     type: TipType.WARNING,
-//     onClick: async () => {
-//
-//       await forMentionTip({ content: "取消失败！", time: 5000, type: TipType.ERROR, emphase: true })
-//
-//       return false
-//
-//     },
-//     loading: async(func) => {
-//
-//       await sleep(3000)
-//
-//       func()
-//
-//     }
-//   },
-//   {
-//     content: "确定",
-//     type: TipType.INFO,
-//     onClick: async () => {
-//
-//       await forMentionTip({ content: "无浏览权限！", time: 5000, type: TipType.WARNING, emphase: true })
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.INFO, true)
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.WARNING, false)
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.ERROR, true)
-//
-//       await sleep(5000)
-//
-//       await forWikiTip("您已获得浏览器权限！", 5000, TipType.SUCCESS)
-//
-//       await forMentionTip({ content: "权限已批阅！", time: 5000, type: TipType.SUCCESS, emphase: true })
-//
-//       return true
-//
-//     }
-//   }
-// ])
 
 const tryRegister = ref(async () => {
 
   loadings.btn = true
 
   await sleep(1200)
+
+  if( !formModel.email || formModel.email.length < 5 || formModel.email.length > 32 || formModel.email.indexOf('@') === -1 ) {
+
+    loadings.btn = false
+
+    return await forMentionTip({ content: "请确保您的邮箱格式正确(5-32位)!", time: 2600, type: TipType.ERROR })
+
+  }
 
   if( !formModel.username || formModel.username.length < 3 || formModel.username.length > 32 ) {
 
@@ -149,12 +114,12 @@ const tryRegister = ref(async () => {
 
 <script>
 export default {
-  name: "Login"
+  name: "Register"
 }
 </script>
 
 <style lang="scss" scoped>
-.Login-Container-Header {
+.Register-Container-Header {
   h1:after {
     content: '';
     position: relative;
@@ -180,14 +145,14 @@ export default {
 
 }
 
-.Login-Container-Main {
+.Register-Container-Main {
   position: relative;
   padding-bottom: 20px;
   width: 80%;
 }
 
-.Login-Container-Footer {
-  .Login-Footer-Mention {
+.Register-Container-Footer {
+  .Register-Footer-Mention {
     span {
       &:before {
         content: "";
@@ -231,7 +196,7 @@ export default {
   width: 80%;
 }
 
-.Login-Container {
+.Register-Container {
   z-index: 10;
   &:before {
     content: '';
@@ -259,7 +224,7 @@ export default {
   left: 50%;
 
   width: 380px;
-  height: 350px;
+  height: 400px;
 
   border-radius: 8px;
   backdrop-filter: contrast(120%) saturate(180%) blur(10px);
@@ -267,7 +232,7 @@ export default {
   animation: loadIn-Trans .25s;
 }
 
-.Login-Wrapper {
+.Register-Wrapper {
   &:before {
     content: "";
     position: absolute;

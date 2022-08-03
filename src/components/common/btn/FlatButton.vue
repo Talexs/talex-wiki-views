@@ -1,13 +1,10 @@
 <template >
-  <div class="FlatButton-Wrapper" :class="{ 'plain-btn': plain }" @click="handleClick" @keyup.enter="handleClick">
-
-    <div class="FlatButton-Container">
-      <div class="FlatButton-Loading">
-        <Loading />
-      </div>
-      <!-- <div class="FlatButton-Text">
-        <slot></slot>
-      </div> -->
+  <div v-wave class="FlatButton-Wrapper" :class="{ 'plain-btn': plain, 'loading': loadingFlag }" @click="handleClick" @keyup.enter="handleClick">
+    <div class="FlatButton-Loading">
+      <Loading />
+    </div>
+    <div class="FlatButton-Text">
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -31,10 +28,21 @@ const handleClick = ref((e) => {
 </script>
 
 <style lang="scss" scoped>
+
+.FlatButton-Loading {
+  position: absolute;
+
+  transform: scale(0);
+  transition: all .25s;
+}
+
 .FlatButton-Wrapper {
   position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 
-  width: 200px;
+  width: 120px;
   height: 28px;
   max-height: 28px;
 
@@ -47,6 +55,7 @@ const handleClick = ref((e) => {
 
   transition: all .25s;
   user-select: none;
+  --bg-color: var(--el-bg-color-page);
 
   &:hover {
     cursor: pointer;
@@ -54,27 +63,29 @@ const handleClick = ref((e) => {
     opacity: .95;
     transform: scale(1.035, 1.025);
   }
+}
 
-  .FlatButton-Container {
-    position: absolute;
+.FlatButton-Text {
 
-    top: 50%;
-    left: 50%;
+  display: inline-block;
 
-    transform: translate(-50%, -50%);
+  transition: all .25s;
 
-    .FlatButton-Text {
+}
 
-      display: inline-block;
+.FlatButton-Wrapper.loading {
+  .FlatButton-Loading {
 
-    }
+    transform: scale(.5);
 
-    .FlatButton-Loading {
-
-      transform: scale(.5);
-
-    }
   }
+  .FlatButton-Text {
+
+    opacity: .45;
+
+  }
+
+
 }
 
 .plain-btn {
@@ -91,9 +102,11 @@ const handleClick = ref((e) => {
 
   }
 
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
 
+  --bg-color: var(--el-color-primary-light-3);
+  color: var(--el-color-primary-light-3);
   border-radius: var(--border-radius, 8px);
   background-color: rgba(0, 0, 0, 0);
   border: 2px solid var(--el-color-primary-light-3);

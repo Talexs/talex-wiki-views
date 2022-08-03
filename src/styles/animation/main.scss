@@ -16,14 +16,14 @@
 @keyframes loadIn-Trans {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(-50%, -60%) scale(0);
   }
   70% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.125);
+    transform: translate(-50%, -60%) scale(1.125);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -60%) scale(1);
   }
 }

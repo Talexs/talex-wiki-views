@@ -7,8 +7,10 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    CheckBox: typeof import('./src/components/common/checkbox/CheckBox.vue')['default']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
+    Email: typeof import('./src/components/common/icon/Email.vue')['default']
     FlatButton: typeof import('./src/components/common/btn/FlatButton.vue')['default']
     FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
     GuideRef: typeof import('./src/components/common/GuideRef.vue')['default']
@@ -21,6 +23,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SliderCaptcha: typeof import('./src/components/common/slider/SliderCaptcha.vue')['default']
+    UserAnimate: typeof import('./src/components/common/icon/UserAnimate.vue')['default']
     ViewEye: typeof import('./src/components/common/icon/ViewEye.vue')['default']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']
     WikiMentioner: typeof import('./src/components/common/message/WikiMentioner.vue')['default']

@@ -3,7 +3,7 @@
 
     <div @click="inputFocus"
          :class="{ 'mode-pass-focus': passFocus, 'mode-pass-view': !passEye }"
-         v-if="pass" class="FlatInput-Mode-Pass">
+         v-if="pass && content" class="FlatInput-Mode-Pass">
       <div :style="`--delay: all .25s ${i * 10}ms`" v-for="i in Math.min(String(content).length, maxPassDotNum)" class="FlatInput-Mode-Pass__ball">
       </div>
       <div class="FlatInput-Mode-Pass__selector">
@@ -99,7 +99,7 @@ export default {
       margin-left: 8px;
 
       top: 6px;
-      right: 9px;
+      right: 4px;
 
     }
     :deep(.ViewEye-Container) {
@@ -107,12 +107,14 @@ export default {
       margin-left: 7px;
 
       top: 6px;
-      right: 7px;
+      right: 2px;
 
     }
     position: relative;
 
     height: 100%;
+
+    margin-right: 5px;
 
     background-color: var(--input-bg, var(--el-bg-color));
     border-radius: var(--border-radius-inner, 8px);
@@ -242,8 +244,8 @@ export default {
   display: inline-flex;
   flex-direction: row;
 
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 4px);
+  height:  calc(100% - 4px);
   max-height: 32px;
 
   border: 2px solid var(--el-color-primary-light-3);

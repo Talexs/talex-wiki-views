@@ -4,13 +4,13 @@
 
       <div class="SliderCaptcha-Container">
 
-        <ProgressBar></ProgressBar>
+        <ProgressBar :success="status === states.SUCCESS" :error="status === states.ERROR" :warn="status === states.WARN" :loading="status === states.LOADING" style="transform: scaleY(1.5)"></ProgressBar>
 
-        <div class="SliderCaptcha-Major">
+        <div :class="{ 'slider-shaver': status !== states.SUCCESS && status !== states.LOADING && status !== states.NORMAL }" class="SliderCaptcha-Major" :ref="captchaRefs.MajorRef">
           <p class="mention">请拖动滑块完成拼图</p>
           <div class="content">
 
-            <div class="bg-img-div" :ref="captchaRefs.bgImg">
+            <div :class="{ 'slider-success' : status === states.SUCCESS }" class="bg-img-div" :ref="captchaRefs.bgImg">
               <img id="bg-img" :src="captchaOptions.backgroundImage" alt/>
             </div>
 
@@ -18,9 +18,9 @@
               <img id="slider-img" :src="captchaOptions.sliderImage" alt/>
             </div>
 
-<!--            <div class="slider-mentioner" :ref="captchaRefs.mentioner">-->
-<!--              {{ mentionTip }}-->
-<!--            </div>-->
+            <div class="slider-mentioner" :ref="captchaRefs.mentioner">
+              {{ mentionTip }}
+            </div>
 
           </div>
 
@@ -44,6 +44,7 @@ import ProgressBar from './../bar/ProgressBar.vue'
 import { watch, watchEffect, onMounted, reactive, ref, toRefs } from 'vue'
 
 import { genCaptcha, validateCaptcha } from './../../../plugins/api/captchaReq.ts'
+import { sleep } from '../../../plugins/Common.ts'
 
 const emits = defineEmits(['onSuccess', 'onFailed', 'tryClose'])
 const props = defineProps({
@@ -53,13 +54,104 @@ const props = defineProps({
   }
 })
 
+const mentionTip = ref("")
 const realOpen = ref(false)
 
 watchEffect(async () => {
 
   realOpen.value = props.open
 
-  // if( props.open && realOpen.value ) refreshCaptcha.value()
+  if( props.open && realOpen.value ) refreshCaptcha.value()
+
+})
+
+const captchaRefs = toRefs({
+  MajorRef: ref(null),
+  bgImg: ref(null),
+  sliderImg: ref(null),
+  sliderBtn: ref(null),
+  mentioner: ref(null)
+})
+
+onMounted(async () => {
+
+  await refreshCaptcha.value()
+
+  window.addEventListener('touchstart', handleDragStart)
+  window.addEventListener('touchmove', handleDragMove)
+  window.addEventListener('touchend', handleDragEnd)
+
+  window.addEventListener('mousedown', handleDragStart)
+  window.addEventListener('mousemove', handleDragMove)
+  window.addEventListener('mouseup', handleDragEnd)
+
+})
+
+const refreshCaptcha = ref(async () => {
+
+  status.value = states.LOADING
+
+  const el = captchaRefs.MajorRef.value;
+
+  if( !el ) return
+
+  el.style.transform = 'scale(.8)'
+
+  await sleep(250)
+
+  el.style.transform = 'scale(.8) translateX(-150%)'
+  el.style.opacity = '0'
+
+  await sleep(250)
+
+  el.style.transform = 'scale(.8) translateX(150%)'
+  el.style.opacity = '0'
+
+  await sleep(1250)
+
+  resetOptions()
+
+  const res = await genCaptcha()
+
+  if( !res ) {
+
+    await mentioner( `${res?.data || "未知错误!"}}`, states.ERROR )
+
+    await sleep(200)
+
+    realOpen.value = false
+
+    await sleep(250)
+
+    // do server error -> arg for true
+    emits("onFailed", true)
+
+    return;
+
+  }
+
+  let { data } = res;
+
+  captchaOptions.currentCaptchaId = data.id;
+
+  if( !data.info?.backgroundImage ) {
+
+    return refreshCaptcha.value()
+
+  }
+
+  captchaOptions.backgroundImage = data.info.backgroundImage;
+  captchaOptions.sliderImage = data.info.sliderImage
+  captchaRefs.sliderImg.value && (captchaRefs.sliderImg.value.style.transform = 'translate(0px, 0px)')
+  captchaRefs.sliderBtn && (captchaRefs.sliderBtn.value.style.transform = 'translate(0px, 0px)')
+
+  el.style.transform = 'scale(.8) translateX(0%)'
+  el.style.opacity = '1'
+
+  await sleep(250)
+
+  el.style.transform = ''
+  status.value = states.NORMAL
 
 })
 
@@ -79,30 +171,158 @@ const captchaOptions = reactive({
   sliderImageHeight: 0,
 })
 
-const captchaRefs = toRefs({
-  MajorRef: ref(null),
-  bgImg: ref(null),
-  sliderImg: ref(null),
-  sliderBtn: ref(null),
-  mentioner: ref(null)
+const validate = ref(async () => {
+
+  let data = {
+
+    bgImageWidth: captchaRefs.bgImg.value.clientWidth,
+    bgImageHeight: captchaRefs.bgImg.value.clientHeight,
+    sliderImageWidth: captchaRefs.sliderImg.value.clientWidth,
+    sliderImageHeight: captchaRefs.sliderImg.value.clientHeight,
+    startSlidingTime: captchaOptions.startSlidingTime,
+    endSlidingTime: captchaOptions.endSlidingTime,
+    trackList: captchaOptions.trackList,
+
+  }
+
+  validateCaptcha(captchaOptions.currentCaptchaId, data).then(async res => {
+
+    if( res.status === 200 ) {
+
+      const time = data.endSlidingTime - data.startSlidingTime
+
+      await mentioner( `${ ( time / 1000 ).toFixed( 1 ) } 秒的速度超 ${ ( Math.random() * 100 ).toFixed( 1 ) } % 的用户`, states.SUCCESS )
+
+      await sleep(200)
+
+      realOpen.value = false
+
+      await sleep(250)
+
+      emits("onSuccess", captchaOptions.currentCaptchaId)
+
+    } else {
+
+      await mentioner( `请正确拼合图像!`, states.WARN )
+
+      refreshCaptcha.value();
+
+    }
+
+  })
+
 })
 
-onMounted(async () => {
+function resetOptions() {
 
-  await refreshCaptcha.value()
+  captchaOptions.currentCaptchaId = ''
+  captchaOptions.backgroundImage = ''
+  captchaOptions.sliderImage = ''
+  captchaOptions.isMouseDown = false
+  captchaOptions.originX = 0
+  captchaOptions.originY = 0
+  captchaOptions.startSlidingTime = null
+  captchaOptions.entSlidingTime = null
+  captchaOptions.trackList = []
+  captchaOptions.bgImageWidth = 0
+  captchaOptions.bgImageHeight = 0
+  captchaOptions.sliderImageWidth = 0
+  captchaOptions.sliderImageHeight = 0
 
-})
+}
 
-const refreshCaptcha = ref(async () => {
+function handleDragStart(e) {
 
-  const { data: res } = await genCaptcha()
+  captchaOptions.startSlidingTime = new Date().getTime()
 
-  captchaOptions.currentCaptchaId = res.id
+  captchaOptions.originX = e.clientX || e.touches[0].clientX
+  captchaOptions.originY = e.clientY || e.touches[0].clientY
 
-  captchaOptions.backgroundImage = res.info.backgroundImage
-  captchaOptions.sliderImage = res.info.sliderImage
+  captchaOptions.isMouseDown = true;
 
-  console.log( res )
+}
+
+function handleDragMove(e) {
+
+  if( !captchaOptions.isMouseDown ) return
+
+  const w = 206;
+
+  const currentX = e.clientX || e.touches[0].clientX
+  const currentY = e.clientY || e.touches[0].clientY
+
+  let { moveX, moveY } = { moveX: currentX - captchaOptions.originX, moveY: currentY - captchaOptions.originY }
+
+  captchaOptions.trackList.push({x: moveX, y: moveY, t: (new Date() - captchaOptions.startSlidingTime)})
+
+  moveX = Math.max(0, moveX) // if( moveX < 0 ) moveX = 0 // 限制左移
+  moveX = Math.min(w, moveX) // if( moveX > w ) moveX = w // 限制右移
+
+  const value = captchaRefs.sliderImg.value
+
+  if( !value ) return
+
+  value.style.transform = 'translate(' + moveX + 'px, 0px)';
+  captchaRefs.sliderBtn.value.style.transform = 'translate(' + moveX + 'px, 0px)';
+
+}
+
+function handleDragEnd(e) {
+
+  if( !captchaOptions.isMouseDown ) return
+
+  captchaOptions.isMouseDown = false;
+
+  const currentX = e.clientX || e.changedTouches[0].clientX
+
+  if( currentX === captchaOptions.originX ) return false
+
+  captchaOptions.endSlidingTime = new Date().getTime()
+
+  validate.value()
+
+}
+
+const statusColor = {
+  "SUCCESS": "var(--el-color-success)",
+  "ERROR": "var(--el-color-error)",
+  "WARN": "var(--el-color-warning)"
+}
+const states = { NORMAL: "NORMAL", SUCCESS: "SUCCESS", ERROR: "ERROR", WARN: "WARN", LOADING: "LOADING" }
+const status = ref(states.NORMAL)
+
+async function mentioner(text, tStatus) {
+
+  const el = captchaRefs.mentioner.value
+
+  mentionTip.value = text
+
+  el.style.background = statusColor[tStatus];
+
+  await sleep(250)
+
+  el.style.transform = 'scaleX(.8) translateY(0) scaleY(1)'
+  status.value = tStatus
+
+  await sleep(50)
+
+  el.style.transform = 'scaleX(1) translateY(0) scaleY(1)'
+
+  await sleep(2250)
+
+  el.style.transform = 'scaleX(.8) translateY(0) scaleY(1)'
+
+  await sleep(50)
+
+  el.style.transform = 'scaleX(0) translateY(50%) scaleY(0)'
+
+  await sleep(250)
+
+}
+
+const tryClose = ref(() => {
+
+  emits("tryClose")
 
 })
 
@@ -115,6 +335,89 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.slider-success::after {
+  content: "";
+  position: absolute;
+
+  left: -100px;
+  top: 0;
+
+  width: 30px;
+  height: 100%;
+
+  background: linear-gradient(to right bottom, rgba(200, 200, 200, .25), rgba(200, 200, 200, .75), rgba(200, 200, 200, .25));
+
+  transform: skewX(10deg);
+  animation: sliderScan .95s linear;
+
+}
+@keyframes sliderScan {
+  0% {
+    left: 300px;
+  }
+  100% {
+    left: -100px;
+  }
+}
+
+.slider-shaver {
+  animation: shaver .125s 3 .25s;
+}
+@keyframes shaver {
+
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.slider-mentioner {
+  position: absolute;
+
+  width: 100%;
+  height: 25px;
+
+  bottom: -1px;
+
+  line-height: 25px;
+  font-size: 13px;
+  text-align: center;
+
+  color: #fff;
+  transform: scaleX(0) translateY(50%) scaleY(0);
+  transition: all .25s;
+}
+
+.SliderCaptcha-Major {
+  position: relative;
+
+  height: 100%;
+  transition: all .25s;
+}
+
+.SliderCaptcha-Container .content {
+  position: relative;
+
+  margin-top: 10px;
+
+  width: 100%;
+  height: 159px;
+}
 
 .SliderCaptcha-Container {
   .mention {
@@ -129,9 +432,8 @@ export default {
   left: 50%;
   top: 50%;
 
-  transform: translate(-50%, -50%) translateY(-80%) scaleY(0) rotateY(180deg);
   width: 278px;
-  height: 345px;
+  height: 305px;
 
   box-sizing: border-box;
   padding: 9px;
@@ -139,6 +441,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.9);
 
   overflow: hidden;
+  transform: translate(-50%, -50%) translateY(-80%) scaleY(0) rotateY(180deg);
   transition: all .25s;
 }
 
@@ -166,7 +469,7 @@ export default {
   height: 100%;
 
   transition: all .5s;
-  opacity: 1;
+  opacity: 0;
 
   pointer-events: none;
 }
@@ -190,6 +493,7 @@ export default {
   height: 100%;
 
   transform: translate(0px, 0px);
+  overflow: hidden;
 }
 
 .slider-img-div {
@@ -208,10 +512,13 @@ export default {
 }
 
 .SliderCaptcha-Container .slider-move {
-  height: 60px;
-  width: 100%;
-  margin: 21px 0;
   position: relative;
+  margin: 21px 0;
+
+  height: 60px;
+
+  width: 100%;
+
 }
 
 .SliderCaptcha-Container .bottom {

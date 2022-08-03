@@ -99,17 +99,17 @@ watchEffect(() => {
 
 const clickBtn = ref(async (btn) => {
 
-  if( btn.value.onClick() ) {
+  btn.value.loading = true
 
-    btn.value.loading = true
+  await sleep(1200)
 
-    await sleep(1200)
+  if( await btn.value.onClick() ) {
 
     forClose.value()
 
-    btn.value.loading = false
-
   }
+
+  btn.value.loading = false
 
 })
 

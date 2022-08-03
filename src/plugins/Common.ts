@@ -3,20 +3,28 @@ import { createApp, customRef } from 'vue'
 import WikiTip from './../components/common/message/WikiTip.vue'
 import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
 
-export enum TipType {
+export enum TipType { // 提示类型
     ERROR, WARNING, INFO, SUCCESS, DEFAULT
-}
+} // => const TipType = [{ERROR:0, WARNING: 1}]
 
 export interface DialogBtn {
 
     content: string
     type?: TipType
-    onClick: () => Boolean; // return true for close, false for deny
+    onClick: () => Promise<Boolean>; // return true for close, false for deny
     loading?: (func: Function) => Promise<void>; // 1 param argument for loading function, call for stop loading
 
 }
 
-export async function forWikiDialogTip(title: String, message: String, btns: DialogBtn[] = [ { content: "确定", type: TipType.INFO, onClick: () => true } ]) {
+import { mentionManager, MentionTip } from './addon/MentionerManager'
+
+export async function forMentionTip(tip: MentionTip) {
+
+    await mentionManager.applyFor(tip)
+
+}
+
+export async function forWikiDialogTip(title: String, message: String, btns: DialogBtn[] = [ { content: "确定", type: TipType.INFO, onClick: async () => true } ]) {
 
     const root: HTMLDivElement = document.createElement('div');
 
@@ -102,9 +110,33 @@ export function useModelWrapper(props: any, emit: any, name = 'modelValue') {
     })
 }
 
+export function throttleRef(value: any, time: number) {
+
+    let ts = 0
+
+    return customRef((track, trigger) => {
+        return {
+            get() {
+                track()
+                return value
+            },
+            set(newValue) {
+
+                if( new Date().getTime() - ts < time ) return
+
+                value = newValue
+                track()
+                trigger()
+                ts = new Date().getTime()
+            }
+        }
+    })
+
+}
+
 export function debounceRef(value: any, delay: number) {
 
-    let timer
+    let timer: any
 
     return customRef((track, trigger) => {
        return {
@@ -128,3 +160,5 @@ export function debounceRef(value: any, delay: number) {
 export async function sleep(time: number) {
     return new Promise((resolve) => setTimeout(() => resolve(time), time))
 }
+
+

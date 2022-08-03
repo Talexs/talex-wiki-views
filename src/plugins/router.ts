@@ -19,6 +19,11 @@ const routes = [
         path: "/user/login",
         name: "登录",
         component: () => import('./../view/base/Login.vue')
+    },
+    {
+        path: "/user/register",
+        name: "注册",
+        component: () => import('./../view/base/Register.vue')
     }
 ]
 
