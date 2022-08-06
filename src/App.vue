@@ -8,13 +8,13 @@
     </div>
     <div class="App-Footer-Main">
 
-
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
+import TriangleColorfulBar from './components/common/bar/TriangleColorfulBar.vue'
 import { Hide } from '@element-plus/icons-vue'
 import { ElIcon } from 'element-plus'
 
@@ -69,6 +69,8 @@ const content = ref('')
     position: relative;
     padding: 4px 8px;
     flex: 1;
+
+    height: calc(100% - 50px);
 
   }
   .App-Header-Main {

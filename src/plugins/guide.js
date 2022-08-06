@@ -2,6 +2,20 @@
 
 // 封装
 
+// 隐式 -> 创建一个对象
+// 显式 -> 访问一个对象
+
+// 你去吃海底捞
+//   调料 # 水果 (直接可以访问的 # 显式）
+//   后厨 -> 切水果 （隐式 # 说 -> 切）
+
+const obj= {}
+const func = () => {}
+
+// 对象 { 创建 / 访问 }
+
+// function. -> prototype
+
 class Animal {
 
   #name
@@ -71,3 +85,12 @@ const dog = new Dog("旺财", 26);
 
 dog.getAge()
 dog.getGender()
+
+new Promise(() => {
+
+
+
+});
+
+// js/ts oop => 万物皆对象
+

@@ -7,13 +7,17 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AsideBar: typeof import('./src/components/doc/AsideBar.vue')['default']
     CheckBox: typeof import('./src/components/common/checkbox/CheckBox.vue')['default']
+    Doc: typeof import('./src/components/doc/Doc.vue')['default']
+    DocView: typeof import('./src/components/doc/DocView.vue')['default']
     Email: typeof import('./src/components/common/icon/Email.vue')['default']
     FlatButton: typeof import('./src/components/common/btn/FlatButton.vue')['default']
     FlatInput: typeof import('./src/components/common/input/FlatInput.vue')['default']
     GuideRef: typeof import('./src/components/common/GuideRef.vue')['default']
     Header: typeof import('./src/components/common/layout/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    ListBar: typeof import('./src/components/doc/ListBar.vue')['default']
     LoadingIcon: typeof import('./src/components/common/icon/LoadingIcon.vue')['default']
     Logo: typeof import('./src/components/common/icon/Logo.vue')['default']
     LogoNew: typeof import('./src/components/common/icon/LogoNew.vue')['default']
@@ -21,6 +25,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SliderCaptcha: typeof import('./src/components/common/slider/SliderCaptcha.vue')['default']
+    TriangleColorfulBar: typeof import('./src/components/common/bar/TriangleColorfulBar.vue')['default']
     UserAnimate: typeof import('./src/components/common/icon/UserAnimate.vue')['default']
     ViewEye: typeof import('./src/components/common/icon/ViewEye.vue')['default']
     WikiDialogTip: typeof import('./src/components/common/message/WikiDialogTip.vue')['default']

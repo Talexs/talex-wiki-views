@@ -38,7 +38,7 @@
 
     </div>
 
-    <SliderCaptcha :open="sliderVisible" />
+    <SliderCaptcha  @success="onSuccess"  :open="sliderVisible" />
   </div>
 </template>
 
@@ -52,6 +52,7 @@ import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'
 import { forWikiDialogTip, forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common.ts'
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { req_tryLogin } from './../../plugins/api/baseReq.ts'
 
 const sliderVisible = ref(false)
 
@@ -73,6 +74,31 @@ const goRegister = ref(() => {
 
 })
 
+const onSuccess = ref(async() => {
+
+  loadings.btn = sliderVisible.value = false
+
+  const res = await req_tryLogin({
+
+    // tc_id :id,
+    username :formModel.username,
+    password :formModel.password
+
+  })
+
+  if ( res.code === "200"){
+
+    await forWikiTip("登录成功!", TipType.SUCCESS);
+
+    await router.push("/")
+
+  } else {
+
+    await forWikiTip("登录失败", TipType.ERROR);
+
+  }
+
+})
 // forWikiDialogTip("啊，糟糕", "您没有浏览此页面的权限，是否申请？", [
 //   {
 //     content: "取消",
@@ -141,7 +167,9 @@ const tryRegister = ref(async () => {
 
   sliderVisible.value = true
 
-  await forMentionTip({ content: "请完成滑块验证以确保你是一个自然人!", time: 2200, type: TipType.INFO })
+   // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
+
+  await onSuccess.value()
 
 })
 

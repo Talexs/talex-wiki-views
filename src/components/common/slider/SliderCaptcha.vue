@@ -46,7 +46,7 @@ import { watch, watchEffect, onMounted, reactive, ref, toRefs } from 'vue'
 import { genCaptcha, validateCaptcha } from './../../../plugins/api/captchaReq.ts'
 import { sleep } from '../../../plugins/Common.ts'
 
-const emits = defineEmits(['onSuccess', 'onFailed', 'tryClose'])
+const emits = defineEmits(['success', 'onFailed', 'tryClose'])
 const props = defineProps({
   open: {
     type: Boolean,
@@ -57,14 +57,6 @@ const props = defineProps({
 const mentionTip = ref("")
 const realOpen = ref(false)
 
-watchEffect(async () => {
-
-  realOpen.value = props.open
-
-  if( props.open && realOpen.value ) refreshCaptcha.value()
-
-})
-
 const captchaRefs = toRefs({
   MajorRef: ref(null),
   bgImg: ref(null),
@@ -74,8 +66,6 @@ const captchaRefs = toRefs({
 })
 
 onMounted(async () => {
-
-  await refreshCaptcha.value()
 
   window.addEventListener('touchstart', handleDragStart)
   window.addEventListener('touchmove', handleDragMove)
@@ -145,6 +135,21 @@ const refreshCaptcha = ref(async () => {
   captchaRefs.sliderImg.value && (captchaRefs.sliderImg.value.style.transform = 'translate(0px, 0px)')
   captchaRefs.sliderBtn && (captchaRefs.sliderBtn.value.style.transform = 'translate(0px, 0px)')
 
+  // 计算滑块 的大小 - 简单的比例
+
+  const { clientWidth, clientHeight } = captchaRefs.bgImg.value
+
+  // 比例计算
+  const scaleX = clientWidth / data.info.bgImageWidth
+  const scaleY = clientHeight / data.info.bgImageHeight
+
+  const style = captchaRefs.sliderImg.value.style
+
+  style.width = `${data.info.sliderImageWidth * scaleX}px`
+  style.height = `${data.info.sliderImageHeight * scaleY}px`
+
+  // done
+
   el.style.transform = 'scale(.8) translateX(0%)'
   el.style.opacity = '1'
 
@@ -171,11 +176,19 @@ const captchaOptions = reactive({
   sliderImageHeight: 0,
 })
 
+watchEffect(async () => {
+
+  realOpen.value = props.open
+
+  if( props.open && realOpen.value ) refreshCaptcha.value()
+
+})
+
 const validate = ref(async () => {
 
   let data = {
 
-    bgImageWidth: captchaRefs.bgImg.value.clientWidth,
+    bgImageWidth: captchaRefs.bgImg.value?.clientWidth,
     bgImageHeight: captchaRefs.bgImg.value.clientHeight,
     sliderImageWidth: captchaRefs.sliderImg.value.clientWidth,
     sliderImageHeight: captchaRefs.sliderImg.value.clientHeight,
@@ -193,13 +206,7 @@ const validate = ref(async () => {
 
       await mentioner( `${ ( time / 1000 ).toFixed( 1 ) } 秒的速度超 ${ ( Math.random() * 100 ).toFixed( 1 ) } % 的用户`, states.SUCCESS )
 
-      await sleep(200)
-
-      realOpen.value = false
-
-      await sleep(250)
-
-      emits("onSuccess", captchaOptions.currentCaptchaId)
+      emits("success", captchaOptions.currentCaptchaId)
 
     } else {
 
@@ -478,7 +485,7 @@ export default {
 
   .SliderCaptcha-Container {
 
-    transform: translate(-50%, -50%) translateY(0) scaleY(1);
+    transform: translate(-50%, -50%) translateY(0) scaleY(1) scale(2);
 
   }
 

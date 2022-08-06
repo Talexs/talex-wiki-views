@@ -198,7 +198,7 @@ export function debounceRef(value: any, delay: number) {
 }
 
 export async function sleep(time: number) {
-    return new Promise((resolve) => setTimeout(() => resolve(time), time))
+    return new Promise(resolve => setTimeout(() => resolve(time), time))
 }
 
 // class Animal {

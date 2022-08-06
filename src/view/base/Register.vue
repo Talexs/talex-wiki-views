@@ -39,7 +39,7 @@
 
     </div>
 
-    <SliderCaptcha :open="sliderVisible" />
+    <SliderCaptcha @success="onSuccess" :open="sliderVisible" />
   </div>
 </template>
 
@@ -50,9 +50,10 @@ import FlatInput from './../../components/common/input/FlatInput.vue'
 import FlatButton from './../../components/common/btn/FlatButton.vue'
 import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'
 
-import { forMentionTip, TipType, sleep } from './../../plugins/Common.ts'
+import { forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common'
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { req_tryRegister, req_tryLogin } from './../../plugins/api/baseReq.ts'
 
 const sliderVisible = ref(false)
 
@@ -106,7 +107,34 @@ const tryRegister = ref(async () => {
 
   sliderVisible.value = true
 
-  await forMentionTip({ content: "请完成滑块验证以确保你是一个自然人!", time: 2200, type: TipType.INFO })
+  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
+
+  await onSuccess.value()
+
+})
+
+const onSuccess = ref(async () => {
+
+  loadings.btn = sliderVisible.value = false
+
+  const res = await req_tryRegister({
+    email: formModel.email,
+    username: formModel.username,
+    password: formModel.password,
+    // tc_id: id
+  })
+
+  if( res.status === 200 ) {
+
+    await forWikiTip("注册成功, 正在跳转...", 2200, TipType.INFO)
+
+    await router.push("/user/login")
+
+  } else {
+
+    await forMentionTip({ content: res.data, time: 3100, type: TipType.ERROR })
+
+  }
 
 })
 
