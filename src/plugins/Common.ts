@@ -3,49 +3,18 @@ import { createApp, customRef } from 'vue'
 import WikiTip from './../components/common/message/WikiTip.vue'
 import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
 
+import { Md5 } from 'ts-md5'
+
+// string to md5
+export const toMD5 = ( str: string ) => {
+
+    return Md5.hashStr(str);
+
+}
+
 export enum TipType { // 提示类型
     ERROR, WARNING, INFO, SUCCESS, DEFAULT
-} // => const TipType = [{ERROR:0, WARNING: 1}]
-
-// // oop: 封装 继承 多态
-// // oop: 万物皆(对象) => 属性 动作
-// // interface 相似 动作/属性对象 => 共有
-//
-// interface IPerson {
-//
-//     name: String
-//     eat: () => void
-//
-// }
-//
-// interface IStudent extends IPerson {
-//
-//     school: String
-//
-// }
-//
-// interface IWorker extends IPerson {
-//
-//     company: String
-//
-// }
-//
-// class People implements IStudent, IWorker {
-//
-//     company: String = "ABCD"
-//     school: String = "新希望"
-//
-//     eat(): void {
-//
-//         console.log('我吃了')
-//
-//     }
-//     name: String = "张三"
-//
-//
-// }
-//
-// const person: IStudent = new People()
+}
 
 export interface DialogBtn {
 
@@ -78,7 +47,7 @@ export async function forWikiDialogTip(title: String, message: String, btns: Dia
 
     root.id = 'wiki-dialog-tip-' + index;
 
-    root.style.zIndex = `${100 + index}`
+    root.style.zIndex = `${1000 + index}`
 
     const app = createApp(WikiDialogTip, {
         message, index, title, btns,
@@ -97,7 +66,7 @@ export async function forWikiDialogTip(title: String, message: String, btns: Dia
 
 }
 
-export async function forWikiTip(message: String, stay: Number, type: TipType | null = null, loading: boolean = false) {
+export async function forWikiTip(message: String, stay: Number, type: TipType | null = null, loading: boolean = false, left: boolean = false) {
 
     const root: HTMLDivElement = document.createElement('div');
 
@@ -112,7 +81,7 @@ export async function forWikiTip(message: String, stay: Number, type: TipType | 
     root.id = 'wiki-tip-' + index;
 
     root.style.position = 'absolute'
-    root.style.right = '-100%'
+    root.style[left ? 'left' : 'right'] = '-100%'
     root.style.bottom = `calc(5% + ${index * 45}px)`;
     root.style.transition = 'all .25s'
 
@@ -121,7 +90,7 @@ export async function forWikiTip(message: String, stay: Number, type: TipType | 
         close: async () => {
 
             root.style.opacity = '0'
-            root.style.right = '-100%'
+            root.style[left ? 'left' : 'right'] = '-100%'
 
             await sleep(300)
 
@@ -137,7 +106,7 @@ export async function forWikiTip(message: String, stay: Number, type: TipType | 
 
     await sleep(200)
 
-    root.style.right = '0'
+    root.style[left ? 'left' : 'right'] = '0'
 
 }
 

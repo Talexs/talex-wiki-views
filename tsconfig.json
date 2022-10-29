@@ -12,7 +12,13 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "allowJs": true
+    "allowJs": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "@plugins": ["./src/plugins/*"],
+      "@components": ["./src/components/*"],
+      "@assets": ["./src/assets/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -230,7 +230,7 @@ export default {
     transform: scale(0) translateX(-50%);
     opacity: 0;
     --bg-color: var(--theme-color);
-    transition: all .25s;
+    transition: .3s cubic-bezier(.25,.8,.25,1);
   }
   h1 {
     position: absolute;
@@ -304,7 +304,7 @@ export default {
   box-shadow: 0 0 16px 32px var(--el-box-shadow);
 
   transform: translate(-50%, -50%);
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
   animation: enter .2s ease-in-out;
 
 }
@@ -344,7 +344,7 @@ export default {
   text-align: center;
 
   color: var(--theme-color, var(--el-text-color-regular));
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 @keyframes enter {

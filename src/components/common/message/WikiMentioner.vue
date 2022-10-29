@@ -42,31 +42,31 @@ async function mention(tip) {
   const el = dom.value
   const style = el.style
 
-  await sleep(250)
+  await sleep(50)
 
   style.transform = 'translate(-50%, 0)'
 
-  await sleep(400)
+  await sleep(100)
 
   style.setProperty('--radius', '4px')
 
-  await sleep(350)
+  await sleep(150)
 
   for( let c of [...tip.content] ) {
 
     el.innerText += c
 
-    await sleep(50)
+    await sleep(20)
 
   }
 
-  await sleep(350)
+  await sleep(150)
 
   if( tip?.emphase ) {
 
     style.boxShadow = '0 0 4px 2px var(--theme-color)'
 
-    await sleep(350)
+    await sleep(150)
 
   }
 
@@ -80,19 +80,19 @@ async function mention(tip) {
 
     el.innerText = el.innerText.substring(0, el.innerText.length - 1)
 
-    await sleep(50)
+    await sleep(20)
 
   }
 
-  await sleep(250)
+  await sleep(150)
 
   style.setProperty('--radius', '50%')
 
-  await sleep(400)
+  await sleep(100)
 
   style.transform = 'translate(-50%, 0) translateY(100px) scale(0)'
 
-  await sleep(500)
+  await sleep(200)
 
 }
 
@@ -121,8 +121,9 @@ export default {
     border-radius: var(--radius);
     background-color: var(--theme-color, var(--el-text-color-regular));
     box-shadow: 0 0 1px 2px var(--theme-color, var(--el-text-color-regular)) inset;
-    transition: all .25s;
+    transition: .3s cubic-bezier(.25,.8,.25,1);
   }
+  z-index: 10000;
   position: absolute;
   padding: 4px 8px;
   display: flex;
@@ -135,12 +136,14 @@ export default {
   height: 32px;
   line-height: 34px;
 
+  user-select: none;
+  user-focus: -1;
   color: var(--theme-color, var(--el-text-color-regular));
   --radius: 50%;
   border-radius: var(--radius);
   backdrop-filter: saturate(200%) blur(10px);
   transform: translate(-50%, 0) translateY(100px) scale(0);
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 .success-tip {

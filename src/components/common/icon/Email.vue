@@ -119,7 +119,7 @@ export default {
   width: 100%;
   height: 100%;
 
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 .EmailIcon-Folder {
@@ -149,7 +149,7 @@ export default {
 
   border: 1px solid var(--el-text-color-regular);
   border-radius: 2px;
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 .EmailIcon-Wrapper {

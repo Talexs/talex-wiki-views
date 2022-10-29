@@ -1,6 +1,6 @@
 <template>
   <div :message="message" class="WikiTip-Container"
-       :class="{ 'info-tip': type === TipType.INFO,
+       :class="{ 'info-tip': type === TipType.INFO, left,
         'warn-tip': type === TipType.WARNING,
         'error-tip': type === TipType.ERROR,
         'success-tip': type === TipType.SUCCESS, 'loading-tip': loading }">
@@ -12,30 +12,32 @@
 </template>
 
 <script setup>
-import Loading from './../icon/LoadingIcon.vue'
 import { defineProps, onMounted } from 'vue'
-import { sleep, TipType } from './../../../plugins/Common.ts'
+import Loading from '../icon/LoadingIcon.vue'
+import { sleep, TipType } from '~/plugins/Common.ts'
 
 const props = defineProps({
-  message: String, stay: Number, close: Function,
-  type: TipType, loading: Boolean
+  message: String,
+  stay: Number,
+  close: Function,
+  type: TipType,
+  loading: Boolean,
+  left: Boolean
 })
 
 onMounted(async () => {
-
-  if( props.stay <= 0 ) return
+  if (props.stay <= 0) return
 
   await sleep(props.stay)
 
   props.close()
-
 })
 
 </script>
 
 <script>
 export default {
-  name: "WikiTip"
+  name: 'WikiTip'
 }
 </script>
 
@@ -67,7 +69,7 @@ export default {
     top: 0;
     left: 0;
 
-    border-radius: 4px 0 0 4px;
+    border-radius: 8px 0 0 8px;
     //background-color: var(--el-bg-color);
     filter: invert(5%);
     backdrop-filter: contrast(200%) saturate(180%) blur(10px);
@@ -100,6 +102,16 @@ export default {
 
 }
 
+.WikiTip-Container.left {
+  padding: 4px 6px 4px 40px;
+  &:after {
+    transform: translate(20px, -50%);
+  }
+  &:before {
+    border-radius: 0 8px 8px 0;
+  }
+}
+
 .success-tip {
 
   --theme-color: #629168;
@@ -127,7 +139,7 @@ export default {
 .loading-tip {
 
   box-shadow: 0 0 4px 1px var(--theme-color) inset,
-             0 0 8px 2px var(--theme-color);
+  0 0 8px 2px var(--theme-color);
 
 }
 

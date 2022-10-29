@@ -1,302 +1,302 @@
-<template>
-  <div class="Register-Wrapper">
-    <div class="Register-Container">
+<!--<template>-->
+<!--  <div class="Register-Wrapper">-->
+<!--    <div class="Register-Container">-->
 
-      <div class="Register-Container-Header">
+<!--      <div class="Register-Container-Header">-->
 
-        <h1 style="animation: loadIn .15s .1s backwards">TalexWiki</h1>
-        <p style="animation: loadIn .15s .2s backwards">写你所想，享你所写</p>
+<!--        <h1 style="animation: loadIn .15s .1s backwards">TalexWiki</h1>-->
+<!--        <p style="animation: loadIn .15s .2s backwards">写你所想，享你所写</p>-->
 
-      </div>
+<!--      </div>-->
 
-      <div class="Register-Container-Main">
+<!--      <div class="Register-Container-Main">-->
 
-        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="请输入邮箱" v-model="formModel.email">
-          <template #suffix>
-            <Email open ></Email>
-          </template>
-        </FlatInput>
-        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .4s backwards" placeholder="请输入昵称" v-model="formModel.username">
-          <template #suffix>
-            <UserAnimate :parent-amo="3" />
-          </template>
-        </FlatInput>
-        <FlatInput style="animation: loadIn .15s .5s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>
+<!--        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="请输入邮箱" v-model="formModel.email">-->
+<!--          <template #suffix>-->
+<!--            <Email open ></Email>-->
+<!--          </template>-->
+<!--        </FlatInput>-->
+<!--        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .4s backwards" placeholder="请输入昵称" v-model="formModel.username">-->
+<!--          <template #suffix>-->
+<!--            <UserAnimate :parent-amo="3" />-->
+<!--          </template>-->
+<!--        </FlatInput>-->
+<!--        <FlatInput style="animation: loadIn .15s .5s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>-->
 
-        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">注 册</FlatButton>
+<!--        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">注 册</FlatButton>-->
 
-      </div>
+<!--      </div>-->
 
-      <div class="Register-Container-Footer">
+<!--      <div class="Register-Container-Footer">-->
 
-        <div class="Register-Footer-Mention" style="animation: loadIn .15s .6s backwards">
+<!--        <div class="Register-Footer-Mention" style="animation: loadIn .15s .6s backwards">-->
 
-          <span @click="goLogin">立即登录</span>
+<!--          <span @click="goLogin">立即登录</span>-->
 
-        </div>
+<!--        </div>-->
 
-      </div>
+<!--      </div>-->
 
-    </div>
+<!--    </div>-->
 
-    <SliderCaptcha @success="onSuccess" :open="sliderVisible" />
-  </div>
-</template>
+<!--    <SliderCaptcha @success="onSuccess" :open="sliderVisible" />-->
+<!--  </div>-->
+<!--</template>-->
 
-<script setup>
-import Email from './../../components/common/icon/Email.vue'
-import UserAnimate from './../../components/common/icon/UserAnimate.vue'
-import FlatInput from './../../components/common/input/FlatInput.vue'
-import FlatButton from './../../components/common/btn/FlatButton.vue'
-import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'
+<!--<script setup>-->
+<!--import Email from './../../components/common/icon/Email.vue'-->
+<!--import UserAnimate from './../../components/common/icon/UserAnimate.vue'-->
+<!--import FlatInput from './../../components/common/input/FlatInput.vue'-->
+<!--import FlatButton from './../../components/common/btn/FlatButton.vue'-->
+<!--import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'-->
 
-import { forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common'
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { req_tryRegister, req_tryLogin } from './../../plugins/api/baseReq.ts'
+<!--import { forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common'-->
+<!--import { ref, reactive } from 'vue'-->
+<!--import { useRouter } from 'vue-router'-->
+<!--import { req_tryRegister, req_tryLogin } from './../../plugins/api/baseReq.ts'-->
 
-const sliderVisible = ref(false)
+<!--const sliderVisible = ref(false)-->
 
-const formModel = reactive({
-  email: '',
-  username: '',
-  password: ''
-})
+<!--const formModel = reactive({-->
+<!--  email: '',-->
+<!--  username: '',-->
+<!--  password: ''-->
+<!--})-->
 
-const loadings = reactive({
-  btn: false
-})
+<!--const loadings = reactive({-->
+<!--  btn: false-->
+<!--})-->
 
-const router = useRouter()
+<!--const router = useRouter()-->
 
-const goLogin = ref(() => {
+<!--const goLogin = ref(() => {-->
 
-  router.push("/user/login")
+<!--  router.push("/user/login")-->
 
-})
+<!--})-->
 
-const tryRegister = ref(async () => {
+<!--const tryRegister = ref(async () => {-->
 
-  loadings.btn = true
+<!--  loadings.btn = true-->
 
-  await sleep(1200)
+<!--  await sleep(1200)-->
 
-  if( !formModel.email || formModel.email.length < 5 || formModel.email.length > 32 || formModel.email.indexOf('@') === -1 ) {
+<!--  if( !formModel.email || formModel.email.length < 5 || formModel.email.length > 32 || formModel.email.indexOf('@') === -1 ) {-->
 
-    loadings.btn = false
+<!--    loadings.btn = false-->
 
-    return await forMentionTip({ content: "请确保您的邮箱格式正确(5-32位)!", time: 2600, type: TipType.ERROR })
+<!--    return await forMentionTip({ content: "请确保您的邮箱格式正确(5-32位)!", time: 2600, type: TipType.ERROR })-->
 
-  }
+<!--  }-->
 
-  if( !formModel.username || formModel.username.length < 3 || formModel.username.length > 32 ) {
+<!--  if( !formModel.username || formModel.username.length < 3 || formModel.username.length > 32 ) {-->
 
-    loadings.btn = false
+<!--    loadings.btn = false-->
 
-    return await forMentionTip({ content: "请确保您的账号格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
+<!--    return await forMentionTip({ content: "请确保您的账号格式正确(3-32位)!", time: 2600, type: TipType.ERROR })-->
 
-  }
+<!--  }-->
 
-  if( !formModel.password || formModel.password.length < 3 || formModel.password.length > 32 ) {
+<!--  if( !formModel.password || formModel.password.length < 3 || formModel.password.length > 32 ) {-->
 
-    loadings.btn = false
+<!--    loadings.btn = false-->
 
-    return await forMentionTip({ content: "请确保您的密码格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
+<!--    return await forMentionTip({ content: "请确保您的密码格式正确(3-32位)!", time: 2600, type: TipType.ERROR })-->
 
-  }
+<!--  }-->
 
-  sliderVisible.value = true
+<!--  sliderVisible.value = true-->
 
-  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
+<!--  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })-->
 
-  await onSuccess.value()
+<!--  await onSuccess.value()-->
 
-})
+<!--})-->
 
-const onSuccess = ref(async () => {
+<!--const onSuccess = ref(async () => {-->
 
-  loadings.btn = sliderVisible.value = false
+<!--  loadings.btn = sliderVisible.value = false-->
 
-  const res = await req_tryRegister({
-    email: formModel.email,
-    username: formModel.username,
-    password: formModel.password,
-    // tc_id: id
-  })
+<!--  const res = await req_tryRegister({-->
+<!--    email: formModel.email,-->
+<!--    username: formModel.username,-->
+<!--    password: formModel.password,-->
+<!--    // tc_id: id-->
+<!--  })-->
 
-  if( res.status === 200 ) {
+<!--  if( res.status === 200 ) {-->
 
-    await forWikiTip("注册成功, 正在跳转...", 2200, TipType.INFO)
+<!--    await forWikiTip("注册成功, 正在跳转...", 2200, TipType.INFO)-->
 
-    await router.push("/user/login")
+<!--    await router.push("/user/login")-->
 
-  } else {
+<!--  } else {-->
 
-    await forMentionTip({ content: res.data, time: 3100, type: TipType.ERROR })
+<!--    await forMentionTip({ content: res.data, time: 3100, type: TipType.ERROR })-->
 
-  }
+<!--  }-->
 
-})
+<!--})-->
 
-</script>
+<!--</script>-->
 
-<script>
-export default {
-  name: "Register"
-}
-</script>
+<!--<script>-->
+<!--export default {-->
+<!--  name: "Register"-->
+<!--}-->
+<!--</script>-->
 
-<style lang="scss" scoped>
-.Register-Container-Header {
-  h1:after {
-    content: '';
-    position: relative;
-    padding: 0 2px;
-    display: block;
+<!--<style lang="scss" scoped>-->
+<!--.Register-Container-Header {-->
+<!--  h1:after {-->
+<!--    content: '';-->
+<!--    position: relative;-->
+<!--    padding: 0 2px;-->
+<!--    display: block;-->
 
-    left: 0;
-    top: -4px;
+<!--    left: 0;-->
+<!--    top: -4px;-->
 
-    width: 100%;
-    height: 6px;
+<!--    width: 100%;-->
+<!--    height: 6px;-->
 
-    border-radius: 5px;
-    background: var(--el-color-primary);
-    opacity: .65;
-  }
-  p {
+<!--    border-radius: 5px;-->
+<!--    background: var(&#45;&#45;el-color-primary);-->
+<!--    opacity: .65;-->
+<!--  }-->
+<!--  p {-->
 
-    opacity: .65;
+<!--    opacity: .65;-->
 
-  }
-  position: relative;
+<!--  }-->
+<!--  position: relative;-->
 
-}
+<!--}-->
 
-.Register-Container-Main {
-  position: relative;
-  padding-bottom: 20px;
-  width: 80%;
-}
+<!--.Register-Container-Main {-->
+<!--  position: relative;-->
+<!--  padding-bottom: 20px;-->
+<!--  width: 80%;-->
+<!--}-->
 
-.Register-Container-Footer {
-  .Register-Footer-Mention {
-    span {
-      &:before {
-        content: "";
-        position: absolute;
+<!--.Register-Container-Footer {-->
+<!--  .Register-Footer-Mention {-->
+<!--    span {-->
+<!--      &:before {-->
+<!--        content: "";-->
+<!--        position: absolute;-->
 
-        width: 48px;
-        height: 1px;
+<!--        width: 48px;-->
+<!--        height: 1px;-->
 
-        bottom: 2px;
+<!--        bottom: 2px;-->
 
-        background-color: var(--el-text-color-regular);
-        transform: translateX(-50px) scaleX(0);
-        opacity: 0;
-        transition: all .25s;
-      }
-      &:hover:before {
+<!--        background-color: var(&#45;&#45;el-text-color-regular);-->
+<!--        transform: translateX(-50px) scaleX(0);-->
+<!--        opacity: 0;-->
+<!--        transition: .3s cubic-bezier(.25,.8,.25,1);-->
+<!--      }-->
+<!--      &:hover:before {-->
 
-        transform: translateX(0);
-        opacity: 1;
+<!--        transform: translateX(0);-->
+<!--        opacity: 1;-->
 
-      }
-      position: relative;
+<!--      }-->
+<!--      position: relative;-->
 
-      width: 100%;
-      height: 20px;
-      line-height: 20px;
+<!--      width: 100%;-->
+<!--      height: 20px;-->
+<!--      line-height: 20px;-->
 
-      text-align: right;
-      cursor: pointer;
-    }
-    display: flex;
-    padding-right: 2px;
+<!--      text-align: right;-->
+<!--      cursor: pointer;-->
+<!--    }-->
+<!--    display: flex;-->
+<!--    padding-right: 2px;-->
 
-    font-size: 12px;
+<!--    font-size: 12px;-->
 
-  }
-  position: relative;
+<!--  }-->
+<!--  position: relative;-->
 
-  //bottom: -20%;
+<!--  //bottom: -20%;-->
 
-  width: 80%;
-}
+<!--  width: 80%;-->
+<!--}-->
 
-.Register-Container {
-  z-index: 10;
-  &:before {
-    content: '';
-    position: absolute;
+<!--.Register-Container {-->
+<!--  z-index: 10;-->
+<!--  &:before {-->
+<!--    content: '';-->
+<!--    position: absolute;-->
 
-    left: 0;
-    top: 0;
+<!--    left: 0;-->
+<!--    top: 0;-->
 
-    width: 100%;
-    height: 100%;
+<!--    width: 100%;-->
+<!--    height: 100%;-->
 
-    opacity: .75;
-    //backdrop-filter: saturate(180%) blur(10px);
-    border-radius: 8px;
-    background-color: var(--el-bg-color-page);
-  }
-  position: absolute;
-  display: flex;
-  padding: 30px 20px;
+<!--    opacity: .75;-->
+<!--    //backdrop-filter: saturate(180%) blur(10px);-->
+<!--    border-radius: 8px;-->
+<!--    background-color: var(&#45;&#45;el-bg-color-page);-->
+<!--  }-->
+<!--  position: absolute;-->
+<!--  display: flex;-->
+<!--  padding: 30px 20px;-->
 
-  flex-direction: column;
-  align-items: center;
+<!--  flex-direction: column;-->
+<!--  align-items: center;-->
 
-  top: 50%;
-  left: 50%;
+<!--  top: 50%;-->
+<!--  left: 50%;-->
 
-  width: 380px;
-  height: 400px;
+<!--  width: 380px;-->
+<!--  height: 400px;-->
 
-  border-radius: 8px;
-  backdrop-filter: contrast(120%) saturate(180%) blur(10px);
-  transform: translate(-50%, -60%);
-  animation: loadIn-Trans .25s;
-}
+<!--  border-radius: 8px;-->
+<!--  backdrop-filter: contrast(120%) saturate(180%) blur(10px);-->
+<!--  transform: translate(-50%, -60%);-->
+<!--  animation: loadIn-Trans .25s;-->
+<!--}-->
 
-.Register-Wrapper {
-  &:before {
-    content: "";
-    position: absolute;
+<!--.Register-Wrapper {-->
+<!--  &:before {-->
+<!--    content: "";-->
+<!--    position: absolute;-->
 
-    top: 0;
-    left: 50%;
+<!--    top: 0;-->
+<!--    left: 50%;-->
 
-    width: 120px;
-    height: 100%;
+<!--    width: 120px;-->
+<!--    height: 100%;-->
 
-    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-    transform: scale(2) skewX(20deg);
-  }
-  &:after {
-    z-index: 0;
-    content: "";
-    position: absolute;
+<!--    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);-->
+<!--    transform: scale(2) skewX(20deg);-->
+<!--  }-->
+<!--  &:after {-->
+<!--    z-index: 0;-->
+<!--    content: "";-->
+<!--    position: absolute;-->
 
-    top: -10%;
-    left: 50%;
+<!--    top: -10%;-->
+<!--    left: 50%;-->
 
-    width: 400px;
-    height: 100%;
+<!--    width: 400px;-->
+<!--    height: 100%;-->
 
-    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-    transform: scale(2) skewX(-70deg);
-  }
-  position: absolute;
+<!--    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);-->
+<!--    transform: scale(2) skewX(-70deg);-->
+<!--  }-->
+<!--  position: absolute;-->
 
-  left: 0;
-  top: 0;
+<!--  left: 0;-->
+<!--  top: 0;-->
 
-  width: 100%;
-  height: 100%;
+<!--  width: 100%;-->
+<!--  height: 100%;-->
 
-  background-color: var(--el-bg-color);
-  overflow: hidden;
-}
-</style>
+<!--  background-color: var(&#45;&#45;el-bg-color);-->
+<!--  overflow: hidden;-->
+<!--}-->
+<!--</style>-->

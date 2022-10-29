@@ -1,50 +1,99 @@
 <template>
-  <div class="AppContainer">
-    <div class="App-Header-Main">
-      <Header />
-    </div>
-    <div class="App-Main-Main">
-      <router-view></router-view>
-    </div>
-    <div class="App-Footer-Main">
+  <el-config-provider :locale="locale">
+    <div class="AppContainer" :class="{ 'height-unlimited': route?.meta?.heightUnlimited }">
+      <div class="App-Header-Main transition-cubic" ref="headerDom">
+        <HeadBar />
+      </div>
+      <div class="App-Main-Main">
+        <router-view></router-view>
+      </div>
+      <div class="App-Footer-Main">
 
+      </div>
     </div>
-  </div>
 
+    <el-backtop :right="50" :bottom="50" />
+  </el-config-provider>
 </template>
 
-<script setup lang="ts">
-import TriangleColorfulBar from './components/common/bar/TriangleColorfulBar.vue'
-import { Hide } from '@element-plus/icons-vue'
-import { ElIcon } from 'element-plus'
+<script setup>
+import HeadBar from './components/common/layout/HeadBar.vue'
+import { ref, onMounted, watch, onBeforeMount, computed, watchEffect } from 'vue'
+import ws from '~/plugins/channel/connection'
+import { useStore } from '~/plugins/store'
+import { useRoute } from 'vue-router'
+import router from '~/plugins/router'
 
-import FlatInput from './components/common/input/FlatInput.vue'
-import Header from './components/common/layout/Header.vue'
-import Loading from './components/common/icon/LoadingIcon.vue'
-import ViewEye from './components/common/icon/ViewEye.vue'
-import { ref } from 'vue'
-import { forWikiDialogTip, TipType } from './plugins/Common'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
+const locale = ref(zhCn)
+
+const route = useRoute()
+const store = useStore()
+
+const headerDom = ref()
 const content = ref('')
 
-// forWikiDialogTip("是这样滴", "QWQ AWA", [
-//  {
-//   content: "确定",
-//   type: TipType.INFO,
-//   onClick: () => {
-//
-//     return true;
-//
-//   },
-//   loading: async (func) => {
-//
-//     setTimeout(() => {
-//       func()
-//     }, 1000)
-//
-//   }
-//  }
-// ])
+let lastY = -1
+
+function scrollUp(e) {
+    if( !headerDom.value?.style ) return
+    const y = window.scrollY
+
+    if( y - lastY < 0 ) {
+
+        headerDom.value.style.transform = ``
+
+    } else {
+
+        if( y >= 50 ) {
+
+            headerDom.value.style.transform = `translateY(-100%)`
+
+        } else {
+
+            headerDom.value.style.transform = ``
+
+        }
+
+    }
+
+    lastY = y
+    //
+    // headerDom.value.style.transform = `translateY(-${y}px)`
+}
+
+onMounted(() => {
+    const loader = document.getElementById('loader')
+    if(loader) loader.style.display = 'none'
+
+    window.addEventListener('scroll', scrollUp)
+
+})
+
+onBeforeMount(() => {
+    window.removeEventListener('scroll', scrollUp)
+})
+
+watchEffect(() => {
+    let access = false
+    Array(store.local.permissions)?.flat().forEach(per => {
+        if( access ) return
+        access = per.name === "*"
+    })
+
+    store.local.admin = access
+})
+
+watch(() => store.local.loggedIn, () => {
+    if( !store.local.loggedIn ) {
+        store.local.admin = false
+        router.push('/index')
+    }
+    // console.log("login status changed", store.local.loggedIn)
+    // if( !store.local.loggedIn ) ws.disconnect()
+    // else ws.connect()
+})
 
 </script>
 
@@ -55,9 +104,8 @@ const content = ref('')
   flex-direction: column;
 
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 
-  background-color: var(--el-bg-color-page);
   .App-Footer-Main {
     position: relative;
 
@@ -66,12 +114,18 @@ const content = ref('')
 
   }
   .App-Main-Main {
-    position: relative;
-    padding: 4px 8px;
+    position: absolute;
+    padding: 0 8px;
     flex: 1;
 
-    height: calc(100% - 50px);
+    left: 0;
+    top: 30px;
 
+    width: 100%;
+    height: calc(100% - 30px);
+
+    background-color: var(--el-fill-color-lighter);
+    //overflow: hidden;
   }
   .App-Header-Main {
     z-index: 100;
@@ -84,8 +138,16 @@ const content = ref('')
     height: 50px;
 
   }
+}
 
-  //background-color: var(--el-color-primary-dark-2);
+.AppContainer.height-unlimited {
+  .App-Main-Main {
+    position: relative !important;
+    margin-top: -10px !important;
+
+    top: 0;
+
+  }
 
 }
 </style>

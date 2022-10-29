@@ -1,20 +1,20 @@
 import {createApp} from 'vue'
 import WikiMentioner from '../../components/common/message/WikiMentioner.vue'
-import { TipType } from '../Common'
+import {TipType} from '../Common'
 
 export class MentionTip {
 
     public content: String
     public type?: TipType
     public time: Number
-    public emphase?: Boolean
+    public emphasis?: Boolean
 
-    constructor(content: String, time: Number, type?: TipType, emphase: Boolean = false) {
+    constructor(content: String, time: Number = 2600, type?: TipType, emphase: Boolean = false) {
 
         this.content = content
         this.time = time
         this.type = type
-        this.emphase = emphase
+        this.emphasis = emphase
 
     }
 

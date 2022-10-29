@@ -1,5 +1,5 @@
 <template >
-  <div v-wave class="FlatButton-Wrapper" :class="{ 'plain-btn': plain, 'loading': loadingFlag }" @click="handleClick" @keyup.enter="handleClick">
+  <div role="button" v-wave class="FlatButton-Wrapper" :class="{ 'plain-btn': plain, 'loading': loadingFlag }" @click="handleClick" @keyup.enter="handleClick">
     <div class="FlatButton-Loading">
       <Loading />
     </div>
@@ -33,7 +33,7 @@ const handleClick = ref((e) => {
   position: absolute;
 
   transform: scale(0);
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 .FlatButton-Wrapper {
@@ -53,7 +53,7 @@ const handleClick = ref((e) => {
   border-radius: 2px;
   background-color: var(--el-color-primary);
 
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
   user-select: none;
   --bg-color: var(--el-bg-color-page);
 
@@ -69,7 +69,7 @@ const handleClick = ref((e) => {
 
   display: inline-block;
 
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="Login-Wrapper">
+<!--  <div class="Login-Wrapper">-->
     <div class="Login-Container">
 
       <div class="Login-Container-Header">
@@ -11,24 +11,31 @@
 
       <div class="Login-Container-Main">
 
-        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="账号 / 邮箱 / UID" v-model="formModel.username">
-          <template #suffix>
-            <UserAnimate :parent-amo="3" />
-          </template>
-        </FlatInput>
-        <FlatInput style="animation: loadIn .15s .4s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>
+        <el-form>
+          <el-form-item>
+            <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="账号" v-model="formModel.username">
+              <template #suffix>
+                <UserAnimate :parent-amo="3" />
+              </template>
+            </FlatInput>
+          </el-form-item>
+          <el-form-item>
+            <FlatInput style="animation: loadIn .15s .4s backwards" placeholder="密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>
+          </el-form-item>
 
-        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">登 录</FlatButton>
+          <el-form-item>
+            <RotateCaptcha :before-validation="tryLogin" @success="_login">
+              <FlatButton :loading-flag="loadings.btn" plain style="animation: loadIn .15s .5s backwards">登 录</FlatButton>
+            </RotateCaptcha>
+          </el-form-item>
+
+        </el-form>
 
       </div>
 
       <div class="Login-Container-Footer">
 
         <div style="animation: loadIn .15s .6s backwards" class="Login-Footer-Mention">
-
-          <CheckBox title="记住密码" v-model="formModel.remember">
-
-          </CheckBox>
 
           <span @click="goRegister">立即注册</span>
 
@@ -38,112 +45,94 @@
 
     </div>
 
-    <SliderCaptcha  @success="onSuccess"  :open="sliderVisible" />
-  </div>
+<!--  </div>-->
 </template>
 
 <script setup>
 import UserAnimate from './../../components/common/icon/UserAnimate.vue'
 import FlatInput from './../../components/common/input/FlatInput.vue'
 import FlatButton from './../../components/common/btn/FlatButton.vue'
-import CheckBox from './../../components/common/checkbox/CheckBox.vue'
-import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'
 
-import { forWikiDialogTip, forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common.ts'
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { req_tryLogin } from './../../plugins/api/baseReq.ts'
+import { forMentionTip, TipType, sleep, forWikiDialogTip } from '~/plugins/Common.ts'
+import { reactive, defineEmits } from 'vue'
+import UserModel from '~/plugins/model/base/user.js'
+import { useStore } from '~/plugins/store/index.ts'
+import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
+import RotateCaptcha from '~/components/common/captcha/RotateCaptcha.vue'
 
-const sliderVisible = ref(false)
+const emits = defineEmits(['success'])
+const store = useStore()
 
 const formModel = reactive({
   username: '',
-  password: '',
-  remember: false
+  password: ''
 })
 
 const loadings = reactive({
   btn: false
 })
 
-const router = useRouter()
+async function goRegister() {
 
-const goRegister = ref(() => {
+  await forWikiDialogTip("注册暂未开放", "抱歉，由于维基系统正处于内测状态，暂不开放注册权限。", [
+    {
+      content: "申请",
+      type: TipType.WARNING,
+      async onClick() {
 
-  router.push("/user/register")
+        await sleep(5000)
 
-})
+        await forMentionTip(new MentionTip("抱歉，现在无法申请!", 3200, TipType.ERROR, true))
 
-const onSuccess = ref(async() => {
+        return false
 
-  loadings.btn = sliderVisible.value = false
+      },
+      loading(stop) {
 
-  const res = await req_tryLogin({
+        setTimeout(() => {
 
-    // tc_id :id,
-    username :formModel.username,
-    password :formModel.password
+          stop()
 
-  })
+        }, 4000)
 
-  if ( res.code === "200"){
+      }
+    },
+    {
+      content: "了解",
+      type: TipType.INFO,
+      async onClick() { return true }
+    }
+  ])
 
-    await forWikiTip("登录成功!", TipType.SUCCESS);
+}
 
-    await router.push("/")
+async function _login(token) {
 
-  } else {
+  try {
 
-    await forWikiTip("登录失败", TipType.ERROR);
+    const res = await UserModel.getToken(token, formModel.username, formModel.password)
+
+    store.local.user = res.user
+    store.local.permissions = res.eller.permissions
+    store.local.loggedIn = true
+
+    loadings.btn = false
+
+    await forMentionTip(new MentionTip("登录成功!", 2600, TipType.SUCCESS))
+
+    await sleep(1300)
+
+    emits('success')
+
+  } catch (e) {
+
+    loadings.btn = false
 
   }
 
-})
-// forWikiDialogTip("啊，糟糕", "您没有浏览此页面的权限，是否申请？", [
-//   {
-//     content: "取消",
-//     type: TipType.WARNING,
-//     onClick: async () => {
-//
-//       await forMentionTip({ content: "取消失败！", time: 5000, type: TipType.ERROR, emphase: true })
-//
-//       return false
-//
-//     },
-//     loading: async(func) => {
-//
-//       await sleep(3000)
-//
-//       func()
-//
-//     }
-//   },
-//   {
-//     content: "确定",
-//     type: TipType.INFO,
-//     onClick: async () => {
-//
-//       await forMentionTip({ content: "无浏览权限！", time: 5000, type: TipType.WARNING, emphase: true })
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.INFO, true)
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.WARNING, false)
-//
-//       await forWikiTip("正在申请权限，请稍后...", 5000, TipType.ERROR, true)
-//
-//       await sleep(5000)
-//
-//       await forWikiTip("您已获得浏览器权限！", 5000, TipType.SUCCESS)
-//
-//       await forMentionTip({ content: "权限已批阅！", time: 5000, type: TipType.SUCCESS, emphase: true })
-//
-//       return true
-//
-//     }
-//   }
-// ])
+}
 
-const tryRegister = ref(async () => {
+async function tryLogin(func) {
 
   loadings.btn = true
 
@@ -165,13 +154,14 @@ const tryRegister = ref(async () => {
 
   }
 
-  sliderVisible.value = true
+  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
 
-   // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
+  // await onSuccess.value()
+  // await _login(token)
 
-  await onSuccess.value()
+  func()
 
-})
+}
 
 </script>
 
@@ -183,6 +173,9 @@ export default {
 
 <style lang="scss" scoped>
 .Login-Container-Header {
+  h1 {
+    margin-top: 10px;
+  }
   h1:after {
     content: '';
     position: relative;
@@ -196,8 +189,9 @@ export default {
     height: 6px;
 
     border-radius: 5px;
-    background: var(--el-color-primary);
-    opacity: .65;
+    backdrop-filter: saturate(90%) blur(5px);
+    background: var(--el-color-primary-light-5);
+    //opacity: .65;
   }
   p {
 
@@ -205,12 +199,11 @@ export default {
 
   }
   position: relative;
-
+  text-align: center;
 }
 
 .Login-Container-Main {
   position: relative;
-  padding-bottom: 20px;
   width: 80%;
 }
 
@@ -224,12 +217,12 @@ export default {
         width: 48px;
         height: 1px;
 
-        bottom: 2px;
+        bottom: -50%;
 
         background-color: var(--el-text-color-regular);
-        transform: translateX(-50px) scaleX(0);
+        transform: translateX(-30px) scaleX(0);
         opacity: 0;
-        transition: all .25s;
+        transition: .3s cubic-bezier(.25,.8,.25,1);
       }
       &:hover:before {
 
@@ -241,7 +234,7 @@ export default {
 
       width: 100%;
       height: 20px;
-      line-height: 20px;
+      line-height: 40px;
 
       text-align: right;
       cursor: pointer;
@@ -254,84 +247,85 @@ export default {
   }
   position: relative;
 
-  //bottom: -20%;
+  bottom: 10%;
 
   width: 80%;
 }
 
 .Login-Container {
   z-index: 10;
-  &:before {
-    content: '';
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    opacity: .75;
-    //backdrop-filter: saturate(180%) blur(10px);
-    border-radius: 8px;
-    background-color: var(--el-bg-color-page);
-  }
-  position: absolute;
+  //&:before {
+  //  content: '';
+  //  position: absolute;
+  //
+  //  left: 0;
+  //  top: 0;
+  //
+  //  width: 100%;
+  //  height: 100%;
+  //
+  //  opacity: .75;
+  //  //backdrop-filter: saturate(180%) blur(10px);
+  //  border-radius: 8px;
+  //  background-color: var(--el-bg-color-page);
+  //}
+  position: relative;
   display: flex;
   padding: 30px 20px;
 
   flex-direction: column;
   align-items: center;
 
-  top: 50%;
-  left: 50%;
+  //top: 50%;
+  //left: 50%;
 
   width: 380px;
   height: 350px;
 
   border-radius: 8px;
-  backdrop-filter: contrast(120%) saturate(180%) blur(10px);
-  transform: translate(-50%, -60%);
-  animation: loadIn-Trans .25s;
+  //backdrop-filter: saturate(180%) blur(50px);
+  //transform: translate(-50%, -50%);
+  animation: loadIn .25s;
 }
 
-.Login-Wrapper {
-  &:before {
-    content: "";
-    position: absolute;
-
-    top: 0;
-    left: 50%;
-
-    width: 120px;
-    height: 100%;
-
-    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-    transform: scale(2) skewX(20deg);
-  }
-  &:after {
-    z-index: 0;
-    content: "";
-    position: absolute;
-
-    top: -10%;
-    left: 50%;
-
-    width: 400px;
-    height: 100%;
-
-    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-    transform: scale(2) skewX(-70deg);
-  }
-  position: absolute;
-
-  left: 0;
-  top: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background-color: var(--el-bg-color);
-  overflow: hidden;
-}
+//.Login-Wrapper {
+//  &:before {
+//    content: "";
+//    position: absolute;
+//
+//    top: 0;
+//    left: 50%;
+//
+//    width: 120px;
+//    height: 100%;
+//
+//    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+//    transform: scale(2) skewX(20deg);
+//  }
+//  &:after {
+//    z-index: 0;
+//    content: "";
+//    position: absolute;
+//
+//    top: -10%;
+//    left: 50%;
+//
+//    width: 400px;
+//    height: 100%;
+//
+//    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+//    transform: scale(2) skewX(-70deg);
+//  }
+//  position: absolute;
+//  //padding: 5%;
+//
+//  left: 0;
+//  top: 0;
+//
+//  width: 100%;
+//  height: 100%;
+//
+//  background-color: var(--el-bg-color);
+//  overflow: hidden;
+//}
 </style>

@@ -12,7 +12,7 @@
     </div>
 
     <div class="FlatInput-Input-Container__inner" :class="{ 'mode-pass-focus': pass && passFocus }">
-      <input :placeholder="placeholder" ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" type="text" v-model="content" />
+      <input autofocus autocomplete="true" :placeholder="placeholder" ref="inputRef" @blur="passFocus = false" @focus="passFocus = true" class="FlatInput-Input" :type="!pass || !passFocus ? 'text' : 'password'" v-model="content" />
     </div>
 
     <!--    // div: const emits = defineEmits(['click']);-->
@@ -72,23 +72,23 @@ export default {
     height: 8px;
     width: 8px;
 
-    background-color: #212121;
+    background-color: var(--el-text-color-primary);
     border-radius: 50%;
     transform: translateY(-50%);
     transition: var(--delay);
   }
   position: absolute;
   display: flex;
-  padding: 2px 4px;
+  padding: 0 4px;
 
   left: 0;
-  top: 0;
+  top: 2px;
 
   max-width: calc(100% - 36px);
   height: calc(100% - 4px);
   font-size: 15px;
   border-radius: var(--border-radius-inner, 8px);
-  background-color: var(--input-bg, var(--el-bg-color));
+  background-color: var(--input-bg, var(--el-fill-color-light));
   transition: all .125s;
 }
 
@@ -106,17 +106,18 @@ export default {
 
       margin-left: 7px;
 
-      top: 6px;
+      top: 2px;
       right: 2px;
 
     }
     position: relative;
 
-    height: 100%;
+    top: 1px;
+    height: calc(100% - 2px);
 
     margin-right: 5px;
 
-    background-color: var(--input-bg, var(--el-bg-color));
+    background-color: var(--input-bg, var(--el-fill-color-light));
     border-radius: var(--border-radius-inner, 8px);
   }
   position: relative;
@@ -134,6 +135,12 @@ export default {
   }
 }
 
+:deep(input) {
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px var(--input-bg, var(--el-fill-color-light)) inset;
+  }
+}
+
 .FlatInput-Input-Container__inner {
   position: relative;
 
@@ -141,16 +148,19 @@ export default {
 
   .FlatInput-Input {
     position: relative;
-    padding: 2px 4px;
+    padding: 0 4px;
 
     width: calc(100% - 16px);
     height: calc(100% - 4px);
 
+    top: 1px;
+
     font-size: 15px;
     outline: none;
     border: none;
+    background-color: var(--input-bg, var(--el-fill-color-light)) !important;
     border-radius: var(--border-radius-inner, 8px);
-    transition: all .25s;
+    transition: .3s cubic-bezier(.25,.8,.25,1);
     &:before {
       content: v-bind(placeholder);//attr(placeholder);
       position: absolute;
@@ -162,7 +172,7 @@ export default {
 
       opacity: 0;
       transform: translateX(3px);
-      transition: all .25s;
+      transition: .3s cubic-bezier(.25,.8,.25,1);
     }
     &:empty {
 
@@ -210,7 +220,7 @@ export default {
   opacity: 0;
   background-color: var(--el-color-primary);
   animation: selectorShave 1s linear infinite;
-  transition: all .25s;
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 
 .FlatInput-Container {
@@ -250,7 +260,7 @@ export default {
 
   border: 2px solid var(--el-color-primary-light-3);
   border-radius: var(--border-radius-inner, 8px);
-  background-color: var(--input-bg, var(--el-bg-color));
-  transition: all .25s;
+  background-color: var(--input-bg, var(--el-fill-color-light));
+  transition: .3s cubic-bezier(.25,.8,.25,1);
 }
 </style>

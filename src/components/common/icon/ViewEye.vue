@@ -48,7 +48,7 @@ export default {
     background-color: var(--el-text-color-regular);
     border: 1px solid var(--el-text-color-regular);
     transform: translate(-50%, -50%);
-    transition: all .25s;
+    transition: .3s cubic-bezier(.25,.8,.25,1);
   }
   &:after {
     content: "";
@@ -63,7 +63,7 @@ export default {
     box-shadow: 1px 0 0 0 var(--el-bg-color);
     background-color: var(--el-text-color-regular);
     transform: translate(-50%, -50%) rotate(45deg) translateX(-1px) translateY(-50%) scaleY(0);
-    transition: all .25s;
+    transition: .3s cubic-bezier(.25,.8,.25,1);
   }
   position: relative;
   display: inline-block;

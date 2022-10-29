@@ -1,47 +1,29 @@
 import { createApp } from 'vue'
-import './style.css'
+import './style.scss'
 import App from './App.vue'
 
-import axios from './plugins/axios'
+import axios from './plugins/api/axios'
 import router from './plugins/router'
 import VWave from 'v-wave'
+import pinia, { useStore } from './plugins/store/index'
 
 import './styles/animation/main.scss'
 import './styles/element/index.scss'
-
-// &
-// demo
-
-// interface animal {
-//
-//     name: String
-//     age: Number
-//
-// }
-//
-// interface animal2 {
-//
-//     gender: Boolean
-//     birth: String
-//
-// }
-//
-// const Animal: animal | animal2 = {
-//
-// }
-
-// const test: any = 123
-//
-// const variable: unknown = 123
-//
-// const test2: Object = test
-//
-// console.log( typeof test2 )
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const app = createApp(App)
 
-app.use(router).use(VWave)
+import Loading from '~/plugins/directives/Loading'
+import store from './plugins/store/index'
+
+app.use(pinia).use(router).use(VWave).directive('loading', Loading)
 
 app.provide('$axios', axios)
 
 router.isReady().then(() => app.mount('#app'))
+
+// import ws from '~/plugins/channel/connection'
+// import '~/plugins/channel/room-channel'
+// if( useStore().local.loggedIn ) {
+//     ws.connect()
+// }
