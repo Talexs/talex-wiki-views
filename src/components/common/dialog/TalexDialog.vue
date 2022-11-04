@@ -75,6 +75,12 @@ export default {
   overflow: hidden;
 }
 
+.TalexDialog-Container {
+  position: relative;
+
+  top: 8px;
+}
+
 .TalexDialog-Main {
   &:before {
     z-index: -1;

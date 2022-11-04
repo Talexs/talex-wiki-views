@@ -1,16 +1,27 @@
 <template>
-  <el-config-provider :locale="locale">
-    <div class="AppContainer" :class="{ 'height-unlimited': route?.meta?.heightUnlimited }">
-      <div class="App-Header-Main transition-cubic" ref="headerDom">
+  <el-config-provider :locale="zhCn">
+    <el-container class="AppContainer" :class="{ 'height-unlimited': route?.meta?.heightUnlimited }">
+      <el-header class="App-Header-Main transition-cubic" ref="headerDom">
         <HeadBar />
-      </div>
-      <div class="App-Main-Main">
+      </el-header>
+      <el-main id="AppMainLayer" class="App-Main-Main">
         <router-view></router-view>
-      </div>
-      <div class="App-Footer-Main">
-
-      </div>
-    </div>
+        <div v-if="route?.meta?.showFooter" class="App-Footer-Main">
+          <div v-wave class="footer-github">
+            <img src="https://github.com/favicon.ico" alt="github" />
+            <span>
+              GitHub
+            </span>
+          </div>
+          <div class="footer-logo">
+            <Logo only-logo />
+          </div>
+          <div class="footer-record">
+            <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备15031610号-16</a>
+          </div>
+        </div>
+      </el-main>
+    </el-container>
 
     <el-backtop :right="50" :bottom="50" />
   </el-config-provider>
@@ -18,13 +29,14 @@
 
 <script setup>
 import HeadBar from './components/common/layout/HeadBar.vue'
-import { ref, onMounted, watch, onBeforeMount, computed, watchEffect } from 'vue'
+import { ref, onMounted, watch, onBeforeMount, watchEffect } from 'vue'
 import ws from '~/plugins/channel/connection'
 import { useStore } from '~/plugins/store'
 import { useRoute } from 'vue-router'
 import router from '~/plugins/router'
 
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+import Logo from '~/components/common/icon/Logo.vue'
 
 const locale = ref(zhCn)
 
@@ -65,14 +77,14 @@ function scrollUp(e) {
 
 onMounted(() => {
     const loader = document.getElementById('loader')
-    if(loader) loader.style.display = 'none'
+    if(loader) loader.style.display = 'none'//loader.parentNode.removeChild(loader) //loader.style.display = 'none'
 
-    window.addEventListener('scroll', scrollUp)
+    document.getElementById('AppMainLayer')?.addEventListener('scroll', scrollUp)
 
 })
 
 onBeforeMount(() => {
-    window.removeEventListener('scroll', scrollUp)
+  document.getElementById('AppMainLayer')?.removeEventListener('scroll', scrollUp)
 })
 
 watchEffect(() => {
@@ -107,23 +119,70 @@ watch(() => store.local.loggedIn, () => {
   min-height: 100%;
 
   .App-Footer-Main {
+    .footer-logo {
+      position: relative;
+      left: 30px;
+      width: 32px;
+      display: flex;
+      justify-content: center;
+    }
+    .footer-record a {
+      &:visited {
+        color: var(--el-text-color-primary);
+      }
+      &:hover {
+        opacity: .85;
+      }
+      text-decoration: none;
+      font-size: 15px;
+    }
+    .footer-github {
+      &:hover {
+        opacity: .85;
+      }
+      user-select: none;
+      display: flex;
+      align-items: center;
+      img {
+        width: 24px;
+      }
+      span {
+        text-indent: 10px;
+      }
+
+      cursor: pointer;
+      padding: 6px 12px;
+      background-color: var(--el-fill-color-light);
+      border-radius: 10px;
+    }
     position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 
-    //height: 120px;
-    //background-color: var(--el-color-primary);
+    top: 80%;
 
+    width: 100%;
+    height: 72px;
+
+    border-top: 1px solid var(--el-border-color);
+    border-bottom: 1px solid var(--el-border-color);
+    background-color: var(--el-fill-color-lighter);
+
+    //transform: translateY(100%);
   }
   .App-Main-Main {
     position: absolute;
-    padding: 0 8px;
+    //padding: 0 8px;
     flex: 1;
 
     left: 0;
-    top: 30px;
+    top: 50px;
 
     width: 100%;
-    height: calc(100% - 30px);
+    height: calc(100% - 50px);
 
+    --el-main-padding: 0;
     background-color: var(--el-fill-color-lighter);
     //overflow: hidden;
   }
@@ -137,6 +196,7 @@ watch(() => store.local.loggedIn, () => {
     width: 100%;
     height: 50px;
 
+    --el-header-padding: 0;
   }
 }
 
@@ -147,6 +207,7 @@ watch(() => store.local.loggedIn, () => {
 
     top: 0;
 
+    overflow: unset !important;
   }
 
 }

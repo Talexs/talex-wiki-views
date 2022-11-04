@@ -1,13 +1,8 @@
-import _axios, { _delete, get, put } from '~/plugins/api/axios'
+import _axios, { _delete, get, put, post } from '~/plugins/api/axios.ts'
 
-// 我们通过 class 这样的语法糖使模型这个概念更加具象化，其优点：耦合性低、可维护性。
 class Chapter {
   async createChapter(data) {
-    return _axios({
-      method: 'post',
-      url: 'v1/chapter',
-      data,
-    })
+    return post('wiki/chapter/create', data)
   }
 
   async getChapter(bookID, id) {
@@ -15,7 +10,7 @@ class Chapter {
   }
 
   async editChapter(id, info) {
-    return put(`v1/chapter/${ id }`, info)
+    return post(`wiki/chapter/modify/${ id }`, info)
   }
 
   async deleteChapter(id) {
@@ -25,7 +20,7 @@ class Chapter {
   async getChapters(bookID) {
     return _axios({
       method: 'get',
-      url: `v1/chapter/${bookID}`,
+      url: `wiki/chapter/list/${bookID}`,
       handleError: true,
     })
   }

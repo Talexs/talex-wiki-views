@@ -24,6 +24,10 @@ class Wiki {
   async getBooks(page = 0) {
     return get('wiki/list/' + page)
   }
+
+  async getMyBooks(page = 0) {
+    return get('wiki/my/' + page)
+  }
 }
 
 export default new Wiki()

@@ -1,5 +1,5 @@
 <template >
-  <div role="button" v-wave class="FlatButton-Wrapper" :class="{ 'plain-btn': plain, 'loading': loadingFlag }" @click="handleClick" @keyup.enter="handleClick">
+  <div role="button" v-wave class="FlatButton-Wrapper" :class="{ large, 'plain-btn': plain, 'loading': loadingFlag }" @click="handleClick" @keyup.enter="handleClick">
     <div class="FlatButton-Loading">
       <Loading />
     </div>
@@ -9,12 +9,18 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: "FlatButton"
+}
+</script>
+
 <script setup>
 import Loading from '../icon/LoadingIcon.vue';
 import { ref, defineEmits } from 'vue'
 
 const emits = defineEmits([ 'click' ])
-const props = defineProps({ loadingFlag: Boolean, plain: Boolean })
+const props = defineProps({ large: Boolean, loadingFlag: Boolean, plain: Boolean })
 
 
 const handleClick = ref((e) => {
@@ -44,9 +50,9 @@ const handleClick = ref((e) => {
 
   width: 120px;
   height: 28px;
-  max-height: 28px;
+  //max-height: 28px;
 
-  margin: 16px 0;
+  margin: 16px 1rem auto;
 
   font-size: 12px;
   color: #fff;
@@ -90,8 +96,6 @@ const handleClick = ref((e) => {
 
 .plain-btn {
 
-  padding: 2px;
-
   &:hover {
 
     border: 2px solid var(--el-color-primary);
@@ -102,13 +106,33 @@ const handleClick = ref((e) => {
 
   }
 
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
 
   --bg-color: var(--el-color-primary-light-3);
   color: var(--el-color-primary-light-3);
-  border-radius: var(--border-radius, 8px);
+  border-radius: var(--border-radius, 2px);
   background-color: rgba(0, 0, 0, 0);
   border: 2px solid var(--el-color-primary-light-3);
+}
+
+.FlatButton-Wrapper.large {
+  width: 144px;
+  min-width: 144px;
+  height: 44px;
+  min-height: 44px;
+
+  font-size: .825rem;
+}
+
+.FlatButton-Wrapper.large.plain-btn {
+  width: 140px;
+  min-width: 140px;
+  height: 40px;
+  min-height: 40px;
+
+  &:hover {
+    transform: scale(1);
+  }
 }
 </style>

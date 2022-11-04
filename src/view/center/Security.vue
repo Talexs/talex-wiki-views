@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column prop="create_time" label="登录时间">
         <template #default="scope">
-          {{ getTimePeriod(scope.row.create_time) }}
+          {{ formatDateDistance(scope.row.createdAt) }}
         </template>
       </el-table-column>
     </el-table>
@@ -39,9 +39,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import UserModel from '~/plugins/model/base/user.js'
-import moment from 'moment/moment.js'
-import 'moment/dist/locale/zh-cn.js'
-import { CopyDocument } from '@element-plus/icons-vue'
+import { formatDateDistance } from '../../plugins/addon/utils.ts'
+// import { CopyDocument } from '@element-plus/icons-vue'
 import UAParser from 'ua-parser-js'
 
 const historyList = ref()
@@ -67,12 +66,6 @@ function getDevice(str) {
 function getLoginType(str) {
   return str === "0" ? "账号密码" : "未知"
 }
-
-function getTimePeriod(time) {
-  // moment.locale('zh-cn')
-  return moment(time, null, 'zh-cn').fromNow()
-}
-
 </script>
 
 <script>

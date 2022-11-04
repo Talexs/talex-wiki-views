@@ -14,7 +14,7 @@
         <div class="WikiEditor-Box box-wiki-tree">
           <div class="box-wiki-header">
             <p class="box-title">文档集</p>
-            <TalexDropdown hover-trigger>
+            <TalexDropdown>
               <TalexDropItem @click="addDialogVisible = true">
                 <template #label>
                   新建维基章节
@@ -146,28 +146,26 @@ const wikiID = ref()
 function shareThisDoc() {
   navigator.clipboard.writeText(`
   [TalexWiki] 塔莱克斯 | 全新一代分发型维基系统
-  诚邀您查阅维基: ${window.location.origin}/#/wiki/view/${book.value.id}/${wikiID.value}
+  诚邀您查阅维基: ${window.location.origin}/wiki/view/${book.value.id}/${wikiID.value}
 
-  —— 来自 ${store.local.user.nickname} 的分享!
+  —— 来自 ${store.local.user.username} 的分享!
   `);
 
   forMentionTip(new MentionTip("复制成功，粘贴以分享！", 3200, TipType.SUCCESS, true))
 }
 
-const addWikiDoc = ref(async chapter => {
+const addWikiDoc = async ({ chapter }) => {
   const res = await WikiDocument.createDocument({
-    book: book.value.id,
+    wiki: book.value.id,
     title: '新建我的维基文档',
-    authors: '',
     content: '',
-    image: '',
-    chapter
+    chapter: chapter === -1 ? undefined : chapter
   })
 
   await fetchData()
 
-  await forWikiTip(res.message, 2600, res.code === 19 ? 'success' : 'danger', false, true)
-})
+  await forWikiTip(`文档添加${res ? '成功' : '失败'}!`, 2600, res ? 'success' : 'danger', false, true)
+}
 
 async function handleDragDrop(draggedNode, finalNode, pos, event) {
 
@@ -182,7 +180,7 @@ async function handleDragDrop(draggedNode, finalNode, pos, event) {
       data.parentChapter = id
 
       res = await WikiChapter.editChapter(data.value, {
-        book: book.value.id,
+        wiki: book.value.id,
         priority: data.priority,
         parentChapter: data.parentChapter,
         title: data.title
@@ -202,7 +200,7 @@ async function handleDragDrop(draggedNode, finalNode, pos, event) {
       data.priority = finalNode.data.priority + (pos === 'after' ? 1 : -1)
       data.parentChapter = finalNode.data.parentChapter
       res = await WikiChapter.editChapter(data.value, {
-        book: book.value.id,
+        wiki: book.value.id,
         priority: data.priority,
         parentChapter: data.parentChapter,
         title: data.title
@@ -236,21 +234,21 @@ async function handleDragDrop(draggedNode, finalNode, pos, event) {
 async function handleChapterAddDone(res) {
   addDialogVisible.value = false
 
-  await forWikiTip(res.message, 2600, res.code < window.MAX_SUCCESS_CODE ? TipType.SUCCESS : TipType.ERROR, false, true)
+  await forWikiTip(`章节添加${res ? '成功' : '失败'}!`, 2600, res ? TipType.SUCCESS : TipType.ERROR, false, true)
 
   await fetchData()
 
-  addStatus(`章节添加${res.code < window.MAX_SUCCESS_CODE ? '成功' : '失败'}!`, res.code < window.MAX_SUCCESS_CODE ? 'success' : 'danger')
+  addStatus(`章节添加${res ? '成功' : '失败'}!`, res ? 'success' : 'danger')
 }
 
 function addDoc(data) {
-  addWikiDoc.value(data.doChapter ? data.value : null)
+  addWikiDoc(data.doChapter ? { chapter: data.value } : null)
 }
 
 async function delCurrent(data) {
   if (data.doChapter) {
-    WikiChapter.deleteChapter(data.id)
-  } else WikiDocument.deleteDocument(data.id)
+    await WikiChapter.deleteChapter( data.id )
+  } else await WikiDocument.deleteDocument( data.id )
 
   await fetchData()
 }
@@ -267,13 +265,17 @@ async function updateDoc() {
 
   await forWikiTip('正在保存文档...', 1200, TipType.INFO, true)
 
+  doc.wiki = doc.wiki_id
+
   const res = await WikiDocument.editDocument(doc.id, doc)
 
-  await forWikiTip(res.message, 1800, res.code === 20 ? TipType.SUCCESS : TipType.ERROR)
-  addStatus(`文档保存${res.code === 20 ? '成功' : '失败'}!`, res.code === 20 ? 'success' : 'danger')
+  await forWikiTip(`文档保存${res ? '成功' : '失败'}!`, 1800, res ? TipType.SUCCESS : TipType.ERROR)
+  addStatus(`文档保存${res ? '成功' : '失败'}!`, res ? 'success' : 'danger')
 }
 
 function changeCurrentDoc(data) {
+  // console.log(data)
+  if( data.data?.doChapter ) return
   updateDoc()
 
   router.push(`/wiki/edit/${ book.value.id }/${data.id}`)
@@ -288,9 +290,11 @@ async function fetchData(fetch = true) {
     const array = await WikiDocument.getDocument(book.value.id)
 
     array.forEach((item, index) => {
+      // console.log(item)
       const obj = reactive(item)
       obj.content = obj.content || ''
       obj.vid = `doc-${item.id}`
+      obj.chapter = item.chapter_id
 
       array[index] = obj
 
@@ -317,25 +321,26 @@ async function fetchData(fetch = true) {
 function flat2Tree(array, docs) {
   const map = new Map()
 
-  map.set('root', { children: [] })
+  map.set(-1, { children: [] })
 
-  array.forEach(item => map.set(item.id, { vid: `chapter-${item.id}`, priority: item.priority, doChapter: true, parentChapter: item.parentChapter, value: item.id, title: item.title, children: [] }))
+  array.forEach(item => map.set(item.id, { vid: `chapter-${item.id}`, priority: item.priority, doChapter: true, parentChapter: item.parent, value: item.id, title: item.title, children: [] }))
 
   array.forEach(item => {
-    const parent = item.parentChapter || 'root'
+    // console.log(array, item, map)
+    const parent = item.parent || -1
     const obj = map.get(parent)
 
     obj.children.push(map.get(item.id))
   })
 
   docs.forEach(item => {
-    const parent = item.chapter || 'root'
+    const parent = item.chapter || -1
     const obj = map.get(parent)
 
     obj.children.push(item)
   })
 
-  return map.get('root').children
+  return map.get(-1).children
 }
 
 onMounted(async () => {

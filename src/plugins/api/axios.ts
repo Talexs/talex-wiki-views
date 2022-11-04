@@ -156,7 +156,7 @@ _axios.interceptors.response.use(
 
         }
 
-        if( data.error ) {
+        if( !res.config?.hideError && data.error ) {
 
             let msg = data.error?.msg ? Array(...data.error.msg) : [data.error]
 

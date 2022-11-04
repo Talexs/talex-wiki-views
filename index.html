@@ -16,11 +16,11 @@
         right: 0;
         bottom: 0;
         top: 0;
-        /*background: #fff;*/
+        background: #fff;
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: display 1s ease .5s;
+        transition: display 1s ease .5s, background-color 3s ease-in-out .75s;
       }
       .loader-logo {
         width: 60px;
@@ -97,9 +97,6 @@
     <div id="loader">
       <div class="spinner spinner--rotate-square-2"></div>
     </div>
-<!--    <script>-->
-<!--      document.addEventListener('readystatechange', e => console.log(e, document.readyState))-->
-<!--    </script>-->
     <div id="app"></div>
     <script type="application/javascript">
       if( window.matchMedia('(prefers-color-scheme: dark)').matches ) {

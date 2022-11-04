@@ -37,8 +37,7 @@
 <script setup>
 import TFSelector from '@components/common/selector/TFSelector.vue'
 import TFSelectorItem from '@components/common/selector/TFSelectorItem.vue'
-import { useStore } from '../../../plugins/store/index.ts'
-import { computed } from 'vue'
+import { useStore } from '~/plugins/store/index.ts'
 
 const store = useStore()
 

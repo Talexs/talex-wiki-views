@@ -127,47 +127,43 @@ const init = ref(() => {
 
   if ( props.routerMode ) {
 
-    setTimeout( () => {
+    watch( () => route.fullPath, ( fullPath, oldValue ) => {
 
-      watch( () => route.fullPath, ( fullPath, oldValue ) => {
+      if ( fullPath === oldValue ) return
 
-        if ( fullPath === oldValue ) return
+      let matched = false
 
-        let matched = false
+      tabs.value.forEach( ( node, ind ) => {
 
-        tabs.value.forEach( ( node, ind ) => {
+        if ( matched ) return
 
-          if ( matched ) return
+        const ref = node?.item
 
-          const ref = node?.item
+        if( !ref ) return
 
-          if( !ref ) return
+        const to = node.path
 
-          const to = node.path
+        if ( to === fullPath || fullPath.startsWith( to ) ) {
 
-          if ( to === fullPath || fullPath.startsWith( to ) ) {
+          selectIndex.value = ind
 
-            selectIndex.value = ind
-
-            matched = true
-
-          }
-
-        } )
-
-        if ( ! matched ) {
-
-          selectIndex.value = -1
-          refreshChildrenSelected.value()
+          matched = true
 
         }
 
-        if ( tabs.value[selectIndex.value] && tabs.value[selectIndex.value].item )
-          fixPointerPos.value( tabs.value[selectIndex.value].item )
+      } )
 
-      }, { immediate: true } )
+      if ( ! matched ) {
 
-    }, 200)
+        selectIndex.value = -1
+        refreshChildrenSelected.value()
+
+      }
+
+      if ( tabs.value[selectIndex.value] && tabs.value[selectIndex.value].item )
+        fixPointerPos.value( tabs.value[selectIndex.value].item )
+
+    }, { immediate: true } )
 
   }
 
@@ -206,21 +202,26 @@ const fixPointerPos = ref((node) => {
 
       if( y < targetY ) {
 
-        const addHeight = targetY - y + (targetHeight * 1.5) - height
+        const addHeight = (targetY - y) + (targetHeight * 1.5) - height
 
+        el.style.transition = 'height .15s, top .15s'
+        // el.style.top = (y + (height * 0.5)) + 'px'
         el.style.height = addHeight + 'px'
-        const posY = targetY + (targetHeight / 2) - (height / 2)
 
         setTimeout(() => {
 
-          el.style.height = (targetHeight) + 'px'
+          el.style.transition = 'height .15s, top .35s'
+
+          const posY = targetY + (targetHeight / 2) - (height / 2)
           el.style.top = (posY) + 'px'
+
+          el.style.height = (targetHeight) + 'px'
 
         }, 250)
 
       } else {
 
-        const addHeight = (y + height) - (targetY + (targetHeight * 0.5))
+        const addHeight = (y + height) - (targetY + (targetHeight * 1.25))
 
         el.style.transition = 'height .15s, top .15s'
         el.style.top = (targetY + (targetHeight * 0.5)) + 'px'
@@ -254,9 +255,9 @@ const fixPointerPos = ref((node) => {
 
       if( x < targetX ) {
 
-        const addWidth = targetX - x + (targetWidth * 1.5) - width
-
-        el.style.width = addWidth + 'px'
+        // const addWidth = targetX - x + (targetWidth * 1.5) - width
+        //
+        // el.style.width = addWidth + 'px'
         const posX = targetX + (targetWidth / 2) - (width / 2)
 
         setTimeout(() => {
@@ -268,11 +269,11 @@ const fixPointerPos = ref((node) => {
 
       } else {
 
-        const addWidth = (x + width) - (targetX + (targetWidth * 0.5))
+        // const addWidth = (x + width) - (targetX + (targetWidth * 0.5))
 
-        el.style.transition = 'width .15s, left .15s'
-        el.style.left = (targetX + (targetWidth * 0.5)) + 'px'
-        el.style.width = (addWidth) + 'px'
+        // el.style.transition = 'width .15s, left .15s'
+        // el.style.left = (targetX + (targetWidth * 0.5)) + 'px'
+        // el.style.width = (addWidth) + 'px'
 
         setTimeout(() => {
 
@@ -295,7 +296,7 @@ const fixPointerPos = ref((node) => {
 
     }
 
-  }, 200)
+  }, 50)
 
 })
 
@@ -348,7 +349,7 @@ export default {
     //box-shadow: 3px 0 4px var(--el-color-primary);
     border-radius: 5px;
     background-color: var(--el-color-primary);
-    transform: scale(.8);
+    //transform: scale(.8);
     transition: width .35s, left .15s;
 
     //filter: invert(20%);

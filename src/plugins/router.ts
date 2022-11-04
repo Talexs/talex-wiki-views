@@ -5,18 +5,16 @@ import GlobalConfig from '~/config/GlobalConfig'
 
 const routes: any = [
     {
-      path: "/",
-      redirect: "/index"
+        path: "/",
+        redirect: "/index"
     },
     {
         path: "/index",
         name: "首页",
-        component: () => import('./../view/base/Index.vue')
-    },
-    {
-        path: "/user/login",
-        name: "登录",
-        component: () => import('./../view/base/Login.vue')
+        component: () => import('./../view/base/Index.vue'),
+        meta: {
+            showFooter: true
+        }
     },
     {
         path: "/user/personal",
@@ -28,12 +26,43 @@ const routes: any = [
         component: () => import('../view/center/PersonalInfo.vue')
     },
     {
+      path: "/about",
+      redirect: "/about/protocol"
+    },
+    {
         path: "/about",
         name: "关于",
         meta: {
-            heightUnlimited: true
+            heightUnlimited: true,
+            showFooter: true
         },
-        component: () => import('../view/others/About.vue')
+        component: () => import('../view/others/about/AboutNavBar.vue'),
+        children: [
+            {
+                path: "/about/protocol",
+                name: "关于协议",
+                meta: {
+                    heightUnlimited: true
+                },
+                component: () => import('../view/others/about/AboutProtocol.vue'),
+            },
+            {
+                path: "/about/open_source",
+                name: "关于开源",
+                meta: {
+                    heightUnlimited: true
+                },
+                component: () => import('../view/others/about/AboutOpenSource.vue'),
+            },
+            {
+                path: "/about/quote",
+                name: "关于引用",
+                meta: {
+                    heightUnlimited: true
+                },
+                component: () => import('../view/others/about/AboutQuote.vue'),
+            }
+        ]
     },
     {
         name: "PersonCenter",

@@ -18,7 +18,7 @@ import { useStore } from '~/plugins/store'
 
 const store = useStore()
 
-ws.tChannel?.registerChannel('imported-wiki',(info: object) => {
+ws.tChannel?.registerChannel('imported-wiki',(info: any) => {
 
     // Object.keys(info).forEach(key => {
         // @ts-ignore
@@ -37,7 +37,8 @@ ws.tChannel?.registerChannel('imported-wiki',(info: object) => {
 
     if( store.importWiki.p >= 100 ) {
 
-        store.importWiki.doneFunc && store.importWiki.doneFunc()
+        // @ts-ignore
+        store.importWiki.doneFunc()
 
     }
 

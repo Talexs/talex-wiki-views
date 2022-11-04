@@ -1,302 +1,461 @@
-<!--<template>-->
-<!--  <div class="Register-Wrapper">-->
-<!--    <div class="Register-Container">-->
-
-<!--      <div class="Register-Container-Header">-->
-
-<!--        <h1 style="animation: loadIn .15s .1s backwards">TalexWiki</h1>-->
-<!--        <p style="animation: loadIn .15s .2s backwards">写你所想，享你所写</p>-->
-
-<!--      </div>-->
-
-<!--      <div class="Register-Container-Main">-->
-
-<!--        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .3s backwards" placeholder="请输入邮箱" v-model="formModel.email">-->
-<!--          <template #suffix>-->
-<!--            <Email open ></Email>-->
-<!--          </template>-->
-<!--        </FlatInput>-->
-<!--        <FlatInput ref="inputAccountDom" style="animation: loadIn .15s .4s backwards" placeholder="请输入昵称" v-model="formModel.username">-->
-<!--          <template #suffix>-->
-<!--            <UserAnimate :parent-amo="3" />-->
-<!--          </template>-->
-<!--        </FlatInput>-->
-<!--        <FlatInput style="animation: loadIn .15s .5s backwards" placeholder="请输入密码" v-model="formModel.password" pass :max-pass-dot-num="29"></FlatInput>-->
-
-<!--        <FlatButton :loading-flag="loadings.btn" @click="tryRegister" plain style="animation: loadIn .15s .5s backwards">注 册</FlatButton>-->
-
-<!--      </div>-->
-
-<!--      <div class="Register-Container-Footer">-->
-
-<!--        <div class="Register-Footer-Mention" style="animation: loadIn .15s .6s backwards">-->
-
-<!--          <span @click="goLogin">立即登录</span>-->
-
-<!--        </div>-->
-
-<!--      </div>-->
-
+<template>
+  <div id="RegisterDom" class="Register-Wrapper LayoutCenter-Frame">
+    <div v-loading="loading" ref="wholeDom" class="Register-Container transition-cubic">
+      <div class="Register-Background">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 640 800" opacity="0.84"><defs><filter id="bbblurry-filter" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="84" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur></filter></defs><g filter="url(#bbblurry-filter)"><ellipse rx="257.5" ry="129" cx="521.9990897591658" cy="147.60067989319327" fill="#2979ff"></ellipse><ellipse rx="257.5" ry="129" cx="424.0369865837997" cy="402.1657834991695" fill="#3c75a9"></ellipse><ellipse rx="257.5" ry="129" cx="139.74576502522143" cy="674.6489272230253" fill="#35f7ff"></ellipse></g>
+        </svg>
+      </div>
+      <div ref="mainDom" class="Register-Main transition-cubic">
+        <p ref="titleDom" class="title transition-cubic">注册</p>
+        <div ref="contentDom" class="Register-Content transition-cubic">
+          <component :is="component" />
+        </div>
+        <div class="Register-Footer transition-cubic">
+          <p ref="mentionDom" class="transition-cubic"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--  <div ref="wholeDom" class="Register-Wrapper">-->
+<!--    <div class="Register-Background">-->
+<!--      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 640 800" opacity="0.84"><defs><filter id="bbblurry-filter" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">-->
+<!--        <feGaussianBlur stdDeviation="84" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur></filter></defs><g filter="url(#bbblurry-filter)"><ellipse rx="257.5" ry="129" cx="521.9990897591658" cy="147.60067989319327" fill="#2979ff"></ellipse><ellipse rx="257.5" ry="129" cx="424.0369865837997" cy="402.1657834991695" fill="#3c75a9"></ellipse><ellipse rx="257.5" ry="129" cx="139.74576502522143" cy="674.6489272230253" fill="#35f7ff"></ellipse></g></svg>-->
 <!--    </div>-->
-
-<!--    <SliderCaptcha @success="onSuccess" :open="sliderVisible" />-->
+<!--    <div v-loading="loading" class="Register-Container LayoutCenter-Frame">-->
+<!--      <component :is="component" />-->
+<!--    </div>-->
 <!--  </div>-->
-<!--</template>-->
+</template>
 
-<!--<script setup>-->
-<!--import Email from './../../components/common/icon/Email.vue'-->
-<!--import UserAnimate from './../../components/common/icon/UserAnimate.vue'-->
-<!--import FlatInput from './../../components/common/input/FlatInput.vue'-->
-<!--import FlatButton from './../../components/common/btn/FlatButton.vue'-->
-<!--import SliderCaptcha from './../../components/common/slider/SliderCaptcha.vue'-->
+<script setup>
+import RegEmail from './register/RegEmail.vue'
+import { reactive, onMounted, onUpdated, provide, ref } from 'vue'
+import { sleep } from '../../plugins/Common.ts'
+import { useRouter } from 'vue-router'
 
-<!--import { forMentionTip, TipType, sleep, forWikiTip } from './../../plugins/Common'-->
-<!--import { ref, reactive } from 'vue'-->
-<!--import { useRouter } from 'vue-router'-->
-<!--import { req_tryRegister, req_tryLogin } from './../../plugins/api/baseReq.ts'-->
+const wholeDom = ref()
+const mainDom = ref()
+const contentDom = ref()
+const mentionDom = ref()
+const titleDom = ref()
 
-<!--const sliderVisible = ref(false)-->
+const loading = ref(false)
+const component = ref(null)
 
-<!--const formModel = reactive({-->
-<!--  email: '',-->
-<!--  username: '',-->
-<!--  password: ''-->
-<!--})-->
+const router = useRouter()
+const data = reactive({})
 
-<!--const loadings = reactive({-->
-<!--  btn: false-->
-<!--})-->
+let init = false
+async function initial() {
+  if( init ) return
+  init = true
 
-<!--const router = useRouter()-->
+  await join( null, RegEmail )
+}
 
-<!--const goLogin = ref(() => {-->
+provide('mention', mention)
+provide('join', join)
+provide('getData', () => data)
+provide('setData', (key, value) => data[key] = value)
 
-<!--  router.push("/user/login")-->
+async function mention(text, styles, resetTime) {
+  const dom = mentionDom.value.parentNode
+  const style = mentionDom.value.style
 
-<!--})-->
+  if( !text ) {
 
-<!--const tryRegister = ref(async () => {-->
+    await sleep(200)
 
-<!--  loadings.btn = true-->
+    style.opacity = '0'
+    style.transform = 'translateY(-5px)'
 
-<!--  await sleep(1200)-->
+    await sleep(100)
 
-<!--  if( !formModel.email || formModel.email.length < 5 || formModel.email.length > 32 || formModel.email.indexOf('@') === -1 ) {-->
+    dom.style.transform = 'scale(.65, .85)'
 
-<!--    loadings.btn = false-->
+    await sleep(50)
 
-<!--    return await forMentionTip({ content: "请确保您的邮箱格式正确(5-32位)!", time: 2600, type: TipType.ERROR })-->
+    dom.style.transform = 'scale(.65, .85) translateY(-10px)'
 
-<!--  }-->
+    await sleep(50)
 
-<!--  if( !formModel.username || formModel.username.length < 3 || formModel.username.length > 32 ) {-->
+    dom.style.opacity = '0'
 
-<!--    loadings.btn = false-->
+    await sleep(50)
 
-<!--    return await forMentionTip({ content: "请确保您的账号格式正确(3-32位)!", time: 2600, type: TipType.ERROR })-->
+    dom.style.marginBottom = '-15%'
 
-<!--  }-->
+    return
 
-<!--  if( !formModel.password || formModel.password.length < 3 || formModel.password.length > 32 ) {-->
+  }
 
-<!--    loadings.btn = false-->
+  await sleep(200)
 
-<!--    return await forMentionTip({ content: "请确保您的密码格式正确(3-32位)!", time: 2600, type: TipType.ERROR })-->
+  dom.style.marginBottom = '0'
 
-<!--  }-->
+  await sleep(50)
 
-<!--  sliderVisible.value = true-->
+  dom.style.opacity = '1'
 
-<!--  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })-->
+  await sleep(50)
 
-<!--  await onSuccess.value()-->
+  dom.style.transform = 'scale(.65, .85) translateY(0)'
 
-<!--})-->
+  await sleep(100)
 
-<!--const onSuccess = ref(async () => {-->
+  dom.style.transform = 'scale(1) translateY(0)'
 
-<!--  loadings.btn = sliderVisible.value = false-->
+  style.opacity = '0'
+  style.transform = 'translateX(5px)'
 
-<!--  const res = await req_tryRegister({-->
-<!--    email: formModel.email,-->
-<!--    username: formModel.username,-->
-<!--    password: formModel.password,-->
-<!--    // tc_id: id-->
-<!--  })-->
+  await sleep(100)
 
-<!--  if( res.status === 200 ) {-->
+  style.transform = 'translateX(-5px)'
+  mentionDom.value.innerHTML = text
 
-<!--    await forWikiTip("注册成功, 正在跳转...", 2200, TipType.INFO)-->
+  const backupStyles = {}
 
-<!--    await router.push("/user/login")-->
+  styles && Object.keys(styles).forEach(key => {
+    backupStyles[key] = style[key]
+    style[key] = styles[key]
+  })
 
-<!--  } else {-->
+  await sleep(200)
 
-<!--    await forMentionTip({ content: res.data, time: 3100, type: TipType.ERROR })-->
+  style.opacity = '1'
+  style.transform = 'translateX(0)'
 
-<!--  }-->
+  function reset() {
 
-<!--})-->
+    styles && Object.keys(backupStyles).forEach(key => {
+      style[key] = backupStyles[key]
+    })
 
-<!--</script>-->
+  }
 
-<!--<script>-->
-<!--export default {-->
-<!--  name: "Register"-->
-<!--}-->
-<!--</script>-->
-
-<!--<style lang="scss" scoped>-->
-<!--.Register-Container-Header {-->
-<!--  h1:after {-->
-<!--    content: '';-->
-<!--    position: relative;-->
-<!--    padding: 0 2px;-->
-<!--    display: block;-->
-
-<!--    left: 0;-->
-<!--    top: -4px;-->
-
-<!--    width: 100%;-->
-<!--    height: 6px;-->
-
-<!--    border-radius: 5px;-->
-<!--    background: var(&#45;&#45;el-color-primary);-->
-<!--    opacity: .65;-->
-<!--  }-->
-<!--  p {-->
-
-<!--    opacity: .65;-->
-
-<!--  }-->
-<!--  position: relative;-->
-
-<!--}-->
-
-<!--.Register-Container-Main {-->
-<!--  position: relative;-->
-<!--  padding-bottom: 20px;-->
-<!--  width: 80%;-->
-<!--}-->
-
-<!--.Register-Container-Footer {-->
-<!--  .Register-Footer-Mention {-->
-<!--    span {-->
-<!--      &:before {-->
-<!--        content: "";-->
-<!--        position: absolute;-->
-
-<!--        width: 48px;-->
-<!--        height: 1px;-->
-
-<!--        bottom: 2px;-->
-
-<!--        background-color: var(&#45;&#45;el-text-color-regular);-->
-<!--        transform: translateX(-50px) scaleX(0);-->
-<!--        opacity: 0;-->
-<!--        transition: .3s cubic-bezier(.25,.8,.25,1);-->
-<!--      }-->
-<!--      &:hover:before {-->
-
-<!--        transform: translateX(0);-->
-<!--        opacity: 1;-->
-
-<!--      }-->
-<!--      position: relative;-->
-
-<!--      width: 100%;-->
-<!--      height: 20px;-->
-<!--      line-height: 20px;-->
-
-<!--      text-align: right;-->
-<!--      cursor: pointer;-->
-<!--    }-->
-<!--    display: flex;-->
-<!--    padding-right: 2px;-->
-
-<!--    font-size: 12px;-->
-
-<!--  }-->
-<!--  position: relative;-->
-
-<!--  //bottom: -20%;-->
-
-<!--  width: 80%;-->
-<!--}-->
-
-<!--.Register-Container {-->
-<!--  z-index: 10;-->
-<!--  &:before {-->
-<!--    content: '';-->
-<!--    position: absolute;-->
-
-<!--    left: 0;-->
-<!--    top: 0;-->
-
-<!--    width: 100%;-->
-<!--    height: 100%;-->
-
-<!--    opacity: .75;-->
-<!--    //backdrop-filter: saturate(180%) blur(10px);-->
-<!--    border-radius: 8px;-->
-<!--    background-color: var(&#45;&#45;el-bg-color-page);-->
-<!--  }-->
-<!--  position: absolute;-->
-<!--  display: flex;-->
-<!--  padding: 30px 20px;-->
-
-<!--  flex-direction: column;-->
-<!--  align-items: center;-->
-
-<!--  top: 50%;-->
-<!--  left: 50%;-->
-
-<!--  width: 380px;-->
-<!--  height: 400px;-->
-
-<!--  border-radius: 8px;-->
-<!--  backdrop-filter: contrast(120%) saturate(180%) blur(10px);-->
-<!--  transform: translate(-50%, -60%);-->
-<!--  animation: loadIn-Trans .25s;-->
-<!--}-->
-
-<!--.Register-Wrapper {-->
-<!--  &:before {-->
-<!--    content: "";-->
-<!--    position: absolute;-->
-
-<!--    top: 0;-->
-<!--    left: 50%;-->
-
-<!--    width: 120px;-->
-<!--    height: 100%;-->
-
-<!--    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);-->
-<!--    transform: scale(2) skewX(20deg);-->
-<!--  }-->
-<!--  &:after {-->
-<!--    z-index: 0;-->
-<!--    content: "";-->
-<!--    position: absolute;-->
-
-<!--    top: -10%;-->
-<!--    left: 50%;-->
-
-<!--    width: 400px;-->
-<!--    height: 100%;-->
-
-<!--    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);-->
-<!--    transform: scale(2) skewX(-70deg);-->
-<!--  }-->
-<!--  position: absolute;-->
-
-<!--  left: 0;-->
-<!--  top: 0;-->
-
-<!--  width: 100%;-->
-<!--  height: 100%;-->
-
-<!--  background-color: var(&#45;&#45;el-bg-color);-->
-<!--  overflow: hidden;-->
-<!--}-->
-<!--</style>-->
+  if( resetTime ) {
+
+    setTimeout(reset, resetTime)
+
+  }
+
+  return reset
+
+}
+
+async function join(comp, next) {
+  await sleep(200)
+
+  const whole = wholeDom.value.style
+  const main = mainDom.value.style
+  const title = titleDom.value.style
+  const content = contentDom.value.style
+
+  if ( comp ) {
+
+    await mention()
+
+    title.opacity = '0'
+
+    await sleep(50)
+
+    content.opacity = '0'
+
+    await sleep(100)
+
+    const thisComp = component.value
+
+    component.value = null
+
+    await shrink(whole)
+
+    loading.value = true
+
+    await sleep(Math.round(Math.random() * 200))
+
+    comp(async (status, msg, styles) => {
+
+      await sleep(Math.round(Math.random() * 200))
+
+      loading.value = false
+      title.opacity = '0'
+
+      await sleep(100)
+
+      if( msg ) {
+
+        title.opacity = '1'
+
+        await sleep(50)
+
+        content.opacity = '1'
+
+        await sleep(100)
+
+        const reset = await mention( msg, styles )
+
+        await sleep(500)
+
+        reset()
+
+        await mention()
+
+        await sleep(100)
+
+        title.opacity = '0'
+
+        await sleep(50)
+
+        content.opacity = '0'
+
+      }
+
+      if ( status && !next ) {
+
+        await sleep(1200)
+
+        return await router.push('/user/dashboard')
+
+      }
+
+      component.value = status ? next : thisComp
+
+      await expand(whole)
+
+      title.opacity = '1'
+
+      await sleep(50)
+
+      content.opacity = '1'
+
+      await sleep(100)
+
+    })
+
+  } else {
+
+    await mention()
+
+    component.value = null
+    await shrink(whole)
+
+    title.opacity = content.opacity = '0'
+
+    component.value = next
+    await sleep(500)
+
+    title.opacity = content.opacity = '1'
+
+    await expand(whole)
+    await sleep(100)
+
+  }
+
+}
+
+async function shrink(style) {
+  style.width = '320px'
+  style.height = '260px'
+
+  await sleep(200)
+}
+
+async function expand(style) {
+  style.width = '480px'
+  style.height = '320px'
+  await sleep(200)
+}
+
+
+onMounted(initial)
+onUpdated(initial)
+</script>
+
+<script>
+export default {
+  name: "Register"
+}
+</script>
+
+<style lang="scss" scoped>
+
+.Register-Main {
+  .Register-Content {
+    &:before {
+      z-index: -1;
+      content: "";
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      width: 100%;
+      height: 100%;
+
+      opacity: .45;
+      border-radius: 8px;
+      background-color: var(--el-fill-color-lighter);
+    }
+    position: relative;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 80%;
+    height: 100%;
+
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  .Register-Footer {
+    &:before {
+      z-index: -1;
+      content: "";
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      width: 100%;
+      height: 100%;
+
+      opacity: .45;
+      border-radius: 8px;
+      background-color: var(--el-fill-color-lighter);
+    }
+    position: relative;
+    display: flex;
+    margin-top: 25px;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 80%;
+    height: 32px;
+
+    padding: 4px 8px;
+    border-radius: 8px;
+    text-indent: 15px;
+    font-size: 15px;
+    opacity: .75;
+  }
+}
+
+.Register-Container {
+  .Register-Background {
+    //z-index: 1;
+    position: absolute;
+
+    left: 0;
+    top: -50%;
+
+    width: 100%;
+    height: 100%;
+
+    //animation: rotate 100s infinite linear;
+  }
+  .Register-Main {
+    .title {
+      &:after {
+        z-index: -1;
+        content: '';
+        position: relative;
+        padding: 0 2px;
+        display: block;
+
+        left: -4px;
+        top: -4px;
+
+        width: calc(100% + 4px);
+        height: 6px;
+
+        border-radius: 5px;
+        backdrop-filter: saturate(90%) blur(5px);
+        background: var(--el-color-primary-light-5);
+        //opacity: .65;
+      }
+      font-size: 20px;
+      font-weight: 600;
+    }
+    &:before {
+      z-index: -1;
+      content: '';
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      width: 100%;
+      height: 100%;
+
+      opacity: .85;
+      backdrop-filter: saturate(180%) blur(50px);
+      border-radius: 8px;
+      background-color: var(--el-fill-color-light);
+    }
+    //z-index: 10;
+    position: absolute;
+    margin: 0;
+    padding: 30px 0;
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: calc(100% - 60px);
+
+    backdrop-filter: saturate(180%) blur(50px);
+    background-color: unset;
+  }
+  position: absolute;
+  //padding: 40px 30px;
+
+  top: 40%;
+  left: 50%;
+
+  width: 420px;
+  height: 300px;
+
+  border-radius: 8px;
+  transform: translateX(-50%);
+  overflow: hidden;
+}
+
+.Register-Wrapper {
+  &:after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+
+    left: 50%;
+    top: 100%;
+
+    width: 480px;
+    height: 480px;
+
+    border: 30px solid var(--el-fill-color-lighter);
+    opacity: .75;
+    border-radius: 50%;
+    transform: translate(-50%, -35%);
+  }
+  position: relative;
+  padding: 10px 60px;
+
+  left: 50%;
+  top: 5%;
+
+  width: 420px;
+  height: 300px;
+
+  transform: translateX(-50%);
+  background-color: var(--el-color-primary);
+  box-shadow: 0 0 8px 16px var(--el-color-primary-light-8);
+  animation: CenterXFrameLoad .3s cubic-bezier(.25,.8,.25,1) forwards;
+}
+</style>

@@ -103,6 +103,7 @@ export default {
   :deep(a, a:visited) {
     color: var(--el-text-color-primary);
     text-decoration: none;
+    transition: color .75s
   }
 
   position: relative;
@@ -114,6 +115,8 @@ export default {
 
   cursor: pointer;
   user-select: none;
+  opacity: 0;
+  animation: loadIn .45s .75s forwards;
 
   :deep(.label) {
 
@@ -245,14 +248,29 @@ export default {
 
 }
 
+@keyframes loadIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 </style>
 
 <style lang="scss">
 .TFSelectorItemPage.disabled {
   &:hover {
-    color: var(--el-color-info)
+    color: var(--el-color-info) !important;
   }
-  opacity: .5;
+  opacity: .25 !important;
   cursor: not-allowed;
 }
 </style>

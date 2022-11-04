@@ -1,50 +1,75 @@
 <template>
   <div class="Logo-Container font-rounded">
-   <span>TalexWiki</span>
+    <div class="Logo">
+      <div class="logo-first"></div>
+      <div class="logo-right"></div>
+    </div>
+    <div v-if="!onlyLogo" class="Logo-Text">
+      <span>TalexWiki</span>
+    </div>
   </div>
 </template>
 
+<script>
+export default {
+  name: "Logo"
+}
+</script>
+
 <script setup>
+const props = defineProps({
+  onlyLogo: {
+    type: Boolean,
+    default: false
+  }
+})
 </script>
 
 <style lang="scss" scoped>
 .Logo-Container {
-  span {
-    position: absolute;
+  .Logo-Text {
+    width: 70%;
+    span {
+      position: relative;
 
-    line-height: 50px;
-    left: 15px;
+      line-height: 50px;
 
-    font-size: 16px;
-    color: var(--el-text-color-regular);
-    transition: all .05s;
+      font-size: 16px;
+      color: var(--el-text-color-regular);
+      transition: all .05s;
+    }
+    text-align: center;
   }
-  &:before, &:after {
-    content: "";
-    position: absolute;
+  .Logo {
+    width: 30%;
+    div {
+      position: relative;
 
-    left: 0;
-    top: 50%;
+      left: 50%;
+      top: 50%;
 
-    width: 15px;
-    height: 15px;
+      width: 15px;
+      height: 15px;
 
-    background: #60d0fe;
-    border-radius: 22px / 14px;
-    transform: translate(-50%, -50%);
-    opacity: .8;
-    filter: contrast(120%) saturate(180%);
+      background: #60d0fe;
+      border-radius: 22px / 14px;
+      transform: translate(-50%, -50%) translate(2px, -1px);
+      opacity: .8;
+      filter: contrast(120%) saturate(180%);
+    }
+
+    div.logo-right {
+      border-radius: 22px / 19px;
+      background: #2d46fe;
+      opacity: .68;
+      transform: translate(-50%, -50%) translate(-2px, -13px);
+    }
   }
-  &:after {
-    border-radius: 22px / 19px;
-    background: #2d46fe;
-    opacity: .68;
-    transform: translate(-50%, -50%) translate(-3px, 3px);
-  }
-  z-index: 99;
+  z-index: 999;
   position: relative;
-  //padding: 4% 0;
+  padding: 0 2px;
   display: flex;
+  justify-content: space-between;
 
   top: 0;
   left: 0;

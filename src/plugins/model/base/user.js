@@ -7,21 +7,21 @@ export default class User {
 
   /**
    * 分配用户
-   * @param {object} user 注册信息
+   * @param {object} code 注册验证码
+   * @param {object} hex 注册hex
    */
-  static register(user) {
-    return _axios({
-      method: 'post',
-      url: 'user/register',
-      data: {
-        email: user.email,
-        username: user.username,
-        password: user.password,
-        group_ids: user.groupIds,
-        confirm_password: user.confirmPassword,
-      },
-      handleError: true,
+  static async register(verify_token, code, hex) {
+    const res = await _axios.post('user/register/verify', {
+      code, hex
+    }, {
+      headers: {
+        captcha: verify_token
+      }
     })
+    const { token } = res
+    localStorage.setItem(RefreshConfig.storage.accessToken, `${RefreshConfig.storage.bearer} ${token.access_token}`)
+    localStorage.setItem(RefreshConfig.storage.refreshToken, `${RefreshConfig.storage.bearer} ${token.refresh_token}`)
+    return res
   }
 
   /**
@@ -90,6 +90,23 @@ export default class User {
     return post('user/change_password', {
       changed_password: md5(new_password),
       original_password: md5(old_password),
+    })
+  }
+
+  /**
+   *
+   */
+  static hasIdentifier(identifier) {
+    return _axios.get('user/has_user/' + identifier, {
+      hideError: true
+    })
+  }
+
+  static registerCode(email, user, pass) {
+    return post('user/register/email', {
+      email,
+      username: user,
+      password: md5(pass)
     })
   }
 }

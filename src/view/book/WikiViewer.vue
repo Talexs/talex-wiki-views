@@ -1,5 +1,5 @@
 <template>
-  <el-container class="WikiViewer-Container">
+  <el-container class="WikiViewer-Container transition-cubic" :class="{ 'medium-layout': viewerLayout === ViewerLayout.MEDIUM, 'thin-layout': viewerLayout === ViewerLayout.THIN }">
     <el-aside class="WikiViewer-Aside">
       <div class="WikiViewer-Box box-wiki-tree">
         <el-tabs v-model="activeTab" class="flat header-filter">
@@ -13,6 +13,13 @@
           </el-tab-pane>
           <el-tab-pane label="页设置" name="history">
             <div class="WikiViewer-Settings">
+              <el-select v-model="viewerLayout" :placeholder="viewerLayout.value" size="default">
+                <el-option key="0" label="宽硕布局" :value="ViewerLayout.FULL"/>
+                <el-option key="1" label="复合布局" :value="ViewerLayout.MEDIUM"/>
+                <el-option key="2" label="缩减布局" :value="ViewerLayout.THIN"/>
+              </el-select>
+              <br />
+              <br />
               <CheckBox title="开启页面切换动画" v-model="closeAnimations"></CheckBox>
             </div>
           </el-tab-pane>
@@ -27,7 +34,7 @@
 <!--          <span class="viewer-header-title">{{ currentDoc.title }}</span>-->
 <!--        </div>-->
         <div class="viewer-content">
-          <DocViewer :index="index" :book="book.id" :time="getTime(currentDoc.update_time)" :length="currentDoc.content.length" :t-vid="`${book.id}-${wikiID}`" v-model="currentDoc.content" ref="viewerRef">
+          <DocViewer :index="index" :book="book.id" :time="formatDateDistance(currentDoc.updatedAt)" :length="currentDoc.content.length" :t-vid="`${book.id}-${wikiID}`" v-model="currentDoc.content" ref="viewerRef">
 
           </DocViewer>
         </div>
@@ -46,9 +53,10 @@ import WikiDocument from '~/plugins/model/document'
 import WikiChapter from '~/plugins/model/chapter'
 import ChapterTree from '~/components/wiki/BookDocTree.vue'
 import DocViewer from '~/components/wiki/DocViewer.vue'
-import moment from 'moment/moment'
 import CheckBox from '@components/common/checkbox/CheckBox.vue'
 import { useStore } from '@plugins/store/index.ts'
+import { ViewerLayout } from '~/plugins/addon/enums.ts'
+import { formatDateDistance } from '../../plugins/addon/utils.ts'
 
 const store = useStore()
 const router = useRouter()
@@ -69,16 +77,17 @@ const index = ref() // 文档 h pin
 const activeTab = ref('docs-tree')
 
 const closeAnimations = ref(store.local.viewer.animation)
+const viewerLayout = ref(store.local.viewer.layout)
 watch(() => closeAnimations.value, () => {
   store.local.viewer.animation = closeAnimations.value
 })
-
-function getTime(ts) {
-  return moment(ts, null, 'zh-cn').fromNow()
-}
+watch(() => viewerLayout.value, () => {
+  store.local.viewer.layout = viewerLayout.value
+})
 
 let animation = false
 async function changeCurrentDoc(data) {
+  if( data.data?.doChapter ) return
   if(closeAnimations.value) {
     if(animation) return
     animation = true
@@ -129,6 +138,7 @@ async function fetchData(fetch = true) {
       const obj = reactive(item)
       obj.content = obj.content || ''
       obj.vid = `doc-${item.id}`
+      obj.chapter = item.chapter_id
 
       array[index] = obj
 
@@ -149,25 +159,26 @@ async function fetchData(fetch = true) {
 function flat2Tree(array, docs) {
   const map = new Map()
 
-  map.set('root', { children: [] })
+  map.set(-1, { children: [] })
 
-  array.forEach(item => map.set(item.id, { vid: `chapter-${item.id}`, priority: item.priority, doChapter: true, parentChapter: item.parentChapter, value: item.id, title: item.title, children: [] }))
+  array.forEach(item => map.set(item.id, { vid: `chapter-${item.id}`, priority: item.priority, doChapter: true, parentChapter: item.parent, value: item.id, title: item.title, children: [] }))
 
   array.forEach(item => {
-    const parent = item.parentChapter || 'root'
+    // console.log(array, item, map)
+    const parent = item.parent || -1
     const obj = map.get(parent)
 
     obj.children.push(map.get(item.id))
   })
 
   docs.forEach(item => {
-    const parent = item.chapter || 'root'
+    const parent = item.chapter || -1
     const obj = map.get(parent)
 
     obj.children.push(item)
   })
 
-  return map.get('root').children
+  return map.get(-1).children
 }
 
 onMounted(render)
@@ -207,8 +218,9 @@ export default {
   top: 1px;
 
   width: 300px;
-  height: 100%;
+  height: calc(100% - 1px);
 
+  border-left: 1px solid transparent;
   border-right: 1px solid var(--el-border-color);
   background-color: var(--el-fill-color-lighter);
   //backdrop-filter: saturate(180%) brightness(99%) blur(10px) contrast(120%);
@@ -268,6 +280,11 @@ export default {
   height: calc(100% + 5px);
   :deep(.el-scrollbar) {
     height: calc(100% - 30px);
+    .el-tree {
+      position: absolute;
+
+      width: 100%;
+    }
   }
 }
 
@@ -298,6 +315,7 @@ export default {
     //background: var(--el-fill-color-lighter);
   }
 
+  border-right: 1px solid transparent;
   //background-color: var(--el-fill-color-lighter);
   overflow: hidden;
 }
@@ -308,10 +326,48 @@ export default {
   justify-content: center;
 
   left: 0;
-  top: 20px;
+  //top: 20px;
 
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.WikiViewer-Container.thin-layout {
+  .WikiViewer-Aside {
+    border-left: 1px solid var(--el-border-color);
+  }
+  .WikiViewer-Main {
+    border-right: 1px solid var(--el-border-color);
+  }
+  left: 50%;
+
+  width: 70%;
+
+  min-width: 960px;
+  max-width: 1980px;
+
+  transform: translateX(-50%);
+}
+
+.WikiViewer-Container.medium-layout {
+  .WikiViewer-Aside {
+    margin-right: 20px;
+    border-right: 1px solid transparent;
+  }
+  :deep(.DocViewer-Outline) {
+    margin-left: 20px;
+    right: -20px;
+    border-left: 1px solid transparent;
+  }
+  left: 50%;
+
+  width: calc(70% - 20px);
+
+  min-width: 960px;
+  max-width: 1980px;
+
+  transform: translateX(-50%);
 }
 
 </style>

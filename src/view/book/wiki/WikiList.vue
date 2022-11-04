@@ -78,6 +78,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import wikiModel from '@plugins/model/wiki.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useStore } from '@plugins/store/index.ts'
 
 const wikiList = ref()
 const editWikiId = ref()
@@ -85,11 +86,12 @@ const loading = ref(false)
 const showEdit = ref(false)
 const showImport = ref(false)
 
+const store = useStore()
 const router = useRouter()
 
 const getWikiList = async () => {
   loading.value = true
-  wikiList.value = (await wikiModel.getBooks())?.rows || null
+  wikiList.value = (store.local.admin ? await wikiModel.getBooks() : await wikiModel.getMyBooks())?.rows || null
   loading.value = false
 }
 const handleEdit = id => router.push(`/wiki/edit/${id}`)

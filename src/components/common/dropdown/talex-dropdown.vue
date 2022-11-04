@@ -37,26 +37,28 @@ watch(() => isOpen.value, async () => {
 
     const el = displayRef.value
 
-    let pE = el.offsetParent, left = el.offsetLeft, top = el.offsetTop - 5
-    while( pE.offsetParent ) {
-
-      left += pE.offsetLeft
-      top += pE.offsetTop
-
-      pE = pE.parentNode
-
-    }
+    let pE = el.offsetParent, left = el.offsetLeft + pE.offsetLeft + + pE.offsetParent.offsetLeft, top = el.offsetTop - 5
+    // while( pE.offsetParent && pE.offsetParent !== document.getElementById('app') ) {
+    //
+    //   left += pE.offsetLeft
+    //   top += pE.offsetTop
+    //
+    //   pE = pE.parentNode
+    //
+    //   console.log(pE, left, pE.offsetLeft)
+    //
+    // }
 
     const containerEl = containerRef.value
 
-    left += el.clientWidth / 2
-    top += el.clientHeight
+    left += el.clientWidth
+    top += el.clientHeight + 10
 
     if( left + containerEl.clientWidth + 20 >= window.innerWidth ) {
 
       // left -= containerEl.clientWidth / 2
 
-      left -= containerEl.clientWidth
+      left -= containerEl.clientWidth / 2
 
     }
 
@@ -69,7 +71,7 @@ watch(() => isOpen.value, async () => {
 
     const { style } = containerEl
 
-    style.transform = 'scale(0)'
+    style.transform = 'translateY(-30px)'
     style.left = `${left}px`
     style.top = `${top}px`
 
@@ -77,7 +79,10 @@ watch(() => isOpen.value, async () => {
 
     style.pointerEvents = ''
     style.opacity = '1'
-    style.transform = 'scale(1)'
+
+    await sleep(10)
+
+    style.transform = 'translateY(0)'
   }
 })
 
@@ -105,12 +110,12 @@ async function closeMenu() {
   const style = containerRef?.value?.style
   if (!style) return
 
-  style.transform = 'scale(0)'
+  style.transform = 'translateY(-30px)'
   style.opacity = '0'
 
   await sleep(100)
 
-  style.transform = 'scale(1)'
+  style.transform = 'translateY(-30px)'
   style.pointerEvents = 'none'
 }
 

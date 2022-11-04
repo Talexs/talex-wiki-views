@@ -25,7 +25,7 @@
 
           <el-form-item>
             <RotateCaptcha :before-validation="tryLogin" @success="_login">
-              <FlatButton :loading-flag="loadings.btn" plain style="animation: loadIn .15s .5s backwards">登 录</FlatButton>
+              <FlatButton :loading-flag="loadings.btn" plain style="border-radius: 8px;margin: 0 0 auto;animation: loadIn .15s .5s backwards">登 录</FlatButton>
             </RotateCaptcha>
           </el-form-item>
 
@@ -37,7 +37,7 @@
 
         <div style="animation: loadIn .15s .6s backwards" class="Login-Footer-Mention">
 
-          <span @click="goRegister">立即注册</span>
+          <router-link @click="emits('close')" to="/user/register">立即注册</router-link>
 
         </div>
 
@@ -59,8 +59,10 @@ import UserModel from '~/plugins/model/base/user.js'
 import { useStore } from '~/plugins/store/index.ts'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import RotateCaptcha from '~/components/common/captcha/RotateCaptcha.vue'
+import { useRouter } from 'vue-router'
 
-const emits = defineEmits(['success'])
+const router = useRouter()
+const emits = defineEmits(['success', 'close'])
 const store = useStore()
 
 const formModel = reactive({
@@ -74,35 +76,37 @@ const loadings = reactive({
 
 async function goRegister() {
 
-  await forWikiDialogTip("注册暂未开放", "抱歉，由于维基系统正处于内测状态，暂不开放注册权限。", [
-    {
-      content: "申请",
-      type: TipType.WARNING,
-      async onClick() {
+  // await forWikiDialogTip("注册暂未开放", "抱歉，由于维基系统正处于内测状态，暂不开放注册权限。", [
+  //   {
+  //     content: "申请",
+  //     type: TipType.WARNING,
+  //     async onClick() {
+  //
+  //       await sleep(5000)
+  //
+  //       await forMentionTip(new MentionTip("抱歉，现在无法申请!", 3200, TipType.ERROR, true))
+  //
+  //       return false
+  //
+  //     },
+  //     loading(stop) {
+  //
+  //       setTimeout(() => {
+  //
+  //         stop()
+  //
+  //       }, 4000)
+  //
+  //     }
+  //   },
+  //   {
+  //     content: "了解",
+  //     type: TipType.INFO,
+  //     async onClick() { return true }
+  //   }
+  // ])
 
-        await sleep(5000)
-
-        await forMentionTip(new MentionTip("抱歉，现在无法申请!", 3200, TipType.ERROR, true))
-
-        return false
-
-      },
-      loading(stop) {
-
-        setTimeout(() => {
-
-          stop()
-
-        }, 4000)
-
-      }
-    },
-    {
-      content: "了解",
-      type: TipType.INFO,
-      async onClick() { return true }
-    }
-  ])
+  await router.push( '/register' )
 
 }
 
@@ -177,6 +181,7 @@ export default {
     margin-top: 10px;
   }
   h1:after {
+    z-index: -1;
     content: '';
     position: relative;
     padding: 0 2px;
@@ -209,7 +214,7 @@ export default {
 
 .Login-Container-Footer {
   .Login-Footer-Mention {
-    span {
+    a {
       &:before {
         content: "";
         position: absolute;
@@ -236,6 +241,8 @@ export default {
       height: 20px;
       line-height: 40px;
 
+      color: var(--el-text-color-primary);
+      text-decoration: none;
       text-align: right;
       cursor: pointer;
     }
@@ -247,7 +254,7 @@ export default {
   }
   position: relative;
 
-  bottom: 10%;
+  bottom: 5%;
 
   width: 80%;
 }

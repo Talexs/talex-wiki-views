@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { forMentionTip, TipType } from '~/plugins/Common.ts'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
+import { ViewerLayout } from '~/plugins/addon/enums.ts'
 
 const store = defineStore('user', {
     state: () => {
@@ -10,7 +11,8 @@ const store = defineStore('user', {
             permissions: [],
             theme: 'light',
             viewer: {
-                animation: true
+                animation: true,
+                layout: ViewerLayout.FULL
             },
             admin: false
         }

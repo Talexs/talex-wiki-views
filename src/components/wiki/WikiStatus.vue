@@ -24,11 +24,7 @@
 import { ref, computed, defineProps, defineEmits, onMounted, onBeforeMount } from 'vue'
 import { Select } from '@element-plus/icons-vue'
 import { useModelWrapper } from '~/plugins/Common.ts'
-import moment from 'moment'
-
-function getTime(ts) {
-  return moment(ts, null, 'zh-cn').fromNow()
-}
+import { formatDateDistance } from '../../plugins/addon/utils.ts'
 
 const props = defineProps(['modelValue'])
 const emits = defineEmits(['update:modelValue'])
@@ -42,7 +38,7 @@ let shrink = ref(false)
 
 function updateTimeText() {
   shrink.value = new Date().getTime() - lastUpdate > 120 * 1000
-  list.value.forEach(item => item.timeText = getTime(item.time))
+  list.value.forEach(item => item.timeText = formatDateDistance(item.time))
 }
 
 onMounted(() => {

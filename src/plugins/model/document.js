@@ -1,17 +1,12 @@
-import _axios, { _delete, get, put } from '~/plugins/api/axios'
+import _axios, { _delete, get, put, post } from '~/plugins/api/axios'
 
-// 我们通过 class 这样的语法糖使模型这个概念更加具象化，其优点：耦合性低、可维护性。
 class Document {
   async createDocument(data) {
-    return _axios({
-      method: 'post',
-      url: 'v1/doc',
-      data,
-    })
+    return post('wiki/doc/create', data)
   }
 
   async getDocument(bookID) {
-    return get(`wiki/view/doc/${bookID}`)
+    return get(`wiki/doc/list/${bookID}`)
   }
 
   async getTargetDocument(bookID, wikiID) {
@@ -19,7 +14,7 @@ class Document {
   }
 
   async editDocument(id, info) {
-    return put(`v1/doc/${ id }`, info)
+    return post(`wiki/doc/modify/${ id }`, info)
   }
 
   async deleteDocument(id) {

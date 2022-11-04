@@ -15,26 +15,28 @@
   -->
 
 <template>
-  <div class="RotateCaptcha-Container">
-    <div ref="wrapperDom" class="RotateCaptcha-Wrapper transition-cubic">
-<!--      <div ref="bgDom" class="RotateCaptcha-Background transition-cubic">-->
-      <h1>安全验证</h1>
-      <div :class="{ loading }" style="transition-duration: 1.25s" class="RotateCaptcha-HoverWrapper transition-cubic">
-        <div ref="hoverDom" class="RotateCaptcha-HoverBlock transition-cubic">
+    <div class="RotateCaptcha-Container">
+      <teleport :to="teleport" :disabled="!teleport">
+        <div ref="wrapperDom" class="RotateCaptcha-Wrapper transition-cubic">
+          <!--      <div ref="bgDom" class="RotateCaptcha-Background transition-cubic">-->
+          <h1>安全验证</h1>
+          <div :class="{ loading }" style="transition-duration: 1.25s" class="RotateCaptcha-HoverWrapper transition-cubic">
+            <div ref="hoverDom" :style="`background-image: ${hoverImg};transform: translate(-50%, -50%) rotate(${angleRotate})`" class="RotateCaptcha-HoverBlock transition-cubic">
 
+            </div>
+          </div>
+          <div class="RotateCaptcha-Controller">
+            <el-slider :disabled="loading" @change="verifyAngle" :min="90" :max="270" v-model="angle" :show-tooltip="false" />
+            <p>拖动滑块以使图片为正</p>
+          </div>
+          <!--      </div>-->
         </div>
-      </div>
-      <div class="RotateCaptcha-Controller">
-        <el-slider :disabled="loading" @change="verifyAngle" :min="90" :max="270" v-model="angle" :show-tooltip="false" />
-        <p>拖动滑块以使图片为正</p>
-      </div>
-<!--      </div>-->
-    </div>
+      </teleport>
 
-    <div @click="handleClick" class="RotateCaptcha-Displayer">
-      <slot />
+      <div @click="handleClick" class="RotateCaptcha-Displayer">
+        <slot />
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -49,7 +51,7 @@ import { computed, onMounted, ref } from 'vue'
 import { sleep } from '~/plugins/Common.ts'
 
 const emits = defineEmits(['success'])
-const props = defineProps(['beforeValidation'])
+const props = defineProps(['beforeValidation', 'teleport'])
 
 const wrapperDom = ref()
 // const bgDom = ref()
@@ -184,7 +186,7 @@ async function render() {
 
   captcha.value = res
 
-  bgImg.value = `url('${buffer2Img(res.bg.data)}')`
+  // bgImg.value = `url('${buffer2Img(res.bg.data)}')`
   hoverImg.value = `url('${buffer2Img(res.image.data)}')`
 
 }
@@ -217,9 +219,10 @@ function buffer2Img(buffer) {
     width: 100%;
     height: 100%;
 
-    opacity: .75;
+    opacity: .95;
     border-radius: 8px;
-    background-color: var(--el-bg-color);
+    backdrop-filter: brightness(120%) saturate(180%) blur(10px);
+    background-color: var(--el-fill-color-light);
   }
   z-index: 2;
   position: absolute;
@@ -295,44 +298,44 @@ function buffer2Img(buffer) {
 .RotateCaptcha-Displayer {
   z-index: 1;
 }
+.RotateCaptcha-Background {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 512px;
+  height: 512px;
+
+  //opacity: 0;
+  border-radius: 8px;
+  background-image: v-bind(bgImg);
+  transform: scale(.8);
+  transition-duration: 1.25s !important;
+}
+.RotateCaptcha-HoverBlock {
+  position: relative;
+
+  top: 50%;
+  left: 50%;
+
+  //width: 276px;
+  //height: 276px;
+
+  width: 182px;
+  height: 182px;
+
+  //transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow: 0 0 12px 2px rgba(38, 38, 38, 0.1);
+  filter: brightness(105%);
+  //background-size: cover;
+  background-position: center;
+  //transform: translate(-50%, -50%) /*scale(.6)*/ rotate(v-bind(angleRotate));
+  //transition-duration: .5s !important;
+  //background-image: v-bind(hoverImg);
+}
 .RotateCaptcha-Container {
-  .RotateCaptcha-Background {
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 512px;
-    height: 512px;
-
-    //opacity: 0;
-    border-radius: 8px;
-    background-image: v-bind(bgImg);
-    transform: scale(.8);
-    transition-duration: 1.25s !important;
-  }
-  .RotateCaptcha-HoverBlock {
-    position: relative;
-
-    top: 50%;
-    left: 50%;
-
-    //width: 276px;
-    //height: 276px;
-
-    width: 182px;
-    height: 182px;
-
-    //transform: translate(-50%, -50%);
-    border-radius: 50%;
-    box-shadow: 0 0 12px 2px rgba(38, 38, 38, 0.1);
-    filter: brightness(105%);
-    //background-size: cover;
-    background-position: center;
-    transform: translate(-50%, -50%) /*scale(.6)*/ rotate(v-bind(angleRotate));
-    //transition-duration: .5s !important;
-    background-image: v-bind(hoverImg);
-  }
   z-index: 100;
   position: relative;
 

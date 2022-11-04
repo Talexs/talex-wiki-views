@@ -40,7 +40,7 @@ export default {
   setup(props, context) {
     const form = ref(null)
     const loading = ref(false)
-    const chapter = reactive({ parentChapter: null, book: props.bookID, title: '' })
+    const chapter = reactive({ parentChapter: -1, wiki: props.bookID, title: '' })
 
     watch(() => chapter.parentChapter, () => {
       if (chapter.parentChapter instanceof Array && chapter.parentChapter.length > 0) {

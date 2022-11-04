@@ -70,7 +70,7 @@
         </el-table-column>
         <el-table-column prop="create_time" label="加入时间">
           <template #default="scope">
-            {{ getTimePeriod(scope.row.create_time) }}
+            {{ formatDateDistance(scope.row.createdAt) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="275">
@@ -104,7 +104,7 @@
 import { onMounted, ref } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import memberModel from '~/plugins/model/wiki-member.js'
-import moment from 'moment'
+import { formatDateDistance } from '../../../plugins/addon/utils.ts'
 import TalexDropDown from '~/components/common/dropdown/talex-dropdown.vue'
 
 import Avatar from '~/assets/static/avatar.png'
@@ -118,9 +118,6 @@ const props = defineProps({
 const loading = ref(false)
 const showEdit = ref(false)
 
-function getTimePeriod(time) {
-  return moment(time, null, 'zh-cn').fromNow()
-}
 </script>
 
 <style lang="scss" scoped>

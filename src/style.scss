@@ -278,6 +278,12 @@ span.tip {
     backdrop-filter: saturate(180%) brightness(98%) blur(50px);
     border-left: 0.25em solid var(--el-color-primary-light-5) !important;
   }
+  code {
+    .hljs-subst {
+      color: var(--el-text-color-secondary);
+    }
+    background: var(--el-fill-color-lighter);
+  }
   table {
     thead {
       tr {
@@ -330,6 +336,17 @@ span.tip {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes CenterXFrameLoad {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
@@ -463,4 +480,16 @@ span.premium-end {
   //opacity: .25;
   filter: inset(5%);
   background-color: var(--el-fill-color);
+}
+
+@media (min-width: 768px) {
+  .only-pe-display {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .only-pc-display {
+    display: none !important;
+  }
 }

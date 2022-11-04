@@ -1,5 +1,5 @@
 <template>
-  <el-avatar size="small"
+  <el-avatar class="UserAvatar-Container" size="small"
           :src="avatar || defaultAvatar"
   />
 </template>
@@ -27,5 +27,7 @@ export default {
 </script>
 
 <style scoped>
-
+.UserAvatar-Container {
+  /*align-items: center;*/
+}
 </style>
