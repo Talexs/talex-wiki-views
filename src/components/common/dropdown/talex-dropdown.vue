@@ -1,6 +1,6 @@
 <template>
   <div class="TalexDropdown-Wrapper" @mouseenter="hoverTrigger && hoverTriggerIn()" @mouseleave="hoverTrigger && hoverTriggerOut()">
-    <div class="TalexDropdown-Displayer" ref="displayRef" @click.prevent="openMenu">
+    <div class="TalexDropdown-Displayer" ref="displayRef" @click.stop.prevent="openMenu">
       <slot name="display">
         <el-button class="rounder-btn" text :icon="icon"></el-button>
       </slot>
@@ -119,10 +119,11 @@ async function closeMenu() {
   style.pointerEvents = 'none'
 }
 
-onMounted(() => !props.hoverTrigger && window.addEventListener('click', listener))
-onBeforeMount(() => !props.hoverTrigger && window.removeEventListener('click', listener))
+onMounted(() => !props.hoverTrigger && document.body.addEventListener('click', listener))
+onBeforeMount(() => !props.hoverTrigger && document.body.removeEventListener('click', listener))
 
 const openMenu = ref(async e => {
+  e.preventDefault()
   if( props.hoverTrigger ) return
   await closeMenu()
   const { style } = containerRef.value

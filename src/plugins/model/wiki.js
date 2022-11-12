@@ -14,7 +14,7 @@ class Wiki {
   }
 
   async editBook(id, info) {
-    return put(`v1/wiki/${ id }`, info)
+    return post(`wiki/modify/${ id }`, info)
   }
 
   async deleteBook(id) {
@@ -27,6 +27,10 @@ class Wiki {
 
   async getMyBooks(page = 0) {
     return get('wiki/my/' + page)
+  }
+
+  async getChapterWithDocs(id) {
+    return get('wiki/chapter/list/' + id)
   }
 }
 

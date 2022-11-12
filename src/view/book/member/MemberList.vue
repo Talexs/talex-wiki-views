@@ -1,113 +1,62 @@
 <template>
   <div>
-    <div class="container">
-      <div class="header">
-        <div class="title">
-          成员列表
-        </div>
-        <div style="float: right">
+    <el-table :data="props.members" stripe row-class-name="MemberList-list">
+      <el-table-column prop="avatar" label="用户">
+        <template #default="scope">
+          <div class="user">
+            <img v-if="scope.row?.user?.avatar" :src="scope.row?.user?.avatar" alt="" />
+            <img v-else :src="Avatar" class="corner"  alt=""/>
+            <p class="username">
+              {{ scope.row.user.username }}
+            </p>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="permission" label="成员权限">
+        <template #default="scope">
+          <!--            <span v-if="scope.row.permission === 3">超级管理员</span>-->
+          <span v-if="scope.row.permission === 2">成员</span>
+          <span v-if="scope.row.permission === 1">管理员</span>
+          <span v-if="scope.row.permission === 0">超级管理员</span>
+          <!--            <span v-if="scope.row.permission < 0">黑名单</span>-->
+        </template>
+      </el-table-column>
+      <el-table-column prop="create_time" label="加入时间">
+        <template #default="scope">
+          {{ formatDateDistance(scope.row.createdAt) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="275">
+        <template #header>
           <talex-drop-down>
             <template #display>
-              <el-button type="primary">添加成员</el-button>
+              <el-button :icon="Plus" text plain class="rounder-btn primary stretch-center" size="small" type="primary">添加成员</el-button>
             </template>
             123123
             <el-button type="primary">添加成员</el-button>
           </talex-drop-down>
-<!--          <el-popover-->
-<!--            placement="bottom"-->
-<!--            :width="380"-->
-<!--            trigger="click"-->
-<!--          >-->
-<!--            <template #reference>-->
-<!--              <el-button type="primary">添加成员</el-button>-->
-<!--            </template>-->
-<!--            <h2>添加成员</h2>-->
-<!--            <div class="add-member-wrapper">-->
-<!--              <el-input-->
-<!--                v-model="input3"-->
-<!--                placeholder="Please input"-->
-<!--                class="input-with-select"-->
-<!--              >-->
-<!--                <template #prepend>-->
-<!--                  <el-select v-model="select" placeholder="Select" style="width: 115px">-->
-<!--                    <el-option label="超级管理员" value="3" />-->
-<!--                    <el-option label="管理员" value="2" />-->
-<!--                    <el-option label="普通成员" value="1" />-->
-<!--                    <el-option label="游客" value="0" />-->
-<!--                    <el-option label="黑名单" value="-1" />-->
-<!--                  </el-select>-->
-<!--                </template>-->
-<!--                <template #append>-->
-<!--                  <el-button :icon="Search" />-->
-<!--                </template>-->
-<!--              </el-input>-->
-<!--              <el-button type="primary">邀请对方</el-button>-->
-<!--            </div>-->
-<!--          </el-popover>-->
-        </div>
-      </div>
-
-      <el-table :data="props.members" stripe row-class-name="MemberList-list">
-        <el-table-column prop="avatar" label="用户">
-          <template #default="scope">
-           <div class="user">
-             <img v-if="scope.row.avatar" :src="item.avatar" alt="" />
-             <img v-else :src="Avatar" class="corner"  alt=""/>
-             <p class="username">
-              {{ scope.row.username }}
-            </p>
-           </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="permission" label="成员权限">
-          <template #default="scope">
-<!--            <span v-if="scope.row.permission === 3">超级管理员</span>-->
-            <span v-if="scope.row.permission === 2">成员</span>
-            <span v-if="scope.row.permission === 1">管理员</span>
-            <span v-if="scope.row.permission === 0">超级管理员</span>
-<!--            <span v-if="scope.row.permission < 0">黑名单</span>-->
-          </template>
-        </el-table-column>
-        <el-table-column prop="create_time" label="加入时间">
-          <template #default="scope">
-            {{ formatDateDistance(scope.row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" fixed="right" width="275">
-          <template #default="scope">
-<!--            <el-button plain size="small" type="primary" @click="handleSetting(scope.row.id)">编辑</el-button>-->
-<!--            @click="handleDelete(scope.row.id)"-->
-<!--            v-permission="{ permission: '删除成员', type: 'disabled' }"-->
-            <el-button
-              plain
-              size="small"
-              type="danger"
-
-
-            >删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-<!--      <div class="MemberList-Wrapper">-->
-<!--        <div class="MemberList-list" :key="item.id" v-for="item in members">-->
-<!--          <img v-if="item.avatar" :src="item.avatar" alt="" />-->
-<!--          <img v-else src="@/assets/image/user/user.png" class="corner" />-->
-<!--          {{ item }}-->
-<!--        </div>-->
-<!--      </div>-->
-    </div>
-
+        </template>
+        <template #default="scope">
+          <!--            <el-button plain size="small" type="primary" @click="handleSetting(scope.row.id)">编辑</el-button>-->
+          <!--            @click="handleDelete(scope.row.id)"-->
+          <!--            v-permission="{ permission: '删除成员', type: 'disabled' }"-->
+          <el-button plain size="small" type="primary">编辑</el-button>
+          <el-button plain size="small" type="danger" :disabled="scope.row.permission === 0">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ref } from 'vue'
+import { Plus } from '@element-plus/icons-vue'
 import memberModel from '~/plugins/model/wiki-member.js'
 import { formatDateDistance } from '../../../plugins/addon/utils.ts'
 import TalexDropDown from '~/components/common/dropdown/talex-dropdown.vue'
 
 import Avatar from '~/assets/static/avatar.png'
+import UserAvatar from '@components/common/avatar/UserAvatar.vue'
 
 const props = defineProps({
   members: {
@@ -126,6 +75,7 @@ const showEdit = ref(false)
     position: relative;
     display: flex;
 
+    top: 10px;
   }
   img {
     margin-bottom: 5px;
@@ -141,7 +91,7 @@ const showEdit = ref(false)
     left: 5px;
 
     height: 30px;
-    line-height: 30px;
+    line-height: 45px;
     width: max-content;
 
     font-size: 17px;

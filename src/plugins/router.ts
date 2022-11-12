@@ -98,6 +98,15 @@ const routes: any = [
                 component: () => import('../view/book/wiki/WikiList.vue')
             },
             {
+                path: "/user/wiki/setting/:id",
+                name: "维基设置",
+                meta: {
+                    heightUnlimited: false,
+                    loginRequired: true
+                },
+                component: () => import('../view/book/wiki/WikiModifier.vue')
+            },
+            {
                 path: "/user/plans",
                 name: "升级计划",
                 meta: {
@@ -177,7 +186,7 @@ const routes: any = [
         component: () => import('./../view/base/Register.vue')
     },
     {
-        path: "/wiki/view/:id/:wiki?/:index?",
+        path: "/wiki/view/:id",
         name: "维基浏览",
         component: () => import('./../view/book/WikiViewer.vue')
     },
@@ -187,7 +196,22 @@ const routes: any = [
         meta: {
             loginRequired: true
         },
-        component: () => import('./../view/book/WikiEditor.vue')
+        component: () => import('./../view/book/editor/WikiEditorFrame.vue'),
+        // children: [
+        //     {
+        //         path: "/wiki/edit/:id/:wiki?",
+        //         name: "维基编辑",
+        //         meta: {
+        //             loginRequired: true
+        //         },
+        //         component: () => import('./../view/book/editor/WikiEditor.vue')
+        //     },
+        // ]
+    },
+    {
+        path: "/direct",
+        name: "跳转",
+        component: () => import('./../view/others/DirectMention.vue')
     },
     {
         path: "/:pathMatch(.*)*",

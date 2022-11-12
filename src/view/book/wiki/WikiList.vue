@@ -37,16 +37,16 @@
         <el-table-column prop="author" label="权限">
           <template #default="scope">
             <el-icon style="position: relative;top: 3px">
-              <Select v-if="scope.row.permission === 0" />
+              <Select v-if="scope.row.permission === 1" />
               <CloseBold v-else></CloseBold>
             </el-icon>
-            <span>&nbsp;{{ scope.row.permission !== 0 ? '公有' : '私有' }}</span>
+            <span>&nbsp;{{ scope.row.permission === 0 ? '公有' : '私有' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="275">
           <template #default="scope">
             <el-button plain size="small" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
-            <el-button plain size="small" type="warning" @click="handleSetting(scope.row.id)">设置</el-button>
+            <el-button plain size="small" type="warning" @click="$router.push('/user/wiki/setting/' + scope.row.id)">设置</el-button>
             <el-button
                     plain
                     size="small"
@@ -58,18 +58,12 @@
       </el-table>
     </transition>
 
-    <!-- 编辑页面 -->
-    <transition name="el-zoom-in-bottom">
-      <wiki-modify v-show="showEdit" @editClose="editClose" :editWikiId="editWikiId"></wiki-modify>
-    </transition>
-
     <!-- 导入页面 -->
     <ImportedWiki v-if="showImport" @editClose="editClose" ></ImportedWiki>
   </div>
 </template>
 
 <script setup>
-import WikiModify from './WikiModifier.vue'
 import ImportedWiki from './import-wiki.vue'
 import TalexDropdown from '@components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '@components/common/dropdown/talex-drop-item.vue'
@@ -83,7 +77,6 @@ import { useStore } from '@plugins/store/index.ts'
 const wikiList = ref()
 const editWikiId = ref()
 const loading = ref(false)
-const showEdit = ref(false)
 const showImport = ref(false)
 
 const store = useStore()
@@ -95,16 +88,6 @@ const getWikiList = async () => {
   loading.value = false
 }
 const handleEdit = id => router.push(`/wiki/edit/${id}`)
-
-const handleSetting = id => {
-  editWikiId.value = id
-  showEdit.value = true
-}
-
-function handleAddWiki () {
-  editWikiId.value = null
-  showEdit.value = true
-}
 
 function handleImportWiki() {
   showImport.value = true
@@ -122,12 +105,6 @@ const handleDelete = id => {
       ElMessage.success(`${res.message}`)
     }
   })
-}
-
-const editClose = () => {
-  showEdit.value = false
-  showImport.value = false
-  getWikiList()
 }
 
 const indexMethod = index => index + 1

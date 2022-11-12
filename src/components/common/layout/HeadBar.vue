@@ -222,7 +222,7 @@
 import Logo from '~/components/common/icon/Logo.vue'
 import TalexDialog from '~/components/common/dialog/TalexDialog.vue'
 import Login from '~/view/base/Login.vue'
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { useStore } from '~/plugins/store/index'
 import TalexDropdown from '~/components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '~/components/common/dropdown/talex-drop-item.vue'

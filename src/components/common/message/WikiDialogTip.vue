@@ -101,7 +101,7 @@ const clickBtn = ref(async (btn) => {
 
   btn.value.loading = true
 
-  await sleep(1200)
+  await sleep(400)
 
   if( await btn.value.onClick() ) {
 

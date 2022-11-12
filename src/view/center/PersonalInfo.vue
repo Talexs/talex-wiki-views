@@ -54,11 +54,12 @@
 <script setup>
 import UploadImg from '~/components/base/upload-image/index.vue'
 import defaultAvatar from '~/assets/static/avatar.png'
+import GlobalConfig from '~/config/GlobalConfig.js'
 
 import { useStore } from '~/plugins/store/index'
 import { ref, reactive, computed } from 'vue'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
-import { forMentionTip, sleep, TipType } from '~/plugins/Common.ts'
+import { forMentionTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
 import User from '~/plugins/model/base/user.js'
 import { useRouter } from 'vue-router'
 
@@ -138,11 +139,19 @@ function submitForm() {
 
 }
 
-function uploadCover(res) {
+async function uploadCover(res) {
   const url = res[0]
   const uuid = url.split("/").at(-1)
 
-  user.value.avatar = avatarUrl.value = "http://" + url.replace(uuid, "") + encodeURIComponent(uuid)
+  store.local.user.avatar = user.value.avatar = avatarUrl.value = GlobalConfig.hostName + url.replace(uuid, "") + encodeURIComponent(uuid)
+
+  const back = await User.updateUserInfo(avatarUrl.value)
+
+  if( back ) {
+
+    await forMentionTip( new MentionTip( '头像修改成功!', 2000, TipType.INFO, true ) )
+
+  }
 }
 
 </script>

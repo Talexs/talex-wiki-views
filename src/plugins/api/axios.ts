@@ -35,14 +35,6 @@ const _axios = axios.create(config)
 //     writable: false
 //  })
 
-/**
- * 错误码是否是refresh相关
- * @param { number } code 错误码
- */
-function refreshTokenException(code: number) {
-    return RefreshConfig.exceptions.refresh.includes(code)
-}
-
 // 容错处理
 _axios.interceptors.request.use(
      originConfig => {
@@ -125,18 +117,18 @@ _axios.interceptors.response.use(
 
             const { code } = data
 
-            // refresh_token 异常，直接登出
-            if (refreshTokenException(code)) {
-                setTimeout(logout, 1500)
-                return Promise.resolve(null)
-            }
+            // // refresh_token 异常，直接登出
+            // if (refreshTokenException(code)) {
+            //     setTimeout(logout, 1500)
+            //     return Promise.resolve(null)
+            // }
 
             // assessToken相关，刷新令牌
             if (code === 406) {
                 let refreshToken = localStorage.getItem(RefreshConfig.storage.refreshToken)
 
                 if( !refreshToken ) {
-                    logout()
+                    await logout()
                     return Promise.resolve(null)
                 }
 
@@ -156,11 +148,13 @@ _axios.interceptors.response.use(
 
         }
 
-        if( !res.config?.hideError && data.error ) {
+        if( ( res.config['hideError'] !== true ) && data.error ) {
 
             let msg = data.error?.msg ? Array(...data.error.msg) : [data.error]
 
             for ( const m of msg ) {
+
+                console.log("@Error", m)
 
                 await forWikiTip( m + '!', 3200, TipType.ERROR );
 

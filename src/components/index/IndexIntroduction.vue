@@ -36,8 +36,8 @@
           </FlatButton>
         </div>
       </div>
-      <div class="Index-Illustration">
-        <object :data="BookSvg" type="image/svg+xml"></object>
+      <div class="Index-Illustration" :style="`background-image: url('${BookSvg}')`">
+<!--        <object :data="BookSvg" type="image/svg+xml"></object>-->
       </div>
     </div>
   </div>
@@ -54,6 +54,7 @@ import BookSvg from '../../assets/static/svg/book-index.svg'
 import FlatButton from '../common/btn/FlatButton.vue'
 import FlatHrefButton from '../common/btn/FlatHrefButton.vue'
 import { Position } from '@element-plus/icons-vue'
+
 </script>
 
 <style lang="scss" scoped>
@@ -79,11 +80,14 @@ import { Position } from '@element-plus/icons-vue'
 }
 
 .Index-Illustration {
-  width: 30%;
-  object {
-    width: 100%;
-    height: 100%;
-  }
+  width: 35%;
+  background-size: 100% 100%;
+  background-position: center;
+  //object {
+  //
+  //  width: 100%;
+  //  height: 100%;
+  //}
 }
 
 .Index-Introduction-Wrapper {

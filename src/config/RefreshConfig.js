@@ -4,9 +4,6 @@ const config = {
     bearer: 'Bearer',
     refreshToken: 'refresh_token',
     accessToken: 'access_token'
-  },
-  exceptions: {
-    refresh: [403]
   }
 }
 

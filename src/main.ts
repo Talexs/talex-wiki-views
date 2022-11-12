@@ -7,6 +7,7 @@ import router from './plugins/router'
 import VWave from 'v-wave'
 import pinia, { useStore } from './plugins/store/index'
 
+import './styles/milkdown/main.scss'
 import './styles/animation/main.scss'
 import './styles/element/index.scss'
 import 'element-plus/theme-chalk/dark/css-vars.css'
@@ -14,9 +15,12 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 const app = createApp(App)
 
 import Loading from '~/plugins/directives/Loading'
+import ForceFocus from '~/plugins/directives/ForceFocus.js'
 import store from './plugins/store/index'
 
-app.use(pinia).use(router).use(VWave).directive('loading', Loading)
+app.use(pinia).use(router).use(VWave)
+    .directive('loading', Loading)
+    .directive('force-focus', ForceFocus)
 
 app.provide('$axios', axios)
 

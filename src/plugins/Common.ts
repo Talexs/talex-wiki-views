@@ -5,6 +5,39 @@ import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
 
 import { Md5 } from 'ts-md5'
 
+export function _T_DecodeNumber(str: string, addonSecret: number = 0): number {
+    return parseInt(String(str2number(str)), 8) - addonSecret
+}
+
+export function _T_EncodeNumber(number: number, randomAddon: number = 0): string {
+    return number2str(Number((number + randomAddon).toString(8)))
+}
+
+export function str2number(str: string): number {
+
+    const mapper = "VTFCPOGMX*"
+
+    let _str = ''
+    for( const letter of [ ...str ] ) _str += mapper.indexOf(letter.toUpperCase())
+
+    return Number(_str)
+}
+
+export function number2str(number: number): string {
+
+    const mapper = "VTFCPOGMX"
+
+    let str = ''
+    for( const letter of [ ...String(number) ] ) {
+
+        const char = mapper.at(Number(letter)) || '*'
+        str += Math.random() > .5 ? char.toLowerCase() : char
+
+    }
+
+    return str
+}
+
 // string to md5
 export const toMD5 = ( str: string ) => {
 
@@ -47,7 +80,7 @@ export async function forWikiDialogTip(title: String, message: String, btns: Dia
 
     root.id = 'wiki-dialog-tip-' + index;
 
-    root.style.zIndex = `${1000 + index}`
+    root.style.zIndex = `${10000 + index}`
 
     const app = createApp(WikiDialogTip, {
         message, index, title, btns,

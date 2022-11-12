@@ -1,40 +1,42 @@
 <template>
   <el-container class="WikiViewer-Container transition-cubic" :class="{ 'medium-layout': viewerLayout === ViewerLayout.MEDIUM, 'thin-layout': viewerLayout === ViewerLayout.THIN }">
-    <el-aside class="WikiViewer-Aside">
-      <div class="WikiViewer-Box box-wiki-tree">
-        <el-tabs v-model="activeTab" class="flat header-filter">
-          <el-tab-pane label="文档集" name="docs-tree">
-<!--            <div class="box-wiki-header">-->
-<!--              <p class="box-title">文档集</p>-->
-<!--            </div>-->
-            <el-scrollbar>
-              <ChapterTree :func="false" @select-doc="changeCurrentDoc" :currentSelect="wikiID" :tree="tree" />
-            </el-scrollbar>
-          </el-tab-pane>
-          <el-tab-pane label="页设置" name="history">
-            <div class="WikiViewer-Settings">
-              <el-select v-model="viewerLayout" :placeholder="viewerLayout.value" size="default">
-                <el-option key="0" label="宽硕布局" :value="ViewerLayout.FULL"/>
-                <el-option key="1" label="复合布局" :value="ViewerLayout.MEDIUM"/>
-                <el-option key="2" label="缩减布局" :value="ViewerLayout.THIN"/>
-              </el-select>
-              <br />
-              <br />
-              <CheckBox title="开启页面切换动画" v-model="closeAnimations"></CheckBox>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </el-aside>
+    <AsideAdapter>
+      <el-aside class="WikiViewer-Aside">
+        <div class="WikiViewer-Box box-wiki-tree">
+          <el-tabs v-model="activeTab" class="flat header-filter">
+            <el-tab-pane label="文档集" name="docs-tree">
+              <!--            <div class="box-wiki-header">-->
+              <!--              <p class="box-title">文档集</p>-->
+              <!--            </div>-->
+              <el-scrollbar>
+                <ChapterTree :func="false" @select-doc="changeCurrentDoc" :currentSelect="wikiID" :tree="tree" />
+              </el-scrollbar>
+            </el-tab-pane>
+            <el-tab-pane label="页设置" name="history">
+              <div class="WikiViewer-Settings">
+                <el-select v-model="viewerLayout" :placeholder="viewerLayout.value" size="default">
+                  <el-option key="0" label="宽硕布局" :value="ViewerLayout.FULL"/>
+                  <el-option key="1" label="复合布局" :value="ViewerLayout.MEDIUM"/>
+                  <el-option key="2" label="缩减布局" :value="ViewerLayout.THIN"/>
+                </el-select>
+                <br />
+                <br />
+                <CheckBox title="开启页面切换动画" v-model="closeAnimations"></CheckBox>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+      </el-aside>
+    </AsideAdapter>
     <el-main class="WikiViewer-Main transition-cubic" ref="mainRef">
-      <template v-if="wikiID && currentDoc">
+      <template v-if="currentDoc">
 <!--        <div class="viewer-header">-->
 <!--          <span>全文统计: {{ currentDoc.content.length }}</span>-->
 <!--          <span>更新时间: {{ getTime(currentDoc.update_time) }}</span>-->
 <!--          <span class="viewer-header-title">{{ currentDoc.title }}</span>-->
 <!--        </div>-->
         <div class="viewer-content">
-          <DocViewer :index="index" :book="book.id" :time="formatDateDistance(currentDoc.updatedAt)" :length="currentDoc.content.length" :t-vid="`${book.id}-${wikiID}`" v-model="currentDoc.content" ref="viewerRef">
+          <DocViewer :update-time="currentDoc.updatedAt" :content="currentDoc.content" ref="viewerRef">
 
           </DocViewer>
         </div>
@@ -47,16 +49,17 @@
 <script setup>
 import { onMounted, ref, reactive, provide, nextTick, onUpdated, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { forWikiTip, sleep } from '~/plugins/Common'
+import { _T_DecodeNumber, _T_EncodeNumber, forWikiTip, sleep, TipType } from '~/plugins/Common'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document'
 import WikiChapter from '~/plugins/model/chapter'
-import ChapterTree from '~/components/wiki/BookDocTree.vue'
+import ChapterTree from '~/components/wiki/tree/BookDocTree.vue'
 import DocViewer from '~/components/wiki/DocViewer.vue'
 import CheckBox from '@components/common/checkbox/CheckBox.vue'
 import { useStore } from '@plugins/store/index.ts'
 import { ViewerLayout } from '~/plugins/addon/enums.ts'
-import { formatDateDistance } from '../../plugins/addon/utils.ts'
+import { formatDateDistance } from '@plugins/addon/utils.ts'
+import AsideAdapter from '@components/common/layout/AsideAdapter.vue'
 
 const store = useStore()
 const router = useRouter()
@@ -87,7 +90,6 @@ watch(() => viewerLayout.value, () => {
 
 let animation = false
 async function changeCurrentDoc(data) {
-  if( data.data?.doChapter ) return
   if(closeAnimations.value) {
     if(animation) return
     animation = true
@@ -99,12 +101,16 @@ async function changeCurrentDoc(data) {
     style.transform = 'scale(.85) translateX(-100%)'
     style.opacity = '0'
 
-    wikiID.value = data.id
+    wikiID.value = data.data.wiki_id
 
     await sleep(250)
 
-    await fetchData(false)
-    await router.push(`/wiki/view/${ book.value.id }/${data.id}/`)
+    await router.push({
+      query: {
+        doc: `${data.data.id}`
+      }
+    })
+    currentDoc.value = data.data
 
     style.transform = 'scale(.85) translateX(100%)'
 
@@ -119,11 +125,14 @@ async function changeCurrentDoc(data) {
     animation = false
   } else {
 
-    wikiID.value = data.id
+    wikiID.value = data.data.wiki_id
 
-    await fetchData(false)
-
-    await router.push(`/wiki/view/${ book.value.id }/${data.id}`)
+    await router.push({
+      query: {
+        doc: `${data.data.id}`
+      }
+    })
+    currentDoc.value = data.data
 
   }
 
@@ -149,7 +158,7 @@ async function fetchData(fetch = true) {
 
     tree.value = flat2Tree(await WikiChapter.getChapters(book.value.id), array)
 
-    await forWikiTip('维基加载完成!', 2200, 'success')
+    await forWikiTip('维基加载完成!', 2200, TipType.SUCCESS)
   }
 
   currentDoc.value = treeMap.get(Number(wikiID.value))
@@ -186,14 +195,38 @@ onUpdated(render)
 
 async function render() {
   if (wikiID.value) return
-  const tIndex = index
+
+  // for(let i = 0; i < 100; ++i) {
+  //
+  //   const encode = _T_EncodeNumber(i, 0)
+  //   const decode = _T_DecodeNumber(encode, 0)
+  //
+  //   if( i !== decode ) {
+  //
+  //     console.warn(i + " has problem", encode, decode)
+  //
+  //   }
+  //
+  //   const i_encode = _T_EncodeNumber(i, 233)
+  //   const i_decode = _T_DecodeNumber(i_encode, 233)
+  //
+  //   if( i !== i_decode ) {
+  //
+  //     console.warn(i + " has i_problem", i_encode, i_decode)
+  //
+  //   }
+  //
+  // }
+
+  // const tIndex = index
   await nextTick(async () => {
-    const { id, wiki, index } = route.params
+    const { doc } = route.query
+    const { id } = route.params
 
-    tIndex.value = index
-    wikiID.value = wiki
+    // tIndex.value = index
+    wikiID.value = doc
 
-    book.value = await Wiki.getBook(id) // TODO 浏览页面无需详情
+    book.value = await Wiki.getBook(_T_DecodeNumber(id, 9)) // TODO 浏览页面无需详情
 
     await fetchData()
   })

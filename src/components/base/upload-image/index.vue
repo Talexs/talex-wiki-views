@@ -765,7 +765,7 @@ export default {
       })
       // 获取数据成功后发出
       this.$emit('upload', result)
-      console.log('hello')
+      // console.log('hello')
       return result
     },
     /**

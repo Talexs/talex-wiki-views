@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2022. TalexDreamSoul
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <el-tree v-if="tree" :allow-drop="doAllowDrop" draggable default-expand-all @node-drop="handleDrop" ref="treeRef" class="BookDocTree-Container" :current-node-key="`doc-${currentSelect}`" node-key="vid" @current-change="handleChangeCurrentNode" :data="tree" highlight-current>
     <template #default="{ data }">
@@ -7,43 +23,6 @@
             <Document v-else />
           </el-icon>
           <span>{{ data.title }}</span>
-          <span v-if="func" class="action-area">
-            <TalexDropdown>
-            <TalexDropItem>
-              <template #label>
-                新建维基章节
-              </template>
-              <template #icon>
-                <el-icon><Folder /></el-icon>
-              </template>
-            </TalexDropItem>
-            <TalexDropItem v-if="data?.doChapter" @click="addWikiDoc(data)">
-              <template #label>
-                新建维基文档
-              </template>
-              <template #icon>
-                <el-icon><Document /></el-icon>
-              </template>
-            </TalexDropItem>
-            <TalexDropItem v-if="!data?.doChapter">
-              <template #label>
-                分享当前文档
-              </template>
-              <template #icon>
-                <el-icon><Share /></el-icon>
-              </template>
-            </TalexDropItem>
-            <TalexDropItem divider />
-            <TalexDropItem danger @click="delCurrent(data)">
-              <template #label>
-                删除当前{{ data?.doChapter ? '章节' : '文档'}}
-              </template>
-              <template #icon>
-                <el-icon><Delete /></el-icon>
-              </template>
-            </TalexDropItem>
-          </TalexDropdown>
-          </span>
         </span>
     </template>
   </el-tree>
@@ -74,10 +53,8 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted, inject } from 'vue'
 import { Folder, Document } from '@element-plus/icons-vue'
-import TalexDropdown from '~/components/common/dropdown/talex-dropdown.vue'
-import TalexDropItem from '~/components/common/dropdown/talex-drop-item.vue'
 
-const props = defineProps(['tree', 'currentSelect', 'func'])
+const props = defineProps(['tree', 'currentSelect'])
 const emits = defineEmits(['select-doc', 'add-doc', 'del-current', 'drag-drop'])
 const treeRef = ref()
 

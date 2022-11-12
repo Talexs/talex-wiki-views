@@ -29,7 +29,7 @@
 
 <script setup>
 import HeadBar from './components/common/layout/HeadBar.vue'
-import { ref, onMounted, watch, onBeforeMount, watchEffect } from 'vue'
+import { ref, onMounted, watch, onBeforeMount, watchEffect, onUpdated } from 'vue'
 import ws from '~/plugins/channel/connection'
 import { useStore } from '~/plugins/store'
 import { useRoute } from 'vue-router'
@@ -75,15 +75,80 @@ function scrollUp(e) {
     // headerDom.value.style.transform = `translateY(-${y}px)`
 }
 
-onMounted(() => {
-    const loader = document.getElementById('loader')
-    if(loader) loader.style.display = 'none'//loader.parentNode.removeChild(loader) //loader.style.display = 'none'
+// function SetSafeA(whiteDomList) {
+//   const aArr = document.getElementsByTagName('a')
+//   Array.from(aArr).forEach(item=>{
+//     item.onclick = () => {
+//       let target = item.getAttribute('href')
+//       if(/^\//.test(target)) {
+//         // 相对本站链接
+//         return true
+//       }
+//       const isSafe = undefined !== whiteDomList.find(item=>{
+//         return target.indexOf(item) !== -1
+//       })
+//       if(!isSafe) {
+//         window.open(`${window.location.host}/direct?target=${target}`, '_blank')
+//         // window.open(`${safeLink}${target}`, '_blank')
+//       }
+//       return false
+//     }
+//   })
+// }
 
-    document.getElementById('AppMainLayer')?.addEventListener('scroll', scrollUp)
+let init = false
 
-})
+onMounted(initial)
+onUpdated(initial)
+
+function initial() {
+  if( init ) return
+  init = true
+
+  const loader = document.getElementById('loader')
+  if(loader) loader.style.display = 'none'//loader.parentNode.removeChild(loader) //loader.style.display = 'none'
+
+  document.getElementById('AppMainLayer')?.addEventListener('scroll', scrollUp)
+
+  document.body.addEventListener('click', directListener)
+
+}
+
+function directListener(event) {
+  const target = event.target
+
+  if( target.nodeName.toLocaleLowerCase() === 'a' ) {
+
+    if( target.getAttribute("ignoreSafeCheck") === "true" ) return
+
+    // 处理完 a 标签的内容，重新触发跳转，根据原来 a 标签页 target 来判断是否需要新窗口打开
+    const url = target.getAttribute("href")
+
+    if( url.startsWith(window.location.origin) || url.startsWith("/") ) return
+
+    event.preventDefault()
+
+    // if(/^\//.test(target)) {
+    //   // 相对本站链接
+    //   return true
+    // }
+
+    // const isSafe = undefined !== whiteDomList.find(item=>{
+    //   return target.indexOf(item) !== -1
+    // })
+
+    // if(!isSafe) {
+    //   window.open(`${window.location.host}/direct?target=${target}`, '_blank')
+    // window.open(`${safeLink}${target}`, '_blank')
+    // }
+
+    window.open(`${window.location.origin}/direct?target=${url}`, '_blank')
+
+  }
+}
 
 onBeforeMount(() => {
+  document.body.removeEventListener('click', directListener)
   document.getElementById('AppMainLayer')?.removeEventListener('scroll', scrollUp)
 })
 

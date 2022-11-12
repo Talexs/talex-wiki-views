@@ -17,6 +17,10 @@ class Document {
     return post(`wiki/doc/modify/${ id }`, info)
   }
 
+  async viewDocument(id) {
+    return get(`wiki/doc/view/${ id }`)
+  }
+
   async deleteDocument(id) {
     return _delete(`v1/doc/${ id }`)
   }
@@ -27,6 +31,10 @@ class Document {
       url: 'v1/doc/',
       handleError: true,
     })
+  }
+
+  async getLeftDocs(bookID) {
+    return get('wiki/doc/list_left/' + bookID)
   }
 }
 

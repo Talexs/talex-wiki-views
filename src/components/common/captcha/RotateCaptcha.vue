@@ -76,6 +76,8 @@ async function verifyAngle() {
     }
   } )
 
+  console.log(res)
+
   await sleep(400)
 
   loading.value = false
@@ -188,6 +190,16 @@ async function render() {
 
   // bgImg.value = `url('${buffer2Img(res.bg.data)}')`
   hoverImg.value = `url('${buffer2Img(res.image.data)}')`
+
+  angle.value = 0
+
+  const hoverWrapperStyle = hoverDom.value.parentNode.style
+
+  hoverWrapperStyle.transform = ''
+
+  const hoverStyle = hoverDom.value.style
+  hoverStyle.boxShadow = ''
+  hoverStyle.borderRadius = ''
 
 }
 

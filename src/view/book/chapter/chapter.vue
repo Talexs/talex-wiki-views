@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <h1 class="title">添加维基</h1>
+
     <div class="wrap">
       <el-row>
         <el-col :lg="16" :md="20" :sm="24" :xs="24">
@@ -26,10 +28,12 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import chapterModel from '~/plugins/model/chapter'
+import { forWikiTip, TipType } from '@plugins/Common.ts'
 
 export default {
+  name: "Chapter",
   props: {
-    bookID: {
+    bookId: {
       type: Number
     },
     editChapterID: {
@@ -40,7 +44,7 @@ export default {
   setup(props, context) {
     const form = ref(null)
     const loading = ref(false)
-    const chapter = reactive({ parentChapter: -1, wiki: props.bookID, title: '' })
+    const chapter = reactive({ parentChapter: -1, wiki: props.bookId, title: '' })
 
     watch(() => chapter.parentChapter, () => {
       if (chapter.parentChapter instanceof Array && chapter.parentChapter.length > 0) {
@@ -48,7 +52,7 @@ export default {
       }
     })
 
-    const chapters = ref()
+    const chapters = ref([])
     /**
      * 表单规则验证
      */
@@ -65,7 +69,7 @@ export default {
 
     const getChapters = async () => {
       loading.value = true
-      chapters.value = flat2Tree(await chapterModel.getChapters(props.bookID))
+      chapters.value = flat2Tree(await chapterModel.getChapters(props.bookId))
       loading.value = false
     }
 
@@ -88,6 +92,7 @@ export default {
           }
           // if (res.code < window.MAX_SUCCESS_CODE) {
             // ElMessage.success(`${res.message}`)
+            await forWikiTip( "添加成功!", 2600, TipType.SUCCESS )
             context.emit('done', res)
           // }
         } else {
@@ -114,18 +119,18 @@ export default {
 function flat2Tree(array) {
   const map = new Map()
 
-  map.set('root', { children: [] })
+  map.set(-1, { children: [] })
 
-  array.forEach(item => map.set(item.id, { parentChapter: item.parentChapter, value: item.id, label: item.title, children: [] }))
+  array.forEach(item => map.set(item.id, { parentChapter: item.parent, value: item.id, label: item.title, children: [] }))
 
   array.forEach(item => {
-    const parent = item.parentChapter || 'root'
+    const parent = item.parent || -1
     const obj = map.get(parent)
 
     obj.children.push(map.get(item.id))
   })
 
-  return map.get('root').children
+  return map.get(-1).children
 }
 
 /**
@@ -151,13 +156,29 @@ function getRules() {
 <style lang="scss" scoped>
 .container {
   .title {
+    &:after {
+      content: "";
+      position: absolute;
+
+      width: 80%;
+      left: 10%;
+
+      height: 1px;
+      top: 100%;
+
+      background-color: var(--el-border-color);
+
+    }
+    position: relative;
+    padding: 0 10px;
+
     height: 59px;
-    line-height: 59px;
-    //color: $parent-title-color;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     text-indent: 40px;
-    border-bottom: 1px solid #dae1ec;
+
+    box-sizing: border-box;
+    width: 100%;
 
     .back {
       float: right;
@@ -165,6 +186,19 @@ function getRules() {
       cursor: pointer;
     }
   }
+  .wrap {
+    position: relative;
+
+    width: 120%;
+    height: 100%;
+  }
+  padding: 20px 0;
+  //position: relative;
+
+  width: 50%;
+  //height: 40%;
+
+  background-color: var(--el-fill-color-lighter);
 
   .submit {
     float: left;

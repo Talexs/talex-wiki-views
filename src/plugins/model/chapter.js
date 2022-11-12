@@ -17,6 +17,10 @@ class Chapter {
     return _delete(`v1/chapter/${ id }`)
   }
 
+  async viewChapter(id) {
+    return get('wiki/chapter/view/' + id)
+  }
+
   async getChapters(bookID) {
     return _axios({
       method: 'get',

@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref } from 'vue'
+import { defineProps, ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { sleep, useModelWrapper } from '~/plugins/Common.ts'
 
@@ -68,7 +68,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .TalexCoverDialog-Wrapper {
   position: absolute;
   display: flex;
@@ -108,6 +108,7 @@ export default {
   width: 100%;
   height: 100%;
 
+  box-sizing: border-box;
   border-radius: 8px;
   backdrop-filter: saturate(180%) blur(5px);
   pointer-events: none;
@@ -143,7 +144,7 @@ export default {
   padding: 8px;
 
   //min-width: 480px;
-  width: 60%;
+  //width: 60%;
   height: 40%;
   //min-height: 200px;
 

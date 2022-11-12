@@ -93,6 +93,12 @@ export default class User {
     })
   }
 
+  static updateUserInfo(avatar) {
+    return post('user/update_info', {
+      cover: avatar
+    })
+  }
+
   /**
    *
    */
