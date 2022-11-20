@@ -6,7 +6,7 @@
         <div class="quantity-detail">
           <div class="quantity-detail-box">
             <div class="quantity-title">总访问量</div>
-            <div class="quantity">11,590</div>
+            <div class="quantity">{{ visit.tweened.toFixed(0) }}</div>
           </div>
         </div>
         <div class="quantity-icon"><img src="@assets/static/icon/about/icon1.png" alt="" /></div>
@@ -15,7 +15,7 @@
         <div class="quantity-detail">
           <div class="quantity-detail-box">
             <div class="quantity-title">总用户数</div>
-            <div class="quantity">51,862</div>
+            <div class="quantity">{{ users.tweened.toFixed(0) }}</div>
           </div>
         </div>
         <div class="quantity-icon"><img src="@assets/static/icon/about/icon2.png" alt="" /></div>
@@ -45,41 +45,24 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import Chart from '~/addons/chart/view/chart.vue'
 
-export default {
-  components: {
-    Chart
-  },
-  setup() {
-    const showTeam = ref(false)
-    const activeName = ref('first')
-    const { clientWidth } = document.body
+import { systemModel } from '@plugins/model/base/SystemModel'
+import { genGsapNumber } from '@plugins/Common.ts'
 
-    onMounted(() => {
-      if (clientWidth > 1200 && clientWidth < 1330) {
-        showTeam.value = true
-      } else {
-        showTeam.value = false
-      }
-    })
+const visit = genGsapNumber()
+const users = genGsapNumber()
 
-    /**
-     * 切换选项
-     */
-    const handleArticle = link => {
-      window.open(link)
-    }
+async function initial() {
+  const res = await systemModel.getDashBoardData()
 
-    return {
-      showTeam,
-      activeName,
-      handleArticle,
-    }
-  },
+  visit.number = res.visit
+  users.number = res.users
 }
+
+onMounted(initial)
 </script>
 
 <style scoped lang="scss">

@@ -115,8 +115,8 @@ export default {
 
   cursor: pointer;
   user-select: none;
-  opacity: 0;
-  animation: loadIn .45s .75s forwards;
+  opacity: 1;
+  //animation: loadIn .45s .75s forwards;
 
   :deep(.label) {
 

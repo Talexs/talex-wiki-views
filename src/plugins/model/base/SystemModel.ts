@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BaseModel } from '~/plugins/model/BaseModel'
 
-export enum ViewerLayout {
-    FULL = "宽硕布局",
-    MEDIUM = "复合布局",
-    THIN = "缩减布局"
+class SystemModel extends BaseModel {
+
+    constructor() {
+        super("system")
+    }
+
+    getDashBoardData() {
+        return this._get('dashboard')
+    }
+
 }
 
-export enum ViewerAnimation {
-    HORIZON = "拉伸",
-    SCALE = "缩放",
-    CLOSE = "关闭"
-}
+export const systemModel = new SystemModel()
+

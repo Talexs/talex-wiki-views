@@ -40,7 +40,7 @@
                   </template>
                 </TalexDropItem>
               </template>
-                 <Chapter @done="data.addDialogVisible = false" :book-id="data.id" />
+                 <Chapter style="width: 500px" @done="data.addDialogVisible = false" :book-id="data.id" />
             </TalexCoverDialog>
 
             <TalexDropItem v-if="data.type === 0 || data.type === 1" @click="addDoc(data)">
@@ -123,99 +123,202 @@ function allowDrop(sourceNode, toNode, pos) {
   // TODO DRAG TO OTHER WIKI
   if( toNode.level === 1 ) return false
   // console.log("@Drop", sourceNode, toNode, pos)
-  if( sourceNode.data.wiki.id !== toNode.data.wiki.id ) return false
+  if( sourceNode.data.wiki.id !== toNode.data.wiki.id ) {
+    console.log("@Drop denied", "wiki not match # todo", sourceNode, toNode)
+    return false
+  }
   if( sourceNode.data.type === 3 || toNode.data.type === 3 ) return false
-  return sourceNode.data.type <= toNode.data.type;
+  return true //sourceNode.data.type === 1 || sourceNode.data.type === 2 || sourceNode.data.type <= toNode.data.type;
 
 }
 
 async function dragSync(sourceNode, toNode, pos) {
-  const wikiID = sourceNode.data.wiki.id
-  console.log("@Drop", wikiID, sourceNode, toNode, pos)
 
-  let res
-  const { origin: data } = sourceNode.data
-  const id = data.id
+  let res = null
 
-  // inner 就是切换 父项 先判断是不是doc
-  if (pos === 'inner') {
+  const sourceData = sourceNode.data, toData = toNode.data
 
-    if (toNode.type === 1) {
-      data.parent = id
+  console.log("@Drop", sourceData, toData, pos)
 
-      res = await ChapterModel.editChapter(id, {
+  // inner
+  if( pos === 'inner' ) {
+    const wikiID = sourceData.origin.wiki_id
+
+    // 如果是将章节移动到另外一个章节内
+    if( sourceData.type === 1 && toData.type === 1 ) {
+
+      // 将 source 的 parent 设置为 to 的即可 （并且将priority重置）
+      const { id } = toData.origin
+
+      sourceData.origin.parentChapter = id // adapt interface (api)
+      sourceData.origin.priority = 0
+
+      res = ChapterModel.editChapter(sourceData.origin.id, {
         wiki: wikiID,
-        priority: data.priority,
-        parentChapter: data.parent,
-        title: data.title
+        ...sourceData.origin
       })
-    } else {
-      data.chapter = id
 
-      res = await DocModel.editDocument(id, {
-        wiki: wikiID,
-        ...data
-      })
-    }
+    } else
+      // 操作
+      if( sourceData.type === 2 ) {
 
-    if( !res )
-      await forWikiTip(`移动失败!`, 1800, TipType.WARNING)
-  }
-  // 接下来就是切换顺序了 先从 章节入手
-  else {
-    // 如果是章节之间的移动 直接修改priority即可 (此时还得统一两个node data的parent指向 因为after prev 是并列关系）
-    if (sourceNode.type === 1) {
-      data.priority = to.data.origin.priority + (pos === 'after' ? 1 : -1)
-      data.parent = to.data.origin.parent
-      res = await ChapterModel.editChapter(id, {
-        wiki: wikiID,
-        priority: data.priority,
-        parent: data.parent,
-        title: data.title
-      })
-    } else {
-      // 如果是文档之间的移动 分情况
-      // 第一，文档和文档之间的移动，修改priority即可
-      // 第二，文档和章节之间的移动，修改文档的chapter | 判断 finalNode有没有 parentChapter 即可判断是否移动到根
-      // eslint-disable-next-line no-lonely-if
-      if (toNode.type === 1) {
-        // 文档移动到章节前后直接修改parentChapter即可，不存在修改priority情况 | 此时将priority重置为0
-        if (toNode.data.origin.parent) {
-          // 没有移动到根 那就指向根
-          data.priority = 0
-          data.chapter = toNode.data.origin.parent
-        } else {
-          data.priority = 0
-          data.chapter = null
+        if( !(toData.type > 1) ) {
+          // 将 source 的 parent 设置为 to 的即可 （并且将priority重置）
+          const { id } = toData.origin
+
+          sourceData.origin.parentChapter = toData.type === 0 ? -1 : id // adapt interface (api) [0 for root]
+          sourceData.origin.priority = 0
+
+          res = DocModel.editDocument(sourceData.origin.id, {
+            wiki: wikiID,
+            ...sourceData.origin
+          })
         }
-      } else {
-        data.priority = toNode.data.origin.priority + (pos === 'after' ? 1 : -1)
-      }
-      res = await DocModel.editDocument(id, {
+
+    }
+
+  } else if ( pos === 'before' ) {
+    const wikiID = sourceData.wiki.id
+
+    // 移动章节到某个章节之前
+    if( sourceData.type === 1 && toData.type === 1 ) {
+
+      // 先统一 parent
+      sourceData.origin.parentChapter = toData.origin.parent
+
+      // source优先级
+      sourceData.origin.priority = toData.origin.priority + 1
+
+      res = ChapterModel.editChapter(sourceData.origin.id, {
         wiki: wikiID,
-        ...data
+        ...sourceData.origin
       })
     }
 
-    if( !res )
-      await forWikiTip(`移动失败!`, 1800, TipType.WARNING)
+  } else if ( pos === 'after' ) {
+    const wikiID = sourceData.wiki.id
+
+    // 移动章节到某个章节之后
+    if( sourceData.type === 1 && toData.type === 1 ) {
+
+      // 先统一 parent
+      sourceData.origin.parentChapter = toData.origin.parent
+
+      // source优先级
+      sourceData.origin.priority = toData.origin.priority - 1
+
+      res = ChapterModel.editChapter(sourceData.origin.id, {
+        wiki: wikiID,
+        ...sourceData.origin
+      })
+    }
 
   }
+
+  if( !res ) {
+    await forWikiTip(`移动失败!`, 2400, TipType.WARNING)
+    await sleep(2000)
+
+    return window.location.reload()
+  }
+
+  // let res
+  // const { origin: data } = sourceNode.data
+  // const id = data.id
+  //
+  // // inner 就是切换 父项 先判断是不是doc
+  // if (pos === 'inner') {
+  //
+  //   if (toNode.type === 1) {
+  //     data.parent = id
+  //
+  //     res = await ChapterModel.editChapter(id, {
+  //       wiki: wikiID,
+  //       priority: data.priority,
+  //       parentChapter: data.parent,
+  //       title: data.title
+  //     })
+  //   } else {
+  //     data.chapter = id
+  //
+  //     res = await DocModel.editDocument(id, {
+  //       wiki: wikiID,
+  //       ...data
+  //     })
+  //   }
+  //
+  //   if( !res )
+  //     await forWikiTip(`移动失败!`, 1800, TipType.WARNING)
+  // }
+  // // 接下来就是切换顺序了 先从 章节入手
+  // else {
+  //   // 如果是章节之间的移动 直接修改priority即可 (此时还得统一两个node data的parent指向 因为after prev 是并列关系）
+  //   if (sourceNode.type === 1) {
+  //     data.priority = to.data.origin.priority + (pos === 'after' ? 1 : -1)
+  //     data.parent = to.data.origin.parent
+  //     res = await ChapterModel.editChapter(id, {
+  //       wiki: wikiID,
+  //       priority: data.priority,
+  //       parent: data.parent,
+  //       title: data.title
+  //     })
+  //   } else {
+  //     // 如果是文档之间的移动 分情况
+  //     // 第一，文档和文档之间的移动，修改priority即可
+  //     // 第二，文档和章节之间的移动，修改文档的chapter | 判断 finalNode有没有 parentChapter 即可判断是否移动到根
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (toNode.type === 1) {
+  //       // 文档移动到章节前后直接修改parentChapter即可，不存在修改priority情况 | 此时将priority重置为0
+  //       if (toNode.data.origin.parent) {
+  //         // 没有移动到根 那就指向根
+  //         data.priority = 0
+  //         data.chapter = toNode.data.origin.parent
+  //       } else {
+  //         data.priority = 0
+  //         data.chapter = null
+  //       }
+  //     } else {
+  //       data.priority = toNode.data.origin.priority + (pos === 'after' ? 1 : -1)
+  //     }
+  //     res = await DocModel.editDocument(id, {
+  //       wiki: wikiID,
+  //       ...data
+  //     })
+  //   }
+  //
+  //   if( !res )
+  //     await forWikiTip(`移动失败!`, 1800, TipType.WARNING)
+  //
+  // }
 }
 
 const updateDoc = inject('updateDoc')
 
 function handleClick(event, data) {
-  data.__save = () => {
-    data.__edit = false
+  // console.log(data)
+  if( !data.__save )
+    data.__save = async () => {
+      data.__save = null
 
-    if( data.__title === data.label ) return
+      await sleep(50)
 
-    data.content = data.origin.content
-    data.data = data
+      data.__edit = false
 
-    updateDoc(data)
-  }
+      if( data.__title === data.label ) return
+
+      data.content = data.origin.content
+      data.title = data.label
+      data.data = data // adapt func of provided
+
+      // {
+      // ...data,
+      //     __save: undefined,
+      //     __title: undefined,
+      //     __edit: undefined
+      // }
+
+      updateDoc(data)
+    }
   data.__title = data.origin.title instanceof Object ? markRaw(data.origin.title) : data.origin.title
   data.__edit = new Date().getTime() - (data.__lastClick || -1) <= 300
   if( data.__edit ) event.stopImmediatePropagation()
@@ -242,7 +345,7 @@ async function loadNode(node, resolve) {
 
     resolve(tree)
 
-    return  await nextTick( initial )
+    return await nextTick( initial )
   }
 
   const data = node.data
@@ -285,11 +388,9 @@ async function loadNode(node, resolve) {
 
   }
 
-  // load chapters
+  // load book chapters
   if( type === 0 ) {
-    const book = await WikiModel.getBook(data.id)
-
-    const chapters = book.chapters
+    const chapters = await ChapterModel.treeChapter(data.id)
 
     const tree = []
 
@@ -327,6 +428,15 @@ async function loadNode(node, resolve) {
       })
     })
 
+    tree.sort((a, b) => {
+      if( a.type - b.type ) return true
+      return b.origin.priority - a.origin.priority
+      // if( b.origin.priority - a.origin.priority > 0 ) return true
+      // return b.label - a.label
+    })
+
+    // console.log(tree)
+
     // console.log(docsLeft)
 
     // data.children = data.children.concat(tree)
@@ -334,12 +444,29 @@ async function loadNode(node, resolve) {
     return resolve(tree)
   }
 
-  // load chapters
+  // load chapter subchapters
   if( type === 1 ) {
 
     // const wiki = node.parent
 
     const tree = []
+
+    // console.log("@Load subchapters", node, data)
+
+    const subChapters = await ChapterModel.treeChapter(data.wiki.origin.id, data.id)
+
+    ;[ ...subChapters ].forEach(obj => {
+      tree.push({
+        type: 1,
+        id: obj.id,
+        vid: `${data.id}#chapter-${obj.id}`,
+        label: obj.title,
+        wiki: node.parent.data.wiki || node.parent.data,
+        children: [],
+        origin: obj
+      })
+    })
+
     const chapter = await ChapterModel.viewChapter(data.id)
 
     ;[ ...(chapter.docs) ].forEach(obj => {
@@ -350,9 +477,8 @@ async function loadNode(node, resolve) {
         label: obj.title,
         children: [],
         origin: obj,
-        wiki: node.parent.data,
-        isLeaf: true,
-        leaf: true
+        wiki: node.parent.data.wiki || node.parent.data,
+        isLeaf: true
       })
       tree.push(reactiveObj)
 
@@ -368,14 +494,36 @@ async function loadNode(node, resolve) {
 }
 
 async function delCurrent(data) {
-  console.log(data)
+  const tree = treeRef.value
+  let res
+
+  // console.log(tree, data)
+  // delete chapter
+  if( data.type === 1 ) {
+    res = await ChapterModel.deleteChapter(data.id)
+  } else if( data.type === 2 ) {
+    res = await DocModel.deleteDocument(data.id)
+  } else {
+    console.log("@Del denied", data)
+    return await forWikiTip("不允许删除!", 2400, TipType.WARNING)
+  }
+
+  if( res ) {
+
+    tree.remove(data.vid)
+
+  } else {
+
+    await forWikiTip( "删除失败!", 2400, TipType.ERROR )
+
+  }
 }
 
 async function addDoc(data) {
 
   const res = await DocModel.createDocument({
     wiki: data.type === 0 ? data.id : data.wiki.id,
-    title: '新建维基文档',
+    title: '双击编辑标题',
     content: '',
     chapter: data.type === 0 ? undefined : data.id
   })
@@ -389,7 +537,26 @@ async function addDoc(data) {
     origin: res,
     wiki: data.type === 0 ? data.origin : data.wiki,
     isLeaf: true,
-    leaf: true
+    // TODO FIX
+    /*__edit: true,
+    __title: res.title,
+    __save: () => {
+      reactiveObj.__edit = undefined
+      reactiveObj.__save = undefined
+      reactiveObj.__title = undefined
+
+      if( reactiveObj.__title === reactiveObj.label ) reactiveObj.__title = "新建维基文档"
+
+      reactiveObj.content = reactiveObj.origin.content
+      reactiveObj.data = {
+        ...data,
+        __save: undefined,
+        __title: undefined,
+        __edit: undefined
+      }
+
+      updateDoc(reactiveObj)
+    }*/
   })
 
   data.children.push(reactiveObj)

@@ -1,9 +1,27 @@
-import { createApp, customRef } from 'vue'
+import { createApp, customRef, reactive, watch } from 'vue'
 
 import WikiTip from './../components/common/message/WikiTip.vue'
 import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
 
+import gsap from 'gsap'
 import { Md5 } from 'ts-md5'
+
+export function genGsapNumber(number = 0, duration = .5) {
+    const obj = reactive({
+        number,
+        tweened: 0
+    })
+    watch(() => obj.number, () => {
+       gsap.to(
+            obj,
+            {
+                duration,
+                tweened: Number(obj.number) || 0
+            }
+        )
+    })
+    return obj
+}
 
 export function _T_DecodeNumber(str: string, addonSecret: number = 0): number {
     return parseInt(String(str2number(str)), 8) - addonSecret

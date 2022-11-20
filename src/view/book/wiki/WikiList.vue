@@ -3,35 +3,39 @@
 <!--    <transition name="el-zoom-in-top">-->
       <div v-show="!showEdit && !showImport" style="align-items: baseline" class="LayoutSub-Header">
         <p class="title force">维基列表</p>
-        <TalexDropdown >
-          <template #display>
-            <el-button class="rounder-btn primary" text :icon="Plus">
-              新建
-            </el-button>
-          </template>
-          <TalexDropItem recommend @click="handleAddWiki">
-            <template #label>
-              新建维基
+
+        <div class="aggregation">
+          <TalexDropdown >
+            <template #display>
+              <el-button class="rounder-btn primary" text :icon="Plus">
+                新建
+              </el-button>
             </template>
-            <template #icon>
-              <el-icon><Plus /></el-icon>
-            </template>
-          </TalexDropItem>
-          <TalexDropItem divider />
-          <TalexDropItem beta @click="handleImportWiki">
-            <template #label>
-              导入维基
-            </template>
-            <template #icon>
-              <el-icon><Right /></el-icon>
-            </template>
-          </TalexDropItem>
-        </TalexDropdown>
+            <TalexDropItem recommend @click="handleAddWiki">
+              <template #label>
+                新建维基
+              </template>
+              <template #icon>
+                <el-icon><Plus /></el-icon>
+              </template>
+            </TalexDropItem>
+            <TalexDropItem divider />
+            <TalexDropItem beta @click="handleImportWiki">
+              <template #label>
+                导入维基
+              </template>
+              <template #icon>
+                <el-icon><Right /></el-icon>
+              </template>
+            </TalexDropItem>
+          </TalexDropdown>
+          <LayoutSelect v-model="listLayout" />
+        </div>
       </div>
 <!--    </transition>-->
-    <transition name="el-zoom-in-bottom">
+<!--    <transition name="el-fade-in">-->
       <!-- 列表页面 -->
-      <el-table v-show="!showEdit && !showImport" :data="wikiList" v-loading="loading">
+      <el-table v-if="listLayout === 0" v-show="!showImport" :data="wikiList" v-loading="loading">
         <el-table-column type="index" :index="indexMethod" label="序号" width="100"></el-table-column>
         <el-table-column prop="title" label="书名"></el-table-column>
         <el-table-column prop="author" label="权限">
@@ -46,7 +50,7 @@
         <el-table-column label="操作" fixed="right" width="275">
           <template #default="scope">
             <el-button plain size="small" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
-            <el-button plain size="small" type="warning" @click="$router.push('/user/wiki/setting/' + scope.row.id)">设置</el-button>
+            <el-button plain size="small" type="warning" @click="handleSetting(scope.row.id)">设置</el-button>
             <el-button
                     plain
                     size="small"
@@ -56,7 +60,14 @@
           </template>
         </el-table-column>
       </el-table>
-    </transition>
+<!--    </transition>-->
+
+<!--    <transition name="el-fade-in">-->
+      <div v-if="listLayout === 1" v-show="!showImport" class="WikiList-BlockLayout">
+        <!-- 块状视图 列表页面 -->
+        <WikiBlockList @delete="handleDelete" @setting="handleSetting" @edit="handleEdit" :wiki="wiki" v-for="wiki in wikiList" :key="wiki.id" />
+      </div>
+<!--    </transition>-->
 
     <!-- 导入页面 -->
     <ImportedWiki v-if="showImport" @editClose="editClose" ></ImportedWiki>
@@ -68,11 +79,13 @@ import ImportedWiki from './import-wiki.vue'
 import TalexDropdown from '@components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '@components/common/dropdown/talex-drop-item.vue'
 import { Right, Plus, Select, CloseBold } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import wikiModel from '@plugins/model/wiki.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useStore } from '@plugins/store/index.ts'
+import LayoutSelect from '@components/common/icon/LayoutSelect.vue'
+import WikiBlockList from '@components/wiki/addon/WikiBlockList.vue'
 
 const wikiList = ref()
 const editWikiId = ref()
@@ -81,13 +94,40 @@ const showImport = ref(false)
 
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
+
+const listLayout = ref(0)
+
+watch(() => listLayout.value, () => {
+  router.push({
+    query: {
+      layout: listLayout.value
+    }
+  })
+})
+
+// function changeLayout(layout) {
+//   router.push({
+//     query: {
+//       layout: listLayout.value = layout
+//     }
+//   })
+// }
 
 const getWikiList = async () => {
+  const { layout } = route.query
+  listLayout.value = layout ? +layout : 1
+
   loading.value = true
   wikiList.value = (store.local.admin ? await wikiModel.getBooks() : await wikiModel.getMyBooks())?.rows || null
   loading.value = false
 }
 const handleEdit = id => router.push(`/wiki/edit/${id}`)
+const handleSetting = id => router.push(`/user/wiki/setting?id=${id}`)
+
+function handleAddWiki() {
+  router.push(`/user/wiki/setting`)
+}
 
 function handleImportWiki() {
   showImport.value = true
@@ -115,5 +155,10 @@ onMounted(getWikiList)
 <style lang="scss" scoped>
 .LayoutSub-Frame {
   width: unset;
+}
+
+.WikiList-BlockLayout {
+  display: flex;
+  justify-content: space-around;
 }
 </style>

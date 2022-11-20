@@ -25,6 +25,11 @@
     <el-tree @node-click="fixSelect" ref="treeRef" default-expand-all :expand-on-click-node="false" highlight-current :data="treeData" node-key="id" :props="{ label: 'text' }">
 
     </el-tree>
+    <div class="DocOutline-Footer">
+      <el-button disabled :icon="Edit" class="rounder-btn icon-width" text plain></el-button>
+      <el-button :icon="Star" class="rounder-btn icon-width" text plain>0</el-button>
+      <el-button :icon="Share" class="rounder-btn icon-width" text plain></el-button>
+    </div>
   </div>
 </template>
 
@@ -38,6 +43,8 @@ export default {
 import { formatDateDistance } from '~/plugins/addon/utils'
 import { computed, inject, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+import { Edit, Star, Share, Promotion } from '@element-plus/icons-vue'
 
 const time = computed(() => formatDateDistance(new Date(props.update)))
 
@@ -179,15 +186,18 @@ const router = useRouter()
 const getScrollBar = inject('getScrollBar')
 
 async function fixSelect(data) {
-  const hNode = rootEl.querySelector('#' + data.id)
+  // if( !rootEl ) return
+  // console.log(rootEl)
+  // const hNode = rootEl.querySelector('#' + data.id)
+  const hNode = document.getElementById(data.id)
 
-  getScrollBar().setScrollTop(hNode.offsetTop - 20)
   await router.push( {
     query: {
       ...route.query,
       index: data.id
     }
   } )
+  getScrollBar().setScrollTop(hNode.offsetTop - 20)
 
   setTimeout(() => posFixer( treeRef.value.$el.querySelector('.is-current') ) , 100)
 }
@@ -229,6 +239,19 @@ async function fixSelect(data) {
     box-shadow: 0 0 3px 0 var(--el-color-primary);
     background-color: var(--el-color-primary);
   }
+  .DocOutline-Footer {
+    position: absolute;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    bottom: 0;
+
+    height: 32px;
+    width: 100%;
+
+    border-top: 1px solid var(--el-border-color);
+  }
   //padding: 0 10px 15px 10px;
   padding-right: 0;
   box-sizing: border-box;
@@ -240,6 +263,10 @@ async function fixSelect(data) {
   }
   :deep(.el-tree) {
     padding: 0 10px;
+
+    max-height: calc(100% - 90px) !important;
+
+    overflow: hidden;
     .el-icon.el-tree-node__expand-icon {
       display: none !important;
       //opacity: 0;

@@ -11,7 +11,7 @@ const store = defineStore('user', {
             permissions: [],
             theme: 'light',
             viewer: {
-                animation: true,
+                animation: 0,
                 layout: ViewerLayout.FULL
             },
             admin: false

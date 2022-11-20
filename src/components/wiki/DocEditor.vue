@@ -16,7 +16,13 @@ import { defaultValueCtx, Editor, editorViewCtx, rootCtx } from '@milkdown/core'
 import { nord } from '@milkdown/theme-nord'
 import { VueEditor, useEditor } from '@milkdown/vue'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { commonmark } from '@milkdown/preset-commonmark'
+import { commonmark, codeFence } from '@milkdown/preset-commonmark'
+import { slash, slashPlugin, defaultActions, createDropdownItem } from '@milkdown/plugin-slash'
+import { cursor } from '@milkdown/plugin-cursor'
+import { block } from '@milkdown/plugin-block'
+import { math } from '@milkdown/plugin-math'
+import 'katex/dist/katex.min.css'
+import { gfm } from '@milkdown/preset-gfm'
 
 import { useModelWrapper } from '~/plugins/Common.ts'
 import { outline } from '@milkdown/utils'
@@ -56,7 +62,62 @@ const editor = useEditor((root) => Editor.make()
       init()
 
     })
-    .use(nord).use(commonmark).use(listener)
+    .use(nord)
+    .use(commonmark
+        .configure(codeFence, {
+          languageList: [ 'JavaScript', "TypeScript", "Bash", "SQL", "JSON", "YAML",
+            'HTML', "CSS", "C", "CPP", "JAVA", "Ruby", "Python", "Go", "Rust", "FileTree", "Terminal" ,
+              "Body"
+          ]
+        })
+    )
+    .use(slash.configure(slashPlugin, {
+      config: (ctx) => {
+        // Get default slash plugin items
+        const actions = defaultActions(ctx);
+
+        // Define a status builder
+        return ({ isTopLevel, content, parentNode }) => {
+          // You can only show something at root level
+          if (!isTopLevel) return null;
+
+          // Empty content ? Set your custom empty placeholder !
+          if (!content) {
+            return { placeholder: '输入 \'/\' 来打开提示窗口。' };
+          }
+
+          // Define the placeholder & actions (dropdown items) you want to display depending on content
+          if (content.startsWith('/')) {
+            // Add some actions depending on your content's parent node
+            if (parentNode.type.name === 'customNode') {
+              actions.push({
+                id: 'custom',
+                dom: createDropdownItem(ctx.get(themeManagerCtx), 'Custom', 'h1'),
+                command: () => ctx.get(commandsCtx).call(/* Add custom command here */),
+                keyword: ['custom'],
+                typeName: 'heading',
+              });
+            }
+
+            return content === '/'
+                ? {
+                  placeholder: '输入内容以匹配',
+                  actions,
+                }
+                : {
+                  actions: actions.filter(({ keyword }) =>
+                      keyword.some((key) => key.includes(content.slice(1).toLocaleLowerCase())),
+                  ),
+                };
+          }
+        };
+      }
+    }))
+    .use(cursor)
+    .use(block)
+    .use(math)
+    .use(gfm)
+    .use(listener)
 )
 
 const modelValue = useModelWrapper(props, emits)

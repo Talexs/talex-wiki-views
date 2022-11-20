@@ -32,10 +32,14 @@ import { nord } from '@milkdown/theme-nord'
 import { VueEditor, useEditor } from '@milkdown/vue'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
 import { commonmark } from '@milkdown/preset-commonmark'
+import { block } from '@milkdown/plugin-block'
+import { gfm } from '@milkdown/preset-gfm'
 
 import { useModelWrapper } from '~/plugins/Common.ts'
 import { outline, replaceAll } from '@milkdown/utils'
 import DocOutline from '@components/wiki/addon/DocOutline.vue'
+import { iframePlugin } from '@plugins/milkdown/plugins/PowerPlugin.ts'
+import { useImageClickAgent } from '@plugins/addon/hooks.ts'
 
 const props = defineProps({ content: String, updateTime: Number })
 const emits = defineEmits(['update:modelValue'])
@@ -54,6 +58,8 @@ watch(() => props.content, () => {
 
     replaceAll(props.content)(ctx)
     docOutline.value = getOutline(ctx)
+
+    useImageClickAgent(scrollbarRef.value.wrap$)
 
   })
 
@@ -100,12 +106,22 @@ const editor = useEditor((root) => Editor.make()
         docOutline.value = getOutline(ctx)
         // emits('outline', getOutline(ctx))
 
+        // inject image agent
+
+        useImageClickAgent(scrollbarRef.value.wrap$)
+
       }
 
       init()
 
     })
-    .use(nord).use(commonmark).use(listener)
+    .use(nord)
+    // .use(iframePlugin)
+    .use(commonmark)
+    .use(block)
+    .use(gfm)
+    // .use(slash)
+    .use(listener)
 )
 
 const modelValue = useModelWrapper(props, emits)

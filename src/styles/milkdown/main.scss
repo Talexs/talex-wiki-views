@@ -14,9 +14,45 @@
  * limitations under the License.
  */
 .milkdown {
+  p.paragraph.empty-node {
+    &:before {
+      color: var(--el-color-primary-light-7);
+    }
+  }
+  .slash-dropdown {
+    &::-webkit-scrollbar-thumb {
+      &:hover {
+        background-color: var(--el-color-primary-light-5) !important;
+      }
+      background-color: var(--el-color-primary-light-7) !important;
+    }
+    .slash-dropdown-item {
+      .icon {
+        color: var(--el-text-color-secondary);
+      }
+      &.active {
+        .icon {
+          color: var(--el-text-color-primary);
+        }
+        color: var(--el-text-color-primary);
+      }
+      padding: 0 12px;
+      height: 40px;
+      line-height: 40px;
+      gap: 16px;
+
+      color: var(--el-text-color-secondary);
+      background-color: var(--el-fill-color);
+    }
+
+    width: 250px;
+
+    border: 1px solid var(--el-border-color-light);
+    background-color: var(--el-fill-color);
+  }
   .milkdown-benxqe {
     border: 1px solid var(--el-border-color-light) !important;
-    background-color: var(--el-fill-color) !important;;
+    background-color: var(--el-fill-color) !important;
     button {
       color: var(--el-color-primary-light-3);
     }
@@ -37,6 +73,9 @@
       opacity: .65;
       clip-path: circle(20px at 88% 50%);
       &:hover {
+        .code-fence_selector-list {
+          opacity: 1 !important;
+        }
         opacity: 1;
         clip-path: circle(200% at 0 0);
       }
@@ -56,6 +95,9 @@
       }
     }
     .code-fence_selector-list::-webkit-scrollbar-thumb {
+      &:hover {
+        background-color: var(--el-color-primary-light-3) !important;
+      }
       background-color: var(--el-color-primary-light-5) !important;
     }
     .code-fence_selector-list {
@@ -87,8 +129,11 @@
         border-radius: 0 2px 2px 0;
         transition: .25s;
       }
+      left: 100% !important;
+
+      //opacity: 0;
       border-radius: 0 0 2px 2px;
-      transform: translateY(-1px);
+      transform: translate(-100%, 10px) translateX(-18px);
 
       background-color: var(--el-fill-color) !important;
       border-color: var(--el-border-color-light) !important;
@@ -116,9 +161,18 @@
   .ProseMirror {
     height: calc(100% - 10px);
   }
+  .tableWrapper {
+    th {
+      background: var(--el-color-primary-light-9) !important;
+    }
+    td, th {
+      border: 1px solid var(--el-border-color-light) !important;
+    }
+  }
   //position: relative;
 
   color: var(--el-text-color-primary) !important;
+  box-shadow: none !important;
   background-color: var(--el-fill-color-lighter) !important;
 
   height: 100%;
@@ -131,7 +185,7 @@
   background-color: var(--el-color-primary-light-7) !important;
 }
 
-.milkdown div[contenteditable="false"] {
+.milkdown > div[contenteditable="false"] {
   .code-fence_selector {
     clip-path: none;
 

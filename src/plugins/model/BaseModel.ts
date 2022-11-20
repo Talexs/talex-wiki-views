@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { get } from './../api/axios'
 
-export enum ViewerLayout {
-    FULL = "宽硕布局",
-    MEDIUM = "复合布局",
-    THIN = "缩减布局"
-}
+export class BaseModel {
+    readonly #base_prefix: string
 
-export enum ViewerAnimation {
-    HORIZON = "拉伸",
-    SCALE = "缩放",
-    CLOSE = "关闭"
+    get base_prefix() {
+        return this.#base_prefix
+    }
+
+    constructor(base_prefix: string) {
+        this.#base_prefix = base_prefix
+    }
+
+    public async _get(url: string, params = {}) {
+        return get(`${this.base_prefix}/${url}`, params)
+    }
+
 }

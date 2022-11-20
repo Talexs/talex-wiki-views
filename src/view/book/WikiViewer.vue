@@ -14,14 +14,21 @@
             </el-tab-pane>
             <el-tab-pane label="页设置" name="history">
               <div class="WikiViewer-Settings">
-                <el-select v-model="viewerLayout" :placeholder="viewerLayout.value" size="default">
+                布局方式:
+                <el-select style="margin-top: 5px" v-model="viewerLayout" :placeholder="viewerLayout.value" size="default">
                   <el-option key="0" label="宽硕布局" :value="ViewerLayout.FULL"/>
                   <el-option key="1" label="复合布局" :value="ViewerLayout.MEDIUM"/>
                   <el-option key="2" label="缩减布局" :value="ViewerLayout.THIN"/>
                 </el-select>
                 <br />
                 <br />
-                <CheckBox title="开启页面切换动画" v-model="closeAnimations"></CheckBox>
+                切换动画:
+                <el-select style="margin-top: 5px" v-model="viewerAnimation" :placeholder="viewerAnimation.value" size="default">
+                  <el-option key="0" label="拉伸" :value="ViewerAnimation.HORIZON"/>
+                  <el-option key="1" label="缩放" :value="ViewerAnimation.SCALE"/>
+                  <el-option key="2" label="关闭" :value="ViewerAnimation.CLOSE"/>
+                </el-select>
+<!--                <CheckBox title="开启页面切换动画" v-model="closeAnimations"></CheckBox>-->
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -29,14 +36,14 @@
       </el-aside>
     </AsideAdapter>
     <el-main class="WikiViewer-Main transition-cubic" ref="mainRef">
-      <template v-if="currentDoc">
+      <template v-if="wikiID || currentDoc">
 <!--        <div class="viewer-header">-->
 <!--          <span>全文统计: {{ currentDoc.content.length }}</span>-->
 <!--          <span>更新时间: {{ getTime(currentDoc.update_time) }}</span>-->
 <!--          <span class="viewer-header-title">{{ currentDoc.title }}</span>-->
 <!--        </div>-->
-        <div class="viewer-content">
-          <DocViewer :update-time="currentDoc.updatedAt" :content="currentDoc.content" ref="viewerRef">
+        <div class="viewer-content" v-if="!currentDoc._none">
+          <DocViewer :update-time="currentDoc.updatedAt" :content="`${currentDoc.content}`" ref="viewerRef">
 
           </DocViewer>
         </div>
@@ -57,7 +64,7 @@ import ChapterTree from '~/components/wiki/tree/BookDocTree.vue'
 import DocViewer from '~/components/wiki/DocViewer.vue'
 import CheckBox from '@components/common/checkbox/CheckBox.vue'
 import { useStore } from '@plugins/store/index.ts'
-import { ViewerLayout } from '~/plugins/addon/enums.ts'
+import { ViewerLayout, ViewerAnimation } from '~/plugins/addon/enums.ts'
 import { formatDateDistance } from '@plugins/addon/utils.ts'
 import AsideAdapter from '@components/common/layout/AsideAdapter.vue'
 
@@ -79,10 +86,10 @@ const mainRef = ref(null)
 const index = ref() // 文档 h pin
 const activeTab = ref('docs-tree')
 
-const closeAnimations = ref(store.local.viewer.animation)
+const viewerAnimation = ref(store.local.viewer.animation)
 const viewerLayout = ref(store.local.viewer.layout)
-watch(() => closeAnimations.value, () => {
-  store.local.viewer.animation = closeAnimations.value
+watch(() => viewerAnimation.value, () => {
+  store.local.viewer.animation = viewerAnimation.value
 })
 watch(() => viewerLayout.value, () => {
   store.local.viewer.layout = viewerLayout.value
@@ -90,7 +97,7 @@ watch(() => viewerLayout.value, () => {
 
 let animation = false
 async function changeCurrentDoc(data) {
-  if(closeAnimations.value) {
+  if(viewerAnimation.value === "拉伸") {
     if(animation) return
     animation = true
     const { style } = mainRef.value.$el || mainRef.value
@@ -105,14 +112,16 @@ async function changeCurrentDoc(data) {
 
     await sleep(250)
 
+    currentDoc.value = data.data
+    currentDoc.value._none = true
     await router.push({
       query: {
-        doc: `${data.data.id}`
+        doc: `${_T_EncodeNumber(data.data.id, 18)}`
       }
     })
-    currentDoc.value = data.data
 
     style.transform = 'scale(.85) translateX(100%)'
+    currentDoc.value._none = false
 
     await sleep(250)
 
@@ -123,16 +132,43 @@ async function changeCurrentDoc(data) {
 
     style.transform = ''
     animation = false
-  } else {
+  } else if(viewerAnimation.value === "缩放") {
+    const { style } = mainRef.value.$el || mainRef.value
+
+    style.transform = 'scale(.85)'
+    style.opacity = '0'
+
+    await sleep(50)
 
     wikiID.value = data.data.wiki_id
 
+    currentDoc.value = data.data
+    currentDoc.value._none = true
     await router.push({
       query: {
-        doc: `${data.data.id}`
+        doc: `${_T_EncodeNumber(data.data.id, 18)}`
       }
     })
+
+    currentDoc.value._none = false
+
+    await sleep(50)
+
+    style.transform = ''
+    style.opacity = '1'
+
+  } else {
+
+    wikiID.value = data.data.wiki_id
     currentDoc.value = data.data
+    currentDoc.value._none = true
+
+    await router.push({
+      query: {
+        doc: `${_T_EncodeNumber(data.data.id, 18)}`
+      }
+    })
+    currentDoc.value._none = false
 
   }
 
@@ -173,9 +209,11 @@ function flat2Tree(array, docs) {
   array.forEach(item => map.set(item.id, { vid: `chapter-${item.id}`, priority: item.priority, doChapter: true, parentChapter: item.parent, value: item.id, title: item.title, children: [] }))
 
   array.forEach(item => {
-    // console.log(array, item, map)
     const parent = item.parent || -1
     const obj = map.get(parent)
+
+    // 如果没有找到父元素 说明很可能是被删掉了 那就别管
+    if( !obj ) return
 
     obj.children.push(map.get(item.id))
   })
@@ -183,6 +221,9 @@ function flat2Tree(array, docs) {
   docs.forEach(item => {
     const parent = item.chapter || -1
     const obj = map.get(parent)
+
+    // 如果没有找到父元素 说明很可能是被删掉了 那就别管
+    if( !obj ) return
 
     obj.children.push(item)
   })
@@ -224,7 +265,10 @@ async function render() {
     const { id } = route.params
 
     // tIndex.value = index
-    wikiID.value = doc
+    if( doc )
+      wikiID.value = _T_DecodeNumber(doc, 18)
+
+    // book.value = { id }
 
     book.value = await Wiki.getBook(_T_DecodeNumber(id, 9)) // TODO 浏览页面无需详情
 

@@ -22,7 +22,7 @@ class Document {
   }
 
   async deleteDocument(id) {
-    return _delete(`v1/doc/${ id }`)
+    return _delete(`wiki/doc/delete/${ id }`)
   }
 
   async getDocuments() {

@@ -98,7 +98,7 @@ const routes: any = [
                 component: () => import('../view/book/wiki/WikiList.vue')
             },
             {
-                path: "/user/wiki/setting/:id",
+                path: "/user/wiki/setting",
                 name: "维基设置",
                 meta: {
                     heightUnlimited: false,

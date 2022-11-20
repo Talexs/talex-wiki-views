@@ -112,7 +112,7 @@ function render() {
   if( init ) return
   init = true
 
-  editWikiId.value = route.params.id
+  editWikiId.value = route.query.id
   getBook()
 }
 

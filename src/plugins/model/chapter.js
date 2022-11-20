@@ -14,7 +14,7 @@ class Chapter {
   }
 
   async deleteChapter(id) {
-    return _delete(`v1/chapter/${ id }`)
+    return _delete(`wiki/chapter/delete/${ id }`)
   }
 
   async viewChapter(id) {
@@ -26,6 +26,12 @@ class Chapter {
       method: 'get',
       url: `wiki/chapter/list/${bookID}`,
       handleError: true,
+    })
+  }
+
+  async treeChapter(bookID, rootID = -1) {
+    return post('wiki/chapter/tree/' + bookID, {
+      root: rootID
     })
   }
 }
