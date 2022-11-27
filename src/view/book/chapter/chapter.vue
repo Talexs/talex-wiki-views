@@ -24,97 +24,77 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import chapterModel from '~/plugins/model/chapter'
 import { forWikiTip, TipType } from '@plugins/Common.ts'
 
-export default {
-  name: "Chapter",
-  props: {
-    bookId: {
-      type: Number
-    },
-    editChapterID: {
-      type: Number,
-      default: null,
-    },
+const props = defineProps({
+  bookId: {
+    type: Number
   },
-  setup(props, context) {
-    const form = ref(null)
-    const loading = ref(false)
-    const chapter = reactive({ parentChapter: -1, wiki: props.bookId, title: '' })
-
-    watch(() => chapter.parentChapter, () => {
-      if (chapter.parentChapter instanceof Array && chapter.parentChapter.length > 0) {
-        chapter.parentChapter = chapter.parentChapter[chapter.parentChapter.length - 1]
-      }
-    })
-
-    const chapters = ref([])
-    /**
-     * 表单规则验证
-     */
-    const { rules } = getRules()
-
-    onMounted(() => {
-      // 获取所有的章节便于设置父项
-      getChapters()
-
-      if (props.editChapterID) {
-
-      }
-    })
-
-    const getChapters = async () => {
-      loading.value = true
-      chapters.value = flat2Tree(await chapterModel.getChapters(props.bookId))
-      loading.value = false
-    }
-
-    // 重置表单
-    const resetForm = () => {
-      form.value.resetFields()
-      getChapters()
-    }
-
-    const submitForm = async formName => {
-      form.value.validate(async valid => {
-        if (valid) {
-          let res = {}
-          if (props.editChapterID) {
-            res = await chapterModel.editChapter(props.editChapterID, chapter)
-            context.emit('editClose')
-          } else {
-            res = await chapterModel.createChapter(chapter)
-            resetForm(formName)
-          }
-          // if (res.code < window.MAX_SUCCESS_CODE) {
-            // ElMessage.success(`${res.message}`)
-            await forWikiTip( "添加成功!", 2600, TipType.SUCCESS )
-            context.emit('done', res)
-          // }
-        } else {
-          console.error('error submit!!')
-          ElMessage.error('请将信息填写完整!')
-        }
-      })
-    }
-
-    const back = () => context.emit('editClose')
-
-    return {
-      back,
-      chapter,
-      chapters,
-      form,
-      rules,
-      resetForm,
-      submitForm
-    }
+  editChapterID: {
+    type: Number,
+    default: null,
   },
+})
+
+const emits = defineEmits(['created', 'editClose'])
+
+const form = ref(null)
+const loading = ref(false)
+const chapter = reactive({ parentChapter: -1, wiki: props.bookId, title: '' })
+
+watch(() => chapter.parentChapter, () => {
+  if (chapter.parentChapter instanceof Array && chapter.parentChapter.length > 0) {
+    chapter.parentChapter = chapter.parentChapter[chapter.parentChapter.length - 1]
+  }
+})
+
+const chapters = ref([])
+/**
+ * 表单规则验证
+ */
+const { rules } = getRules()
+
+async function getChapters() {
+  loading.value = true
+  chapters.value = flat2Tree(await chapterModel.getChapters(props.bookId))
+  loading.value = false
 }
+
+getChapters()
+
+function resetForm () {
+  form.value.resetFields()
+  getChapters()
+}
+
+const submitForm = async formName => {
+  form.value.validate(async valid => {
+    if (valid) {
+      let res = {}
+      if (props.editChapterID) {
+        res = await chapterModel.editChapter(props.editChapterID, chapter)
+        context.emit('editClose')
+      } else {
+        res = await chapterModel.createChapter(chapter)
+        resetForm(formName)
+      }
+      // if (res.code < window.MAX_SUCCESS_CODE) {
+      // ElMessage.success(`${res.message}`)
+      await forWikiTip( "添加成功!", 2600, TipType.SUCCESS )
+      context.emit('done', res)
+      // }
+    } else {
+      console.error('error submit!!')
+      ElMessage.error('请将信息填写完整!')
+    }
+  })
+}
+
+const back = () => emits('editClose')
 
 function flat2Tree(array) {
   const map = new Map()
@@ -124,7 +104,7 @@ function flat2Tree(array) {
   array.forEach(item => map.set(item.id, { parentChapter: item.parent, value: item.id, label: item.title, children: [] }))
 
   array.forEach(item => {
-    const parent = item.parent || -1
+    const parent = item.parentChapter || -1
     const obj = map.get(parent)
 
     obj.children.push(map.get(item.id))

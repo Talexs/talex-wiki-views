@@ -56,7 +56,7 @@ watch(() => props.content, () => {
 
     const getOutline = editorIns.action(outline)
 
-    replaceAll(props.content)(ctx)
+    replaceAll(props.content + "\n#Power\{text=\"TalexWiki\"}")(ctx)
     docOutline.value = getOutline(ctx)
 
     useImageClickAgent(scrollbarRef.value.wrap$)
@@ -88,7 +88,7 @@ const editor = useEditor((root) => Editor.make()
       ctx.set(editorViewOptionsCtx, {
         editable: () => false
       })
-      ctx.set(defaultValueCtx, props.content)
+      ctx.set(defaultValueCtx, props.content + "\n#Power{text=\"TalexWiki\"}")
       ctx.get(listenerCtx).markdownUpdated((_ctx, markdown) => {
 
         modelValue.value = markdown
@@ -116,7 +116,7 @@ const editor = useEditor((root) => Editor.make()
 
     })
     .use(nord)
-    // .use(iframePlugin)
+    .use(iframePlugin)
     .use(commonmark)
     .use(block)
     .use(gfm)

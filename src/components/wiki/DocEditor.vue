@@ -1,5 +1,5 @@
 <template>
-  <div class="DocEditor-Container">
+  <div ref="containerRef" class="DocEditor-Container">
 <!--    <div class="DocEditor-inner" ref="inner">-->
      <el-scrollbar>
        <VueEditor :editor="editor" />
@@ -12,7 +12,7 @@
 import { ref, defineProps, defineEmits, onMounted, watch, onBeforeMount, reactive, nextTick } from 'vue'
 
 import '@material-design-icons/font'
-import { defaultValueCtx, Editor, editorViewCtx, rootCtx } from '@milkdown/core'
+import { commandsCtx, defaultValueCtx, Editor, editorViewCtx, rootCtx, themeManagerCtx } from '@milkdown/core'
 import { nord } from '@milkdown/theme-nord'
 import { VueEditor, useEditor } from '@milkdown/vue'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
@@ -24,8 +24,13 @@ import { math } from '@milkdown/plugin-math'
 import 'katex/dist/katex.min.css'
 import { gfm } from '@milkdown/preset-gfm'
 
+import { shiki } from 'milkdown-plugin-shiki'
+
+import { iframePlugin } from '@plugins/milkdown/plugins/PowerPlugin.ts'
+
 import { useModelWrapper } from '~/plugins/Common.ts'
 import { outline } from '@milkdown/utils'
+import { generateEditor } from '@plugins/milkdown/generator.js'
 
 const props = defineProps({
   tVid: String,
@@ -34,93 +39,19 @@ const props = defineProps({
 const emits = defineEmits(['update:modelValue', 'outline'])
 
 // const inner = ref(null)
-const editor = useEditor((root) => Editor.make()
-    .config((ctx) => {
-      ctx.set(rootCtx, root)
+const editor = generateEditor(props.modelValue, (ctx, editorIns) => {
 
-      // const ctx = editor.getInstance().ctx
+  const getOutline = editorIns.action(outline)
 
-      ctx.set(defaultValueCtx, props.modelValue)
-      ctx.get(listenerCtx).markdownUpdated((_ctx, markdown) => {
+  emits('outline', getOutline(ctx))
 
-        modelValue.value = markdown
-
-      })
-
-      function init() {
-        const editorIns = editor.getInstance()
-        if( !editorIns ) return setTimeout(init, 100)
-
-        const getOutline = editorIns.action(outline)
-
-        // console.log("@Outline", getOutline(ctx))
-
-        emits('outline', getOutline(ctx))
-
-      }
-
-      init()
-
-    })
-    .use(nord)
-    .use(commonmark
-        .configure(codeFence, {
-          languageList: [ 'JavaScript', "TypeScript", "Bash", "SQL", "JSON", "YAML",
-            'HTML', "CSS", "C", "CPP", "JAVA", "Ruby", "Python", "Go", "Rust", "FileTree", "Terminal" ,
-              "Body"
-          ]
-        })
-    )
-    .use(slash.configure(slashPlugin, {
-      config: (ctx) => {
-        // Get default slash plugin items
-        const actions = defaultActions(ctx);
-
-        // Define a status builder
-        return ({ isTopLevel, content, parentNode }) => {
-          // You can only show something at root level
-          if (!isTopLevel) return null;
-
-          // Empty content ? Set your custom empty placeholder !
-          if (!content) {
-            return { placeholder: '输入 \'/\' 来打开提示窗口。' };
-          }
-
-          // Define the placeholder & actions (dropdown items) you want to display depending on content
-          if (content.startsWith('/')) {
-            // Add some actions depending on your content's parent node
-            if (parentNode.type.name === 'customNode') {
-              actions.push({
-                id: 'custom',
-                dom: createDropdownItem(ctx.get(themeManagerCtx), 'Custom', 'h1'),
-                command: () => ctx.get(commandsCtx).call(/* Add custom command here */),
-                keyword: ['custom'],
-                typeName: 'heading',
-              });
-            }
-
-            return content === '/'
-                ? {
-                  placeholder: '输入内容以匹配',
-                  actions,
-                }
-                : {
-                  actions: actions.filter(({ keyword }) =>
-                      keyword.some((key) => key.includes(content.slice(1).toLocaleLowerCase())),
-                  ),
-                };
-          }
-        };
-      }
-    }))
-    .use(cursor)
-    .use(block)
-    .use(math)
-    .use(gfm)
-    .use(listener)
-)
+}, (_ctx, markdown) => {
+  modelValue.value = markdown
+})
 
 const modelValue = useModelWrapper(props, emits)
+
+const containerRef = ref()
 
 // watch(() => modelValue.value, () => {
 //

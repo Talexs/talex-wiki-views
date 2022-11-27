@@ -9,12 +9,12 @@ import directive from "remark-directive";
 
 // import "./style.css";
 
-const id = "power";
+const id = "iframe";
 const iframe = createNode(() => ({
     id,
     schema: () => ({
         attrs: {
-            'data-text': { default: "TalexWiki" }
+            src: { default: null }
         },
         group: "inline",
         inline: true,
@@ -22,33 +22,33 @@ const iframe = createNode(() => ({
         atom: true,
         parseDOM: [
             {
-                tag: "div",
+                tag: "iframe",
                 getAttrs: (dom) => {
                     if (!(dom instanceof HTMLElement)) {
                         throw new Error();
                     }
                     return {
-                        text: dom.getAttribute("text")
+                        src: dom.getAttribute("src")
                     };
                 }
             }
         ],
-        toDOM: (node) => ["div", { ...node.attrs, class: "talex-power" }, 0],
+        toDOM: (node) => ["iframe", { ...node.attrs, class: "iframe" }, 0],
         parseMarkdown: {
             match: (node) => {
-                return node.type === "textDirective" && node.name === "div";
+                return node.type === "textDirective" && node.name === "iframe";
             },
             runner: (state, node, type) => {
-                state.addNode(type, { text: (node.attributes as { text: string }).text });
+                state.addNode(type, { src: (node.attributes as { src: string }).src });
             }
         },
         toMarkdown: {
             match: (node) => node.type.name === id,
             runner: (state, node) => {
                 state.addNode("textDirective", undefined, undefined, {
-                    name: "div",
+                    name: "iframe",
                     attributes: {
-                        text: node.attrs.text
+                        src: node.attrs.src
                     }
                 });
             }
@@ -56,12 +56,12 @@ const iframe = createNode(() => ({
     }),
     inputRules: (nodeType) => [
         new InputRule(
-            /#Power\{text="(?<text>[^"]+)?"?\}/,
+            /:iframe\{src="(?<src>[^"]+)?"?\}/,
             (state, match, start, end) => {
-                const [okay, text = ""] = match;
+                const [okay, src = ""] = match;
                 const { tr } = state;
                 if (okay) {
-                    tr.replaceWith(start, end, nodeType.create({ text }));
+                    tr.replaceWith(start, end, nodeType.create({ src }));
                 }
 
                 return tr;

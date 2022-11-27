@@ -50,11 +50,37 @@
     border: 1px solid var(--el-border-color-light);
     background-color: var(--el-fill-color);
   }
-  .milkdown-benxqe {
+  .block-menu {
     border: 1px solid var(--el-border-color-light) !important;
     background-color: var(--el-fill-color) !important;
     button {
       color: var(--el-color-primary-light-3);
+    }
+    .block-menu_item {
+      position: relative;
+      &:before {
+        content: "";
+        position: absolute;
+
+        width: 2px;
+        height: 100%;
+
+        left: 3px;
+        top: 0;
+
+        background-color: var(--el-color-primary);
+        opacity: 0;
+        transform: scale(0.8);
+        transition: .25s;
+      }
+      &:hover {
+        color: var(--el-color-primary) !important;
+        background-color: var(--el-fill-color-light) !important;
+        &:before {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
     }
   }
   .ProseMirror {
@@ -168,6 +194,44 @@
     td, th {
       border: 1px solid var(--el-border-color-light) !important;
     }
+  }
+  .talex-power {
+    &:before {
+      content: "Powered by";
+      position: absolute;
+
+
+    }
+    &:after {
+      content: attr(data-text);
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      font-size: 45px;
+      transform: translate(-50%, -50%);
+    }
+    position: relative;
+    padding: 30px 15px;
+
+    height: 100px;
+
+    border-radius: 8px;
+    background-color: var(--el-fill-color-light);
+  }
+  blockquote.blockquote {
+    p.paragraph {
+      width: 96%;
+
+      box-sizing: border-box;
+    }
+    display: inline-block;
+    padding: 20px 0;
+    border-left: none !important;
+
+    border-radius: 8px;
+    background-color: var(--el-fill-color-dark);
   }
   //position: relative;
 

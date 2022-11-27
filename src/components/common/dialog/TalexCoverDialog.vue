@@ -131,7 +131,7 @@ export default {
     height: 100%;
 
     border-radius: 8px;
-    background-color: var(--el-bg-color-page);
+    //background-color: var(--el-bg-color-page);
     filter: brightness(150%);
     opacity: .45;
     transition: .3s cubic-bezier(.25,.8,.25,1);
@@ -153,15 +153,15 @@ export default {
 
   backdrop-filter: saturate(180%) blur(20px);
   border-radius: 8px;
-  transform: translate(-50%, -50%) scale(0) translateY(-30px);
+  transform: translate(-50%, -50%) scale(1.125, 1.25) translateY(-30px);
   opacity: 0;
   overflow: hidden;
-  transition: .3s cubic-bezier(.25,.8,.25,1);
+  transition: .35s cubic-bezier(.25,.8,.25,1);
 }
 
 .TalexDialog-Wrapper.visible {
   .TalexDialog-Main {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1, 1) translateY(0px);
     opacity: 1;
   }
   //transform: scale(1);

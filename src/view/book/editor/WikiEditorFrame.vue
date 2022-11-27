@@ -69,7 +69,7 @@
           <div class="WikiEditor-Content">
             <DocEditor @outline="initOutline($event, item)" :t-vid="item.id" v-model="item.content">
             </DocEditor>
-            <div class="edit-mention transition-cubic" :class="{ shrink: item.origin_content === item.content }">
+            <div @click="updateDoc(currentTab)" class="edit-mention transition-cubic" :class="{ shrink: item.origin_content === item.content }">
               按下 <span class="premium-normal">Ctrl+S</span> 保存!
             </div>
           </div>
@@ -454,8 +454,10 @@ export default {
         right: 0;
         top: 1%;
 
+        cursor: pointer;
         font-size: 14px;
         border-radius: 4px;
+        user-select: none;
         background-color: var(--el-fill-color-dark);
         animation: shaving 1.75s infinite
         //cubic-bezier(0.88, 1.58, 0.25, 0.5)
