@@ -1,4 +1,4 @@
-import { createApp, customRef, reactive, watch } from 'vue'
+import { createApp, customRef, reactive, ref, watch } from 'vue'
 
 import WikiTip from './../components/common/message/WikiTip.vue'
 import WikiDialogTip from './../components/common/message/WikiDialogTip.vue'
@@ -64,7 +64,7 @@ export const toMD5 = ( str: string ) => {
 }
 
 export enum TipType { // 提示类型
-    ERROR, WARNING, INFO, SUCCESS, DEFAULT
+    DEFAULT, ERROR, WARNING, INFO, SUCCESS
 }
 
 export interface DialogBtn {
@@ -117,7 +117,8 @@ export async function forWikiDialogTip(title: String, message: String, btns: Dia
 
 }
 
-export async function forWikiTip(message: String, stay: Number, type: TipType | null = null, loading: boolean = false, left: boolean = false) {
+// DEPERATED
+export async function forWikiTip(message: String, stay: Number = 2200, type: TipType = TipType.DEFAULT, loading: boolean = false, left: boolean = false) {
 
     const root: HTMLDivElement = document.createElement('div');
 
@@ -160,8 +161,85 @@ export async function forWikiTip(message: String, stay: Number, type: TipType | 
     root.style[left ? 'left' : 'right'] = '0'
 
 }
+export async function forTip(message: String, options = {
+    stay: 2200,
+    type: TipType.DEFAULT,
+    loading: null,
+    left: false
+} as {
+    stay: Number,
+    type: TipType | 'loading' | null | Object,
+    loading: Function | null,
+    left: boolean
+}) {
+
+    const root: HTMLDivElement = document.createElement('div');
+
+    let index: number = 0;
+
+    while( document.getElementById('talex-tip-' + index) ) {
+
+        index++;
+
+    }
+
+    root.id = 'talex-tip-' + index;
+
+    root.style.position = 'absolute'
+    root.style[options.left ? 'left' : 'right'] = '-100%'
+    root.style.bottom = `calc(5% + ${index * 65}px)`;
+    root.style.transition = 'all .25s'
+
+    const _type = ref('loading' as any)
+    const _content = ref(message)
+
+    if( options.loading ) {
+
+        const oType = options.type
+
+        options.type = _type
+
+        options.loading((message: string | null, tType: TipType | 'loading' | null) => {
+
+            _type.value = tType || oType
+
+            if( message ) _content.value = message
+
+            return close
+
+        })
+
+    }
+
+    const close = async () => {
+
+        root.style.opacity = '0'
+        root.style[options.left ? 'left' : 'right'] = '-100%'
+
+        await sleep(300)
+
+        app.unmount();
+
+        document.body.removeChild(root);
+
+    }
+
+    const app = createApp(TalexTip, {
+        message: _content, ...options,
+        close
+    })
+
+    document.body.appendChild(root);
+    app.mount(root);
+
+    await sleep(200)
+
+    root.style[options.left ? 'left' : 'right'] = '1%'
+
+}
 
 import { computed } from 'vue'
+import TalexTip from '~/components/common/message/TalexTip.vue'
 
 export function useModelWrapper(props: any, emit: any, name = 'modelValue') {
     return computed({

@@ -25,12 +25,12 @@
           TalexWiki 助您构建您的下一代 知识系统， 这是一个开源的知识管理系统，让知识管理变得简单而又强大。
         </p>
         <div class="Index-Btn">
-          <FlatHrefButton href="/startup" large>
+          <FlatButton @click="loginDialog = true" large>
             <el-icon>
               <Position />
             </el-icon>
             开始使用
-          </FlatHrefButton>
+          </FlatButton>
           <FlatButton plain large>
             登录账号
           </FlatButton>
@@ -54,7 +54,12 @@ import BookSvg from '../../assets/static/svg/book-index.svg'
 import FlatButton from '../common/btn/FlatButton.vue'
 import FlatHrefButton from '../common/btn/FlatHrefButton.vue'
 import { Position } from '@element-plus/icons-vue'
+import { useStore } from '~/plugins/store/index'
+import { toRef } from 'vue'
 
+const store = useStore()
+
+const loginDialog = toRef(store.system.global.login, 'dialog')
 </script>
 
 <style lang="scss" scoped>

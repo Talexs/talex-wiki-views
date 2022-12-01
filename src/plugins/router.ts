@@ -209,6 +209,11 @@ const routes: any = [
         // ]
     },
     {
+        path: "/tds/test",
+        name: "测试页面",
+        component: () => import('./../view/base/Test.vue')
+    },
+    {
         path: "/direct",
         name: "跳转",
         component: () => import('./../view/others/DirectMention.vue')

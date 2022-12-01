@@ -55,9 +55,15 @@ export default () => {
 
     tStore.$subscribe((mutation, state) => {
         if( mutation.storeId !== 'user' ) return
-        if( mutation.events.key !== 'theme' ) return
 
-        changeTheme(state.theme)
+        if( mutation.events.key === 'loggedIn' ) {
+
+            state.loggedIn = false
+            state.user = null
+            state.permissions = []
+            state.admin = false
+
+        } else if( mutation.events.key === 'theme' ) changeTheme(state.theme)
 
     })
 

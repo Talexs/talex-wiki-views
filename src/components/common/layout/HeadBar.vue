@@ -222,7 +222,7 @@
 import Logo from '~/components/common/icon/Logo.vue'
 import TalexDialog from '~/components/common/dialog/TalexDialog.vue'
 import Login from '~/view/base/Login.vue'
-import { provide, ref } from 'vue'
+import { provide, ref, toRef } from 'vue'
 import { useStore } from '~/plugins/store/index'
 import TalexDropdown from '~/components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '~/components/common/dropdown/talex-drop-item.vue'
@@ -236,21 +236,14 @@ import { forMentionTip, TipType } from '~/plugins/Common.ts'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import MenuIcon from '~/components/common/icon/MenuIcon.vue'
 
-const headDialogVisible = ref(false)
-
 const store = useStore()
 
-const theme = ref(store.local.theme)
+const headDialogVisible = toRef(store.system.global.login, 'dialog')
+const theme = toRef(store.local, 'theme')
 
 async function changeTheme(themeStr) {
   store.local.theme = theme.value = themeStr
   await forMentionTip(new MentionTip("切换成功!", 1400, TipType.SUCCESS))
-}
-
-function logout() {
-  store.local.loggedIn = false
-  store.local.user = null
-  store.local.permissions = []
 }
 
 </script>
@@ -350,7 +343,7 @@ function logout() {
   top: 0;
 
   width: 94%;
-  height: 50px;
+  height: 49px;
 
   user-select: none;
   border-bottom: 1px solid var(--el-border-color);

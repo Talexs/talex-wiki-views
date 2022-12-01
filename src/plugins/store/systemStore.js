@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 
+// SYSTEM CONFIG (CLIENT ONLY)
 export default defineStore('system', {
     state: () => {
         return {
@@ -7,7 +8,12 @@ export default defineStore('system', {
                 config: null,
                 treePath: []
             },
-            stageMap: {}
+            stageMap: {},
+            global: {
+              login: {
+                  dialog: false
+              }
+            }
         }
     },
     actions: {
@@ -29,3 +35,4 @@ export default defineStore('system', {
         }
     }
 })
+

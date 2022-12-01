@@ -12,25 +12,16 @@
 import { ref, defineProps, defineEmits, onMounted, watch, onBeforeMount, reactive, nextTick } from 'vue'
 
 import '@material-design-icons/font'
-import { commandsCtx, defaultValueCtx, Editor, editorViewCtx, rootCtx, themeManagerCtx } from '@milkdown/core'
-import { nord } from '@milkdown/theme-nord'
 import { VueEditor, useEditor } from '@milkdown/vue'
-import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { commonmark, codeFence } from '@milkdown/preset-commonmark'
-import { slash, slashPlugin, defaultActions, createDropdownItem } from '@milkdown/plugin-slash'
-import { cursor } from '@milkdown/plugin-cursor'
-import { block } from '@milkdown/plugin-block'
-import { math } from '@milkdown/plugin-math'
 import 'katex/dist/katex.min.css'
-import { gfm } from '@milkdown/preset-gfm'
 
-import { shiki } from 'milkdown-plugin-shiki'
+// import { shiki } from 'milkdown-plugin-shiki'
 
 import { iframePlugin } from '@plugins/milkdown/plugins/PowerPlugin.ts'
 
 import { useModelWrapper } from '~/plugins/Common.ts'
 import { outline } from '@milkdown/utils'
-import { generateEditor } from '@plugins/milkdown/generator.js'
+import { generateEditor } from '@plugins/milkdown/generator.ts'
 
 const props = defineProps({
   tVid: String,

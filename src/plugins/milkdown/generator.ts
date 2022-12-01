@@ -17,7 +17,7 @@
 import { useEditor } from '@milkdown/vue'
 import { commandsCtx, defaultValueCtx, Editor, rootCtx, themeManagerCtx } from '@milkdown/core'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { shiki } from 'milkdown-plugin-shiki'
+// import { shiki } from 'milkdown-plugin-shiki'
 import { nord } from '@milkdown/theme-nord'
 import { codeFence, commonmark } from '@milkdown/preset-commonmark'
 import { createDropdownItem, defaultActions, slash, slashPlugin } from '@milkdown/plugin-slash'
