@@ -197,6 +197,7 @@ export async function forTip(message: String, options = {
 
         const oType = options.type
 
+        options.stay = -1
         options.type = _type
 
         options.loading((message: string | null, tType: TipType | 'loading' | null) => {

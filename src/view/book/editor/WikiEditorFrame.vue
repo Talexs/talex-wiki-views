@@ -108,7 +108,7 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { _T_EncodeNumber, forMentionTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
+import { _T_EncodeNumber, forMentionTip, forTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document.js'
 import WikiListTree from '@components/wiki/tree/WikiListTree.vue'
@@ -245,34 +245,35 @@ async function updateDoc(tabObj) {
   tabObj.loading = true
   // tabObj.origin_content = tabObj.content
 
-  await forWikiTip('正在保存文档...', 1200, TipType.INFO, true)
+  await forTip("正在保存文档...", {
+    loading: async (func) => {
 
-  // {
-  //   wiki: tabObj.data.wiki.id,
-  // ...tabObj.data.origin
-  // }
+      const info = markRaw(tabObj.data.origin)
 
-  const info = markRaw(tabObj.data.origin)
+      info.wiki = info.wiki_id
 
-  info.wiki = info.wiki_id
+      const res = await WikiDocument.editDocument(tabObj.data.id, info)
 
-  // console.log("@", info)
+      const close = func(`文档保存${res ? '成功' : '失败'}!`, res ? TipType.SUCCESS : TipType.ERROR)
+      addStatus(`文档 ${tabObj.title} 保存${res ? '成功' : '失败'}!`, res ? 'success' : 'danger')
 
-  const res = await WikiDocument.editDocument(tabObj.data.id, info)
+      // failed
+      if( res ) {
 
-  await forWikiTip(`文档保存${res ? '成功' : '失败'}!`, 1800, res ? TipType.SUCCESS : TipType.ERROR)
-  addStatus(`文档 ${tabObj.title} 保存${res ? '成功' : '失败'}!`, res ? 'success' : 'danger')
+        tabObj.origin_content = tabObj.content
+        // tabObj.origin_content = backupContent
 
-  // failed
-  if( res ) {
+      }
 
-    tabObj.origin_content = tabObj.content
-    // tabObj.origin_content = backupContent
+      // tabObj.error = !res
+      tabObj.loading = false
 
-  }
+      await sleep(1600)
 
-  // tabObj.error = !res
-  tabObj.loading = false
+      close()
+
+    }
+  })
 }
 
 async function renderOptions() {
