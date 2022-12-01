@@ -25,7 +25,7 @@ import { cursor } from '@milkdown/plugin-cursor'
 import { block } from '@milkdown/plugin-block'
 import { math } from '@milkdown/plugin-math'
 import { gfm } from '@milkdown/preset-gfm'
-import { iframePlugin } from '~/plugins/milkdown/plugins/PowerPlugin'
+// import { iframePlugin } from '~/plugins/milkdown/plugins/PowerPlugin'
 
 export function generateEditor(defaultValue: string, initFunc: Function, onUpdated: Function) {
     const editor = useEditor((root) => Editor.make()
@@ -105,7 +105,7 @@ export function generateEditor(defaultValue: string, initFunc: Function, onUpdat
         .use(block)
         .use(math)
         .use(gfm)
-        .use(iframePlugin)
+        // .use(iframePlugin)
         .use(listener)
     )
     return () => editor

@@ -108,7 +108,7 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { _T_EncodeNumber, forMentionTip, forTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
+import { _T_EncodeNumber, forMentionTip, forTip, sleep, TipType } from '~/plugins/Common.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document.js'
 import WikiListTree from '@components/wiki/tree/WikiListTree.vue'
@@ -120,8 +120,6 @@ import { Back, Setting, Folder, Document, Share, Delete, CloseBold } from '@elem
 import WikiStatus from '~/components/wiki/addon/WikiStatus.vue'
 import { useStore } from '~/plugins/store/index.ts'
 import AsideAdapter from '@components/common/layout/AsideAdapter.vue'
-import TalexCoverDialog from '@components/common/dialog/TalexCoverDialog.vue'
-import { MentionTip } from '@plugins/addon/MentionerManager.ts'
 
 const router = useRouter()
 const route = useRoute()
@@ -240,12 +238,9 @@ async function updateDoc(tabObj) {
 
   if ( tabObj.origin_content === tabObj.content ) return
 
-  // const backupContent = tabObj.origin_content
-
   tabObj.loading = true
-  // tabObj.origin_content = tabObj.content
 
-  await forTip("正在保存文档...", {
+  forTip("正在保存文档...", {
     loading: async (func) => {
 
       const info = markRaw(tabObj.data.origin)
@@ -274,6 +269,7 @@ async function updateDoc(tabObj) {
 
     }
   })
+
 }
 
 async function renderOptions() {

@@ -161,7 +161,7 @@ export async function forWikiTip(message: String, stay: Number = 2200, type: Tip
     root.style[left ? 'left' : 'right'] = '0'
 
 }
-export async function forTip(message: String, options = {
+export function forTip(message: String, options = {
     stay: 2200,
     type: TipType.DEFAULT,
     loading: null,
@@ -190,25 +190,14 @@ export async function forTip(message: String, options = {
     root.style.bottom = `calc(5% + ${index * 65}px)`;
     root.style.transition = 'all .25s'
 
+    const oType = options.type
     const _type = ref('loading' as any)
     const _content = ref(message)
 
     if( options.loading ) {
 
-        const oType = options.type
-
         options.stay = -1
         options.type = _type
-
-        options.loading((message: string | null, tType: TipType | 'loading' | null) => {
-
-            _type.value = tType || oType
-
-            if( message ) _content.value = message
-
-            return close
-
-        })
 
     }
 
@@ -217,7 +206,7 @@ export async function forTip(message: String, options = {
         root.style.opacity = '0'
         root.style[options.left ? 'left' : 'right'] = '-100%'
 
-        await sleep(300)
+        await sleep(500)
 
         app.unmount();
 
@@ -233,9 +222,21 @@ export async function forTip(message: String, options = {
     document.body.appendChild(root);
     app.mount(root);
 
-    await sleep(200)
+    options.loading?.((message: string | null, tType: TipType | 'loading' | null) => {
 
-    root.style[options.left ? 'left' : 'right'] = '1%'
+        sleep(200).then(() => {
+
+            _type.value = tType || oType
+
+            if( message ) _content.value = message
+
+        })
+
+        return close
+
+    })
+
+    sleep(200).then(() => root.style[options.left ? 'left' : 'right'] = '1%')
 
 }
 

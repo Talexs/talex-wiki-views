@@ -56,7 +56,7 @@
 <script setup>
 import { onMounted, ref, reactive, provide, nextTick, onUpdated, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { _T_DecodeNumber, _T_EncodeNumber, forWikiTip, sleep, TipType } from '~/plugins/Common'
+import { _T_DecodeNumber, _T_EncodeNumber, forTip, forWikiTip, sleep, TipType } from '~/plugins/Common'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document'
 import WikiChapter from '~/plugins/model/chapter'
@@ -177,24 +177,31 @@ async function changeCurrentDoc(data) {
 async function fetchData(fetch = true) {
   if (fetch) {
     // TODO 让文档加载了就先出来吧
-    const array = await WikiDocument.getDocument(book.value.id)
+    forTip("正在加载维基...", {
+      loading: async(func) => {
+        const array = await WikiDocument.getDocument(book.value.id)
 
-    array.forEach((item, index) => {
-      const obj = reactive(item)
-      obj.content = obj.content || ''
-      obj.vid = `doc-${item.id}`
-      obj.chapter = item.chapter_id
+        array.forEach((item, index) => {
+          const obj = reactive(item)
+          obj.content = obj.content || ''
+          obj.vid = `doc-${item.id}`
+          obj.chapter = item.chapter_id
 
-      array[index] = obj
+          array[index] = obj
 
-      treeMap.set(item.id, obj)
+          treeMap.set(item.id, obj)
+        })
+
+        // if (Number(wikiID.value) > 0 && !treeMap.get(wikiID.value)) return router.push(`/wiki/view/${book.value.id}`)
+
+        tree.value = flat2Tree(await WikiChapter.getChapters(book.value.id), array)
+
+        // await forWikiTip('维基加载完成!', 2200, TipType.SUCCESS)
+        const close = func("维基加载完成！", TipType.SUCCESS)
+
+        sleep(2200).then(close)
+      }
     })
-
-    // if (Number(wikiID.value) > 0 && !treeMap.get(wikiID.value)) return router.push(`/wiki/view/${book.value.id}`)
-
-    tree.value = flat2Tree(await WikiChapter.getChapters(book.value.id), array)
-
-    await forWikiTip('维基加载完成!', 2200, TipType.SUCCESS)
   }
 
   currentDoc.value = treeMap.get(Number(wikiID.value))

@@ -38,7 +38,7 @@ const editor = generateEditor(props.modelValue, (ctx, editorIns) => {
 
 }, (_ctx, markdown) => {
   modelValue.value = markdown
-})
+})()
 
 const modelValue = useModelWrapper(props, emits)
 
