@@ -28,7 +28,7 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import chapterModel from '~/plugins/model/chapter'
-import { forWikiTip, TipType } from '@plugins/Common.ts'
+import { forWikiTip, TipType } from '~/plugins/addon/Tipper.ts'
 
 const props = defineProps({
   bookId: {

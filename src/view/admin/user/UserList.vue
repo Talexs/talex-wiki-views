@@ -10,12 +10,12 @@
     <el-empty v-if="!tableData || tableData.length < 1" description="当前分组没有用户" />
     <div v-else>
       <!-- 表格 -->
-      <el-table :data="tableData" v-loading="loading" @row-dblclick="rowDoubleClick">
+      <el-table :data="tableData" v-loading="loading">
         <el-table-column prop="username" label="名称"></el-table-column>
         <el-table-column prop="roleNames" label="所属分组"></el-table-column>
-        <el-table-column label="操作" fixed="right" width="275">
-          <template #default="scope">
-            <el-button plain size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-table-column label="操作" :fixed="`right`" width="275">
+          <template v-slot="scope">
+<!--            <el-button plain size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>-->
             <el-button plain size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -28,161 +28,77 @@
                 :page-size="pageCount"
                 v-if="refreshPagination"
                 :current-page="currentPage"
-                layout="prev, pager, next, jumper"
+                :layout="`prev, pager, next, jumper`"
                 @current-change="handleCurrentChange"
         >
         </el-pagination>
       </div>
     </div>
-    <!-- 弹窗 -->
-    <el-dialog title="用户信息" :append-to-body="true" :before-close="handleClose" v-model="dialogFormVisible">
-      <div style="margin-top: -25px">
-        <el-tabs v-model="activeTab" @tab-click="handleClick">
-          <el-tab-pane label="修改信息" name="修改信息">
-            <user-info
-              :id="id"
-              ref="info"
-              class="info"
-              pageType="edit"
-              :info="userInfo"
-              :submit="false"
-              :allGroups="allGroups"
-              labelPosition="right"
-              v-if="dialogFormVisible"
-              @handleInfoResult="handleInfoResult"
-            />
-          </el-tab-pane>
-          <el-tab-pane label="修改密码" name="修改密码">
-            <user-password @handlePasswordResult="handlePasswordResult" ref="password" :id="id" class="password" />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <!-- 按键操作 -->
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="confirmEdit">确 定</el-button>
-          <el-button @click="resetForm">重 置</el-button>
-        </div>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import AdminModel from '~/plugins/model/admin/admin.js'
 
-import UserInfo from './user-info.vue'
-import UserPassword from './user-password.vue'
 import { useUserList, useFormData } from './use-user.js'
 
-export default {
-  components: { UserInfo, UserPassword },
-  setup(props, ctx) {
-    const info = ref(false)
-    const password = ref(false)
-    const dialogFormVisible = ref(false) // 弹窗遮罩层
-    const refreshPagination = ref(true) // 页数增加的时候，因为缓存的缘故，需要刷新Pagination组件
+const info = ref(false)
+const refreshPagination = ref(true) // 页数增加的时候，因为缓存的缘故，需要刷新Pagination组件
 
-    const { allGroups, loading, groupId, totalNum, tableData, pageCount, currentPage, getAdminUsers } = useUserList()
-    const {
-      id,
-      activeTab,
-      resetForm,
-      confirmEdit,
-      handleClose,
-      handleClick,
-      handleChange,
-      handleInfoResult,
-      handleCurrentChange,
-      handlePasswordResult,
-    } = useFormData(ctx, dialogFormVisible, getAdminUsers, currentPage, loading, info, password)
+const { allGroups, loading, groupId, totalNum, tableData, pageCount, currentPage, getAdminUsers } = useUserList()
+const {
+  id,
+  // resetForm,
+  handleClick,
+  handleChange,
+  // handleInfoResult,
+  handleCurrentChange,
+  // handlePasswordResult,
+} = useFormData(getAdminUsers, currentPage, loading, info)
 
-    const userInfo = reactive({
-      email: '',
-      username: '',
-      password: '',
-      groups: [],
-      confirm_password: '',
-    })
+const userInfo = reactive({
+  email: '',
+  username: '',
+  password: '',
+  groups: [],
+  confirm_password: '',
+})
 
-    /**
-     * 修改管理员信息
-     */
-    const handleEdit = row => {
-      id.value = row.id
-      userInfo.email = row.email
-      userInfo.groups = row.groups
-      userInfo.username = row.username
-      dialogFormVisible.value = true
+/**
+ * 删除管理员数据
+ */
+const handleDelete = id => {
+  let res
+  ElMessageBox.confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    try {
+      loading.value = true
+      res = await AdminModel.deleteOneUser(id)
+    } catch (e) {
+      loading.value = false
+      console.error(e)
     }
-
-    /**
-     * 删除管理员数据
-     */
-    const handleDelete = id => {
-      let res
-      ElMessageBox.confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(async () => {
-        try {
-          loading.value = true
-          res = await AdminModel.deleteOneUser(id)
-        } catch (e) {
-          loading.value = false
-          console.error(e)
-        }
-        if (res.code < window.MAX_SUCCESS_CODE) {
-          loading.value = false
-          if (totalNum.value % pageCount.value === 1 && currentPage.value !== 1) {
-            // 判断删除的是不是每一页的最后一条数据
-            currentPage.value--
-          }
-          await getAdminUsers()
-          ElMessage.success(`${res.message}`)
-        } else {
-          loading.value = false
-          ElMessage.error(`${res.message}`)
-        }
-      })
+    if (res.code < window.MAX_SUCCESS_CODE) {
+      loading.value = false
+      if (totalNum.value % pageCount.value === 1 && currentPage.value !== 1) {
+        // 判断删除的是不是每一页的最后一条数据
+        currentPage.value--
+      }
+      await getAdminUsers()
+      ElMessage.success(`${res.message}`)
+    } else {
+      loading.value = false
+      ElMessage.error(`${res.message}`)
     }
-
-    const rowDoubleClick = row => {
-      handleEdit(row)
-    }
-
-    return {
-      id,
-      info,
-      groupId,
-      loading,
-      password,
-      userInfo,
-      totalNum,
-      allGroups,
-      tableData,
-      activeTab,
-      resetForm,
-      pageCount,
-      handleEdit,
-      confirmEdit,
-      handleClose,
-      currentPage,
-      handleClick,
-      handleChange,
-      handleDelete,
-      rowDoubleClick,
-      handleInfoResult,
-      refreshPagination,
-      dialogFormVisible,
-      handleCurrentChange,
-      handlePasswordResult,
-    }
-  },
+  })
 }
+
 </script>
 
 <style lang="scss" scoped>

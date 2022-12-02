@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import GlobalConfig from '~/config/GlobalConfig.js'
-import { forWikiTip, TipType } from '~/plugins/Common'
+import { TipType } from '~/plugins/addon/Tipper'
+import { sleep } from '~/plugins/Common'
 
 const lifeHandlers: LifeHandler = {}
 function emitsLife(type: string, ...data: any) {
@@ -107,12 +108,18 @@ export class TWebSocket {
     #webSocket: WebSocket | null = null
     tChannel: TChannel | null = null
 
-    connect() {
-        if( this.#webSocket ) return
+    connect(callback: Function = () => false) {
+        if( this.#webSocket ) return callback(false)
         this.#webSocket = new WebSocket(`ws:${GlobalConfig.hostName}:${GlobalConfig.endsPort}`)
 
-        this.#webSocket.addEventListener('open', this.#onOpen.bind(this))
-        this.#webSocket.addEventListener('error', this.#onError.bind(this))
+        this.#webSocket.addEventListener('open', () => {
+            this.#onOpen.bind(this)
+            callback(true)
+        })
+        this.#webSocket.addEventListener('error', () => {
+            this.#onError.bind(this)
+            callback(false)
+        })
         this.#webSocket.addEventListener('close', this.#onClose.bind(this))
         this.#webSocket.addEventListener('message', this.#onMessage.bind(this))
 
@@ -122,7 +129,10 @@ export class TWebSocket {
         if( !this.#webSocket ) return
         this.#webSocket.removeEventListener('close', this.#onClose)
         this.#webSocket.onclose = async() => {
-            await forWikiTip("已关闭远程服务器连接!", 3800, TipType.WARNING)
+            window.$tipper.tip("已关闭远程服务器连接!", {
+                stay: 3800,
+                type: TipType.WARNING
+            })
         }
 
         emitsLife(LIFE_HANDLER_DISCONNECTION, ws)
@@ -161,7 +171,10 @@ export class TWebSocket {
     }
 
     async #onOpen(event: Event) {
-        await forWikiTip("已连接至远程服务器!", 3200, TipType.SUCCESS)
+        window.$tipper.tip("已连接至远程服务器!", {
+            stay: 3800,
+            type: TipType.SUCCESS
+        })
 
         this.tChannel = new TChannel()
 
@@ -170,14 +183,33 @@ export class TWebSocket {
 
     async #onError(event: Event) {
         console.error(event)
-        await forWikiTip("与远程服务器连接发生错误!", 3800, TipType.ERROR, true)
+        window.$tipper.tip("与远程服务器连接发生错误!", {
+            stay: 3800,
+            type: TipType.ERROR
+        })
     }
 
     async #onClose(event: CloseEvent) {
-        await forWikiTip("已从远程服务器丢失连接, 正在尝试重连.", 5800, TipType.WARNING, true)
-        this.#webSocket = null
-        setTimeout(this.connect, 5000)
-        emitsLife(LIFE_HANDLER_DISCONNECTION, ws)
+        window.$tipper.tip("已从远程服务器丢失连接, 正在尝试重连...", {
+            stay: -1,
+            type: TipType.ERROR,
+            loading: async (func: Function) => {
+
+                this.#webSocket = null
+
+                setTimeout(() => this.connect(async (state: boolean) => {
+
+                    const res = func(`连接${state ? '成功' : '失败'}!`, state ? TipType.SUCCESS : TipType.ERROR)
+
+                    await sleep(state ? 2000 : 4600)
+
+                }), 5000)
+
+                emitsLife(LIFE_HANDLER_DISCONNECTION, ws)
+
+            }
+        })
+
     }
 
     send(data: string | ArrayBufferLike | Blob | ArrayBufferView) {

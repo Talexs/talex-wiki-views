@@ -4,7 +4,8 @@
         'warn-tip': _type === TipType.WARNING,
         'error-tip': _type === TipType.ERROR,
         'success-tip': _type === TipType.SUCCESS,
-        'loading-tip': loading || _type === 'loading' }">
+        'loading-tip': loading || _type === 'loading',
+         'text-shade': shade }">
     {{ msg }}
     <div class="TalexTip-Icon-Wrapper">
       <Mention :mode="_type" />
@@ -13,9 +14,9 @@
 </template>
 
 <script setup>
-import { computed, defineProps, onMounted, toRef } from 'vue'
-import Loading from '../icon/LoadingIcon.vue'
-import { sleep, TipType } from '~/plugins/Common.ts'
+import { computed, defineProps, onMounted, ref, toRef, watchEffect } from 'vue'
+import { sleep } from '~/plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper'
 import Mention from '~/components/common/icon/Mention.vue'
 
 const props = defineProps({
@@ -29,9 +30,21 @@ const props = defineProps({
 
 // const mode = toRef(props, 'type')
 
-const msg = computed(() => props.message.value || props.message)
+// const msg = computed(() => props.message.value || props.message)
+const shade = ref(false)
+const msg = ref("")
 const _type = computed(() => props.type.value || props.type)
 
+watchEffect(async () => {
+  shade.value = true
+
+  const content = props.message.value || props.message
+  await sleep(200)
+  msg.value = content
+  await sleep(300)
+
+  shade.value = false
+})
 onMounted(async () => {
   if (props.stay <= 0) return
 
@@ -50,6 +63,59 @@ export default {
 
 <style lang="scss" scoped>
 
+@keyframes whole-shade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(.75);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes text-shade {
+  0% {
+    opacity: 1;
+    transform: translate(-17px, -50%) translateX(0);
+  }
+  25% {
+    opacity: 0;
+    transform: translate(-17px, -50%) translateX(5px);
+  }
+  75% {
+    opacity: 0;
+    transform: translate(-17px, -50%) translateX(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-17px, -50%) translateX(0);
+  }
+}
+
+@keyframes text-shade-left {
+  0% {
+    opacity: 1;
+    transform: translate(15px, -50%) translateX(0);
+  }
+  25% {
+    opacity: 0;
+    transform: translate(15px, -50%) translateX(-5px);
+  }
+  75% {
+    opacity: 0;
+    transform: translate(15px, -50%) translateX(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(15px, -50%) translateX(0);
+  }
+}
+
 .TalexTip-Container {
 
   .TalexTip-Icon-Wrapper {
@@ -57,7 +123,7 @@ export default {
     display: inline-block;
 
     top: -5px;
-    left: -10px;
+    left: 0px;
 
     width: 16px;
     height: 16px;
@@ -81,6 +147,7 @@ export default {
     filter: invert(5%);
     box-shadow: var(--el-box-shadow-light);
     backdrop-filter: contrast(200%) saturate(180%) blur(10px);
+    transition: .5s;
   }
   &:after {
     z-index: 10;
@@ -94,28 +161,47 @@ export default {
     left: 0;
 
     text-align: center;
-    font-size: 18px;
     //color: var(--el-text-color-primary);
-    transform: translate(-20px, -50%);
+    transform: translate(-17px, -50%);
+    transition: .25s
   }
 
-  padding: 8px 20px 8px 6px;
+  position: relative;
+  padding: 8px 25px 8px 6px;
 
+  max-width: 100%;
   width: max-content;
   height: 30px;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 30px;
   text-indent: 10px;
 
   color: var(--theme-color, var(--el-text-color-primary));
-  transition: .5s
+  border-radius: 8px;
+  user-select: none;
+  transition: box-shadow .5s, .25s;
+  //background-color: var(--el-bg-color);
 
 }
 
+.TalexTip-Container.text-shade {
+  &:after {
+    animation: text-shade .5s;
+  }
+  animation: whole-shade .05s .1s;
+}
+
+.TalexTip-Container.left.text-shade {
+  &:after {
+    animation: text-shade-left .5s !important;
+  }
+  animation: whole-shade .1s .05s;
+}
+
 .TalexTip-Container.left {
-  padding: 8px 6px 8px 20px;
+  padding: 8px 11px 8px 25px;
   .TalexTip-Icon-Wrapper {
-    left: calc(-100% + 10px);
+    left: calc(-100% + 5px);
 
     width: 16px;
     height: 16px;
@@ -130,33 +216,37 @@ export default {
 
 .success-tip {
 
-  --theme-color: #629168;
+  --theme-color: var(--el-color-success);
+  --theme-light-color: var(--el-color-success-light-5);
 
 }
 
 .info-tip {
 
-  --theme-color: #284f90;
+  --theme-color: var(--el-color-primary);
+  --theme-light-color: var(--el-color-primary-light-5);
 
 }
 
 .warn-tip {
 
-  --theme-color: #f0a732;
+  --theme-color: var(--el-color-warning);
+  --theme-light-color: var(--el-color-warning-light-5);
 
 }
 
 .error-tip {
 
-  --theme-color: #d0493c;
+  --theme-color: var(--el-color-error);
+  --theme-light-color: var(--el-color-error-light-5);
 
 }
 
-.loading-tip {
-
-  box-shadow: 0 0 4px 1px var(--theme-color) inset,
-  0 0 8px 2px var(--theme-color);
-
-}
+//.loading-tip {
+//
+//  box-shadow: 0 0 2px 0 var(--theme-color) inset,
+//  0 0 4px 2px var(--theme-light-color);
+//
+//}
 
 </style>

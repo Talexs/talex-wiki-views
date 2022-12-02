@@ -32,7 +32,7 @@
 import { onMounted, ref, reactive, provide, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { forMentionTip, forWikiTip, TipType } from '~/plugins/Common.ts'
+import { window.$tipper.mention, forWikiTip, TipType } from '~/plugins/Common.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document'
 import WikiChapter from '~/plugins/model/chapter'

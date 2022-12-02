@@ -49,7 +49,8 @@ import CheckList from '@components/common/checkbox/CheckList.vue'
 import { computed, onMounted, onUpdated, reactive, ref } from 'vue'
 import Copy from 'copy-to-clipboard'
 import QRCode from 'qrcode'
-import { _T_EncodeNumber, forMentionTip, TipType } from '@plugins/Common.ts'
+import { _T_EncodeNumber } from '@plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 import { useStore } from '@plugins/store/index.ts'
 import FlatButton from '@components/common/btn/FlatButton.vue'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
@@ -68,7 +69,9 @@ const text = computed(() => `[TalexWiki] 塔莱克斯 | 全新一代分发型维
 function copy() {
   Copy(text.value)
 
-  forMentionTip(new MentionTip("复制成功，粘贴以分享！", 3200, TipType.SUCCESS, true))
+  window.$tipper.mention(new MentionTip("复制成功，粘贴以分享！", {
+    type: TipType.SUCCESS, emphasis: true
+  }))
 }
 
 function renderQRCode() {

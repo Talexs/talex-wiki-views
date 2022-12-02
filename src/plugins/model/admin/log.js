@@ -125,7 +125,7 @@ class Log {
   async getLogs({ executor, page = 0, start, end }) {
      return post('system/logs', {
        page: page,
-       executor,
+       executor: executor || undefined,
        // start: start || this.start,
        // end: end || this.end,
      })

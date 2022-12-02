@@ -43,22 +43,37 @@ import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import AdminModel from '~/plugins/model/admin/admin.js'
 import { Edit } from '@element-plus/icons-vue'
-import { forWikiTip, TipType } from '../../../plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper'
+import { sleep } from '~/plugins/Common'
 
 const router = useRouter()
 const tableData = ref()
 
 async function updateRoleInfo(row) {
 
-  const res = await AdminModel.updateOneGroup(row.id, row.name, row.desc)
+  window.$tipper.tip( '正在更新角色信息...', {
+    loading: async (func) => {
 
-  if( res ) {
+      await sleep(500)
 
-    await forWikiTip( '用户信息更新成功!', 2200, TipType.SUCCESS );
+      const res = await AdminModel.updateOneGroup(row.id, row.name, row.desc)
 
-    await fetchRender()
+      let close
 
-  }
+      if( res ) {
+
+        close = func(" 用户信息更新成功!", TipType.SUCCESS)
+
+        await fetchRender()
+
+      } else close = func(" 用户信息更新失败!", TipType.ERROR)
+
+      await sleep(2600)
+
+      close()
+
+    }
+  } );
 
 }
 
@@ -67,7 +82,9 @@ async function deleteRoleInfo(id) {
   const res = await AdminModel.deleteOneGroup(id)
   if( res ) {
 
-    await forWikiTip( '用户删除成功!', 2200, TipType.SUCCESS );
+    window.$tipper.tip( '用户角色删除成功!', {
+      type: TipType.SUCCESS
+    } );
 
     await fetchRender()
 

@@ -59,9 +59,10 @@ import GlobalConfig from '~/config/GlobalConfig.js'
 import { useStore } from '~/plugins/store/index'
 import { ref, reactive, computed } from 'vue'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
-import { forMentionTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
 import User from '~/plugins/model/base/user.js'
 import { useRouter } from 'vue-router'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 
 const store = useStore()
 const user = ref(store.local.user)
@@ -110,7 +111,10 @@ function submitForm() {
   }
 
   if (this.form.old_password === this.form.new_password) {
-    forMentionTip(new MentionTip('新密码不能与原始密码一样', 2600, TipType.ERROR, true))
+    window.$tipper.mention(new MentionTip('新密码不能与原始密码一样', {
+      type: TipType.ERROR,
+      emphasis: true
+    }))
     return
   }
 
@@ -119,7 +123,7 @@ function submitForm() {
     if (valid) {
       const res = await User.updatePassword(this.form)
       if (res.code < window.MAX_SUCCESS_CODE) {
-        await forMentionTip( new MentionTip( `${ res.message }` ) )
+        await window.$tipper.mention( new MentionTip( `${ res.message }` ) )
         formRef.value.resetFields()
 
         await sleep(1200)
@@ -132,7 +136,10 @@ function submitForm() {
 
       }
     } else {
-      await forMentionTip(new MentionTip('信息核对失败!', 2600, TipType.ERROR, true))
+      await window.$tipper.mention(new MentionTip('信息核对失败!', {
+        type: TipType.ERROR,
+        emphasis: true
+      }))
       return false
     }
   })
@@ -149,7 +156,10 @@ async function uploadCover(res) {
 
   if( back ) {
 
-    await forMentionTip( new MentionTip( '头像修改成功!', 2000, TipType.INFO, true ) )
+    await window.$tipper.mention( new MentionTip( '头像修改成功!', {
+      type: TipType.INFO,
+      emphasis: true
+    } ) )
 
   }
 }

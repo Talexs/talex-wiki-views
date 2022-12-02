@@ -93,16 +93,9 @@ import ChapterModel from '@plugins/model/chapter.js'
 import DocModel from '@plugins/model/document.js'
 import { useStore } from '@plugins/store/index.ts'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  _T_DecodeNumber,
-  _T_EncodeNumber,
-  forMentionTip,
-  forWikiDialogTip, forWikiTip,
-  number2str,
-  sleep,
-  TipType
-} from '@plugins/Common.ts'
+import { sleep } from '@plugins/Common.ts'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
+import { TipType, forWikiTip, forWikiDialogTip } from '~/plugins/addon/Tipper.ts'
 import ShareAction from '@components/wiki/addon/ShareAction.vue'
 
 const router = useRouter()

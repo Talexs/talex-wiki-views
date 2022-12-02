@@ -6,6 +6,7 @@
         'error-tip': nowStatus === TipType.ERROR,
         'success-tip': nowStatus === TipType.SUCCESS }"
     >
+<!--      <Mention v-if="nowStatus" :mode="nowStatus"/>-->
 <!--      <div class="WikiMentioner-Container">-->
 
 <!--      </div>-->
@@ -14,14 +15,18 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { sleep, TipType } from '../../../plugins/Common.ts'
+import { computed, onMounted, ref } from 'vue'
+import { sleep } from '~/plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper'
+import Mention from '~/components/common/icon/Mention.vue'
 
 const props = defineProps( {
-  list: Object, close: Function
+  list: Object, close: Function,
 } )
 const dom = ref(null)
-const nowStatus = ref("")
+const nowStatus = ref()
+
+// const _type = ref() //computed(() => props.type.value || props.type)
 
 onMounted(async () => {
 
@@ -62,7 +67,7 @@ async function mention(tip) {
 
   await sleep(150)
 
-  if( tip?.emphase ) {
+  if( tip?.emphasis ) {
 
     style.boxShadow = '0 0 4px 2px var(--theme-color)'
 
@@ -120,7 +125,7 @@ export default {
     filter: invert(5%);
     border-radius: var(--radius);
     background-color: var(--theme-color, var(--el-text-color-regular));
-    box-shadow: 0 0 1px 2px var(--theme-color, var(--el-text-color-regular)) inset;
+    box-shadow: 0 0 1px 2px var(--theme-color, var(--el-text-color-regular)) inset, var(--el-box-shadow-light);
     transition: .3s cubic-bezier(.25,.8,.25,1);
   }
   z-index: 10000;

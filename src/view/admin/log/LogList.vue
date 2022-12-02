@@ -38,7 +38,6 @@
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import LogModel from '~/plugins/model/admin/log.js'
-import { forWikiTip, TipType } from '../../../plugins/Common.ts'
 import UserAvatar from '../../../components/common/avatar/UserAvatar.vue'
 
 const router = useRouter()

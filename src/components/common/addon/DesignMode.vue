@@ -28,8 +28,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { forMentionTip, sleep, TipType } from '@plugins/Common.ts'
+import { sleep } from '@plugins/Common.ts'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
+import { TipType } from '~/plugins/addon/Tipper'
 
 const props = defineProps({
   theme: {
@@ -62,7 +63,11 @@ async function changeMode() {
 
     await sleep(2600)
 
-    return await forMentionTip(new MentionTip("抱歉，此主题仅对 PRO 用户开放!", 3400, TipType.ERROR, true))
+    return await window.$tipper.mention(new MentionTip("抱歉，此主题仅对 PRO 用户开放!", {
+      stay: 3400,
+      type: TipType.ERROR,
+      emphasis: true
+    }))
 
   }
 

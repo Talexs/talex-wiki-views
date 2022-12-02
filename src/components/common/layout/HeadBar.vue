@@ -102,7 +102,7 @@
                 </template>
                 <template #label>外观</template>
                 <template #multiple>
-                  <TalexDropItem @click="changeTheme('light')">
+                  <TalexDropItem @click="theme.name = 'light';theme.adapt = ThemeAdapt.NONE">
                     <template #icon>
                       <el-icon>
                         <Sunny />
@@ -110,7 +110,7 @@
                     </template>
                     <template #label>明净光亮</template>
                   </TalexDropItem>
-                  <TalexDropItem @click="changeTheme('dark')">
+                  <TalexDropItem @click="theme.name = 'dark';theme.adapt = ThemeAdapt.NONE">
                     <template #icon>
                       <el-icon>
                         <Moon />
@@ -196,7 +196,7 @@
                 </template>
               </TalexDropItem>
               <TalexDropItem divider />
-              <TalexDropItem @click="logout" danger>
+              <TalexDropItem @click="store.local.loggedIn = false" danger>
                 <template #icon>
                   <el-icon><SwitchButton /></el-icon>
                 </template>
@@ -232,19 +232,18 @@ import TFSelector from '~/components/common/selector/TFSelector.vue'
 import TFSelectorItem from '~/components/common/selector/TFSelectorItem.vue'
 
 import { MostlyCloudy, Watermelon, Document, Notebook, Odometer, PieChart, Compass, Link, Finished, Sunny, Moon, Cloudy, Coordinate, Collection, Tickets, Setting, Help, SwitchButton } from '@element-plus/icons-vue'
-import { forMentionTip, TipType } from '~/plugins/Common.ts'
-import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import MenuIcon from '~/components/common/icon/MenuIcon.vue'
+import { ThemeAdapt } from '~/plugins/addon/enums'
 
 const store = useStore()
 
 const headDialogVisible = toRef(store.system.global.login, 'dialog')
-const theme = toRef(store.local, 'theme')
+const theme = store.local.theme
 
-async function changeTheme(themeStr) {
-  store.local.theme = theme.value = themeStr
-  await forMentionTip(new MentionTip("切换成功!", 1400, TipType.SUCCESS))
-}
+// async function changeTheme(themeStr) {
+//   store.local.theme = theme.value = themeStr
+//   await window.$tipper.mention( new MentionTip( "切换成功!", 1400, TipType.SUCCESS ) )
+// }
 
 </script>
 

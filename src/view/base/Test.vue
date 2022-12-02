@@ -16,7 +16,9 @@
 
 <template>
   <div class="TestContainer">
-    <FlatButton @click="mention1">提示</FlatButton>
+    <FlatButton @click="mention1">测试签到</FlatButton>
+    <FlatButton @click="mention2">测试TOAST</FlatButton>
+    <FlatButton @click="mention3">测试TOAST(ICON)</FlatButton>
 <!--    <Mention :mode="mode"></Mention>-->
 <!--    <el-radio-group v-model="mode">-->
 <!--      <el-radio-button :label="`loading`">加载</el-radio-button>-->
@@ -30,7 +32,9 @@
 <script setup>
 import { ref } from 'vue'
 import FlatButton from '~/components/common/btn/FlatButton.vue'
-import { forTip, forWikiTip, sleep, TipType } from '~/plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper.ts'
+import { MentionTip } from '~/plugins/addon/MentionerManager'
 
 const mode = ref('loading')
 
@@ -38,9 +42,14 @@ function mention1() {
 
   // forWikiTip("Hello!")
   // forWikiTip("Hello!")
+  // forWikiTip("Hello!")
+  // forWikiTip("Hello!")
+  // forWikiTip("Hello!")
   // forWikiTip("签到成功!", -1, TipType.SUCCESS)
 
-  forTip("签到中...", {
+
+
+  window.$tipper.tip("签到中...", {
     stay: -1,
     loading: async(func) => {
 
@@ -50,18 +59,7 @@ function mention1() {
 
       await sleep(2000)
 
-      close()
-
-    }
-  })
-
-  forTip("签到中...", {
-    stay: -1,
-    loading: async(func) => {
-
-      await sleep(1000)
-
-      const close = func("签到失败！", TipType.ERROR)
+      func("签到积分 +2！", TipType.INFO)
 
       await sleep(2000)
 
@@ -69,6 +67,22 @@ function mention1() {
 
     }
   })
+
+}
+
+function mention2() {
+
+  window.$tipper.mention(new MentionTip("这是一个测试TOAST") )
+
+}
+
+function mention3() {
+
+  window.$tipper.mention(new MentionTip("这是一个测试TOAST", {
+    time: 3000,
+    type: TipType.SUCCESS,
+    emphasis: true
+  }) )
 
 }
 </script>

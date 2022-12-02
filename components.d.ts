@@ -21,7 +21,6 @@ declare module '@vue/runtime-core' {
     ClearTab: typeof import('./src/components/layout/clear-tab.vue')['default']
     CodeIcon: typeof import('./src/components/common/icon/CodeIcon.vue')['default']
     CodeInput: typeof import('./src/components/common/input/CodeInput.vue')['default']
-    Correct: typeof import('./src/components/common/icon/mention/Correct.vue')['default']
     DesignMode: typeof import('./src/components/common/addon/DesignMode.vue')['default']
     DocEditor: typeof import('./src/components/wiki/DocEditor.vue')['default']
     DocOutline: typeof import('./src/components/wiki/addon/DocOutline.vue')['default']

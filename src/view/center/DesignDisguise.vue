@@ -11,16 +11,17 @@
     <p class="title force">主题偏好</p>
     <blockquote>
       选择 TalexWiki 对您呈现的页面主题，或与您的系统同步并在白天和夜间主题之间自动切换。
+      当您手动指定主题后，自动同步将会失效！
     </blockquote>
     <div style="display: flex">
-      <CheckBox disabled style="position: relative;left: 15px" v-model="colorBlindness" title="&nbsp;颜色主题跟随系统"></CheckBox>
+      <CheckBox :no-value="ThemeAdapt.NONE" :yes-value="ThemeAdapt.SYSTEM" style="position: relative;left: 15px" v-model="theme.adapt" title="&nbsp;颜色主题跟随系统"></CheckBox>
       <br />
-      <CheckBox disabled style="position: relative;left: 15px" v-model="colorBlindness" title="&nbsp;颜色主题跟随时间"></CheckBox>
+      <CheckBox :no-value="ThemeAdapt.NONE" :yes-value="ThemeAdapt.TIME" style="position: relative;left: 15px" v-model="theme.adapt" title="&nbsp;颜色主题跟随时间"></CheckBox>
       <br />
     </div>
     <div class="DesignDisguise-Main">
-      <DesignMode @click="changeTheme('light')" :select="theme === 'light'" theme="#EEEEEE" title="明净光亮" />
-      <DesignMode @click="changeTheme('dark')" :select="theme === 'dark'" theme="#212121" title="奇异暗黑" />
+      <DesignMode @click="theme.name = 'light';theme.adapt = ThemeAdapt.NONE" :select="theme.name === 'light'" theme="#EEEEEE" title="明净光亮" />
+      <DesignMode @click="theme.name = 'dark';theme.adapt = ThemeAdapt.NONE" :select="theme.name === 'dark'" theme="#212121" title="奇异暗黑" />
       <DesignMode @click='none' style="--danger: #400700;--success: #014003" theme="#282C34" title="云镜雾色" vip />
       <DesignMode @click='none' style="--danger: red;--success: green" theme="#000000" title="强烈对比" vip />
       <DesignMode @click='none' style="--danger: #de3116;--success: #76de1b" theme="#DECf6D" title="柔和暖色" vip />
@@ -33,22 +34,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
 import DesignMode from '@components/common/addon/DesignMode.vue'
 import CheckBox from '@components/common/checkbox/CheckBox.vue'
 import { useStore } from '~/plugins/store/index.ts'
-import { forMentionTip, sleep, TipType } from '~/plugins/Common.ts'
-import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
+import { ThemeAdapt } from '~/plugins/addon/enums'
 
 const store = useStore()
 
-const theme = ref(store.local.theme)
-const colorBlindness = ref(false)
+const theme = toRef(store.local,'theme')
 
-async function changeTheme(themeStr) {
-  store.local.theme = theme.value = themeStr
-  await forMentionTip(new MentionTip("切换成功!", 1400, TipType.SUCCESS))
-}
+const colorBlindness = ref(false)
 
 async function none() {
 

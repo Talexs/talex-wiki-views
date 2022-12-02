@@ -91,7 +91,7 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import iWikiModel from '@plugins/model/imported-wiki.js'
 import TalexCoverDialog from '@components/common/dialog/TalexCoverDialog.vue'
-import { forMentionTip, sleep, TipType } from '@plugins/Common.ts'
+import { window.$tipper.mention, sleep, TipType } from '@plugins/Common.ts'
 import { useStore } from '@plugins/store/index.ts'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
 
@@ -146,7 +146,7 @@ async function nextStep() {
 
     if( res.code === 10071 ) {
 
-      return forMentionTip(new MentionTip(res.message + '!', 3300, TipType.WARNING, true))
+      return window.$tipper.mention(new MentionTip(res.message + '!', 3300, TipType.WARNING, true))
 
     }
 

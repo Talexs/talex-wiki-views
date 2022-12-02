@@ -1,7 +1,7 @@
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from '~/plugins/store'
-import { forWikiTip, TipType } from './Common'
 import GlobalConfig from '~/config/GlobalConfig'
+import { TipType } from '~/plugins/addon/Tipper'
 
 const routes: any = [
     {
@@ -240,7 +240,10 @@ router.beforeEach(async (to, from, next) => {
 
     if( !store.local.loggedIn ) {
 
-        await forWikiTip('请先登录!', 4200, TipType.WARNING)
+        window.$tipper.tip('请先登录!', {
+            stay: 4200,
+            type: TipType.WARNING
+        })
 
         return router.back()
 
@@ -251,7 +254,10 @@ router.beforeEach(async (to, from, next) => {
         // @ts-ignore
         if( !store.local.admin  ) {
 
-            await forWikiTip('您没有权限!', 4200, TipType.WARNING)
+            window.$tipper.tip('您没有全新!', {
+                stay: 4200,
+                type: TipType.WARNING
+            })
 
             return router.back()
 

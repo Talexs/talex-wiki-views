@@ -108,7 +108,7 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { _T_EncodeNumber, forMentionTip, forTip, sleep, TipType } from '~/plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document.js'
 import WikiListTree from '@components/wiki/tree/WikiListTree.vue'
@@ -120,6 +120,7 @@ import { Back, Setting, Folder, Document, Share, Delete, CloseBold } from '@elem
 import WikiStatus from '~/components/wiki/addon/WikiStatus.vue'
 import { useStore } from '~/plugins/store/index.ts'
 import AsideAdapter from '@components/common/layout/AsideAdapter.vue'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 
 const router = useRouter()
 const route = useRoute()
@@ -240,7 +241,7 @@ async function updateDoc(tabObj) {
 
   tabObj.loading = true
 
-  forTip("正在保存文档...", {
+  window.$tipper.tip("正在保存文档...", {
     loading: async (func) => {
 
       const info = markRaw(tabObj.data.origin)

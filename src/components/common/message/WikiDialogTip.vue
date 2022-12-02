@@ -34,7 +34,8 @@
 <script setup>
 import Loading from './../icon/LoadingIcon.vue'
 import { defineProps, onMounted, ref, watchEffect } from 'vue'
-import { sleep, TipType } from './../../../plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 
 const props = defineProps({
   title: String, message: String, stay: Number, close: Function,

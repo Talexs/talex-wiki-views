@@ -17,7 +17,8 @@
 <template>
   <div class="Mention-Icon-Wrapper" :class="{
     'normal': mode === null,
-  'warning': mode === TipType.WARNING || mode === TipType.INFO,
+  'warning': mode === TipType.WARNING,
+  'info': mode === TipType.INFO,
    'error': mode === TipType.ERROR,
     'success': mode === TipType.SUCCESS,
      'loading': mode === 'loading' }">
@@ -29,7 +30,8 @@
 
 <script setup>
 
-import { debounceRef, TipType } from '~/plugins/Common'
+import { debounceRef } from '~/plugins/Common'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 import { toRef } from 'vue'
 
 const props = defineProps({
@@ -137,7 +139,7 @@ export default {
       width: 30%;
       height: 200%;
 
-      transition: .25s .05s;
+      transition: .25s .1s;
       transform: translate(300%, -40%) rotate(45deg);
     }
     top: 60%;
@@ -209,6 +211,36 @@ export default {
   }
   //animation: rotate .85s linear infinite;
   --bg-color: var(--el-color-warning);
+
+}
+
+.Mention-Icon-Wrapper.info .Mention-Icon-Container {
+
+  .Mention-Icon-Floater {
+    &:before, &:after {
+      left: 50%;
+      top: 50%;
+      width: 30%;
+      height: 150%;
+      transition: .25s .1s;
+      transform: translate(-50%, -100%) rotate(0);
+    }
+
+    &:after {
+      height: 30%;
+
+      transform: translate(-50%, 100%) rotate(0);
+    }
+    top: 60%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+  }
+  &:before {
+    animation: floater-wave .65s forwards;
+  }
+  //animation: rotate .85s linear infinite;
+  --bg-color: var(--el-color-primary);
 
 }
 

@@ -25,3 +25,13 @@ export enum ViewerAnimation {
     SCALE = "缩放",
     CLOSE = "关闭"
 }
+
+
+export enum ThemeAdapt {
+
+    SYSTEM = "系统",
+    TIME = "时间",
+
+    NONE = "自定义"
+
+}

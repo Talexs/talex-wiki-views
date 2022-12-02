@@ -56,7 +56,8 @@
 <script setup>
 import { onMounted, ref, reactive, provide, nextTick, onUpdated, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { _T_DecodeNumber, _T_EncodeNumber, forTip, forWikiTip, sleep, TipType } from '~/plugins/Common'
+import { _T_DecodeNumber, _T_EncodeNumber, sleep } from '~/plugins/Common'
+import { TipType, forWikiTip } from '~/plugins/addon/Tipper.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document'
 import WikiChapter from '~/plugins/model/chapter'
@@ -177,7 +178,7 @@ async function changeCurrentDoc(data) {
 async function fetchData(fetch = true) {
   if (fetch) {
     // TODO 让文档加载了就先出来吧
-    forTip("正在加载维基...", {
+    window.$tipper.tip("正在加载维基...", {
       loading: async(func) => {
         const array = await WikiDocument.getDocument(book.value.id)
 

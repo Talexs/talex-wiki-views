@@ -1,13 +1,13 @@
 import axios from 'axios'
 
-import { forMentionTip, forWikiTip, sleep, TipType } from '../Common'
+import { sleep } from '../Common'
 
 import GlobalConfig from '~/config/GlobalConfig.js'
 import RefreshConfig from '~/config/RefreshConfig.js'
 import ErrorCode from '~/config/ErrorCode.js'
 import { useStore } from '~/plugins/store'
 import { MentionTip } from '~/plugins/addon/MentionerManager'
-import { useRouter } from "vue-router";
+import { TipType } from '~/plugins/addon/Tipper'
 
 const config = {
     baseURL: `${GlobalConfig.hostName}:${GlobalConfig.endsPort}/`,
@@ -95,7 +95,10 @@ async function logout() {
 
     // window.location = '/'
 
-    await forWikiTip( '登录超时，请重新登录！', 4000, TipType.ERROR );
+    window.$tipper.tip( '登录超时，请重新登录!', {
+        stay: 4000,
+        type: TipType.ERROR
+    } );
 }
 
 // 添加响应拦截器
@@ -106,7 +109,10 @@ _axios.interceptors.response.use(
 
             console.error("@FATAL ERROR@")
 
-            await forWikiTip( '系统出现错误，请联系管理员!', 12000, TipType.ERROR );
+            window.$tipper.tip( '系统出现错误，请联系管理员!', {
+                stay: 12000,
+                type: TipType.ERROR
+            } );
 
             return Promise.reject(res)
 
@@ -156,7 +162,10 @@ _axios.interceptors.response.use(
 
                 console.log("@Error", m)
 
-                await forWikiTip( m + '!', 3200, TipType.ERROR );
+                window.$tipper.tip( m + '!', {
+                    stay: 3200,
+                    type: TipType.WARNING
+                } );
 
                 await sleep(200)
 
@@ -176,12 +185,18 @@ _axios.interceptors.response.use(
     async res => {
 
         if ( !res.response || res.code === "ERR_INTERNET_DISCONNECTED" ) {
-            return await forWikiTip( '请检查您的网络!', 8200, TipType.ERROR, true );
+            return window.$tipper.tip( '请检查您的网络!', {
+                stay: 8200,
+                type: TipType.WARNING
+            } );
         }
 
         // 判断请求超时
         if ( res.code === "ERR_NETWORK" && (res.message.indexOf('timeout') !== -1 || res.message === 'Network Error') ) {
-            return await forWikiTip( '无法连接至远程服务器!', 8200, TipType.ERROR, true );
+            return window.$tipper.tip( '无法连接至远程服务器!', {
+                stay: 8200,
+                type: TipType.WARNING
+            } );
         }
 
         console.log("@ERROR", res)
@@ -220,7 +235,7 @@ _axios.interceptors.response.use(
             if (Object.prototype.toString.call(message) === '[object Array]') {
                 ;[tipMessage] = message
             }
-            await forMentionTip( new MentionTip(tipMessage, 3200, TipType.ERROR, true) );
+            await window.$tipper.mention( new MentionTip(tipMessage, 3200, TipType.ERROR, true) );
             reject(res)
         })
 

@@ -152,7 +152,7 @@ onBeforeMount(() => {
   document.getElementById('AppMainLayer')?.removeEventListener('scroll', scrollUp)
 })
 
-watchEffect(() => {
+watch(() => store.local.permissions, () => {
     let access = false
     Array(store.local.permissions)?.flat().forEach(per => {
         if( access ) return

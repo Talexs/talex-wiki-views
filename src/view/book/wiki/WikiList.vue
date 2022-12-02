@@ -19,15 +19,15 @@
                 <el-icon><Plus /></el-icon>
               </template>
             </TalexDropItem>
-            <TalexDropItem divider />
-            <TalexDropItem beta @click="handleImportWiki">
-              <template #label>
-                导入维基
-              </template>
-              <template #icon>
-                <el-icon><Right /></el-icon>
-              </template>
-            </TalexDropItem>
+<!--            <TalexDropItem divider />-->
+<!--            <TalexDropItem beta @click="handleImportWiki">-->
+<!--              <template #label>-->
+<!--                导入维基-->
+<!--              </template>-->
+<!--              <template #icon>-->
+<!--                <el-icon><Right /></el-icon>-->
+<!--              </template>-->
+<!--            </TalexDropItem>-->
           </TalexDropdown>
           <LayoutSelect v-model="listLayout" />
         </div>
@@ -70,12 +70,12 @@
 <!--    </transition>-->
 
     <!-- 导入页面 -->
-    <ImportedWiki v-if="showImport" @editClose="editClose" ></ImportedWiki>
+<!--    <ImportedWiki v-if="showImport" @editClose="editClose" ></ImportedWiki>-->
   </div>
 </template>
 
 <script setup>
-import ImportedWiki from './import-wiki.vue'
+// import ImportedWiki from './import-wiki.vue'
 import TalexDropdown from '@components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '@components/common/dropdown/talex-drop-item.vue'
 import { Right, Plus, Select, CloseBold } from '@element-plus/icons-vue'

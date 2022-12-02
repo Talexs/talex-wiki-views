@@ -14,7 +14,8 @@
 <script setup>
 import { defineProps, onMounted } from 'vue'
 import Loading from '../icon/LoadingIcon.vue'
-import { sleep, TipType } from '~/plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 
 const props = defineProps({
   message: String,

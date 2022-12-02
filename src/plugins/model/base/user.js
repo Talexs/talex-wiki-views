@@ -99,6 +99,14 @@ export default class User {
     })
   }
 
+  static getUserOption(key) {
+    return get('user/options/' + key)
+  }
+
+  static updateThemeOption(value) {
+    return put('user/options/theme', value)
+  }
+
   /**
    *
    */

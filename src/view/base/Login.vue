@@ -53,13 +53,14 @@ import UserAnimate from './../../components/common/icon/UserAnimate.vue'
 import FlatInput from './../../components/common/input/FlatInput.vue'
 import FlatButton from './../../components/common/btn/FlatButton.vue'
 
-import { forMentionTip, TipType, sleep, forWikiDialogTip } from '~/plugins/Common.ts'
+import { sleep } from '~/plugins/Common.ts'
 import { reactive, defineEmits } from 'vue'
 import UserModel from '~/plugins/model/base/user.js'
 import { useStore } from '~/plugins/store/index.ts'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import RotateCaptcha from '~/components/common/captcha/RotateCaptcha.vue'
 import { useRouter } from 'vue-router'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 
 const router = useRouter()
 const emits = defineEmits(['success', 'close'])
@@ -84,7 +85,7 @@ async function goRegister() {
   //
   //       await sleep(5000)
   //
-  //       await forMentionTip(new MentionTip("抱歉，现在无法申请!", 3200, TipType.ERROR, true))
+  //       await window.$tipper.mention(new MentionTip("抱歉，现在无法申请!", 3200, TipType.ERROR, true))
   //
   //       return false
   //
@@ -122,7 +123,9 @@ async function _login(token) {
 
     loadings.btn = false
 
-    await forMentionTip(new MentionTip("登录成功!", 2600, TipType.SUCCESS))
+    await window.$tipper.mention(new MentionTip("登录成功!", {
+      type: TipType.SUCCESS
+    }))
 
     await sleep(1300)
 
@@ -146,7 +149,7 @@ async function tryLogin(func) {
 
     loadings.btn = false
 
-    return await forMentionTip({ content: "请确保您的账号格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
+    return await window.$tipper.mention({ content: "请确保您的账号格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
 
   }
 
@@ -154,11 +157,11 @@ async function tryLogin(func) {
 
     loadings.btn = false
 
-    return await forMentionTip({ content: "请确保您的密码格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
+    return await window.$tipper.mention({ content: "请确保您的密码格式正确(3-32位)!", time: 2600, type: TipType.ERROR })
 
   }
 
-  // await forMentionTip({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
+  // await window.$tipper.mention({ content: "确保你是一个自然人!", time: 1800, type: TipType.INFO })
 
   // await onSuccess.value()
   // await _login(token)

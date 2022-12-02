@@ -1,5 +1,6 @@
 <template>
-  <div class="CheckBox-Wrapper" @click="!props.disabled && (() => value = valueMode ? title : !value)()" :class="{ 'checked': valueMode ? value === title : value, disabled }">
+  <div class="CheckBox-Wrapper" @click="!props.disabled && (() => value = valueMode ? title : (value ? yesValue || !value : noValue || !value))()"
+       :class="{ 'checked': valueMode ? value === title : ((value && yesValue) ? value === yesValue : value), disabled }">
     <div class="CheckBox-Container">
     </div>
     <slot>
@@ -12,7 +13,7 @@
 import { useModelWrapper } from '~/plugins/Common.ts'
 
 const emits = defineEmits(['update:modelValue'])
-const props = defineProps({ modelValue: Boolean, title: String, disabled: Boolean, valueMode: Boolean })
+const props = defineProps({ modelValue: Boolean, title: String, disabled: Boolean, valueMode: Boolean, yesValue: Object, noValue: Object })
 
 const value = useModelWrapper(props, emits)
 
