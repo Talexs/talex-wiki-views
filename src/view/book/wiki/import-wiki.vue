@@ -91,7 +91,8 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import iWikiModel from '@plugins/model/imported-wiki.js'
 import TalexCoverDialog from '@components/common/dialog/TalexCoverDialog.vue'
-import { window.$tipper.mention, sleep, TipType } from '@plugins/Common.ts'
+import { sleep } from '@plugins/Common.ts'
+import { TipType } from '~/plugins/addon/Tipper.ts'
 import { useStore } from '@plugins/store/index.ts'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
 

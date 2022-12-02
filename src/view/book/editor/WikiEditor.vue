@@ -32,13 +32,8 @@
 import { onMounted, ref, reactive, provide, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { window.$tipper.mention, forWikiTip, TipType } from '~/plugins/Common.ts'
-import Wiki from '~/plugins/model/wiki'
-import WikiDocument from '~/plugins/model/document'
-import WikiChapter from '~/plugins/model/chapter'
 import DocEditor from '~/components/wiki/DocEditor.vue'
 import { useStore } from '~/plugins/store/index.ts'
-import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 
 const router = useRouter()
 const route = useRoute()

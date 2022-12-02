@@ -64,9 +64,8 @@ import wikiModel from '~/plugins/model/wiki.js'
 import UploadImgs from '~/components/base/upload-image/index.vue'
 import MemberList from '~/view/book/member/MemberList.vue'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
-import { window.$tipper.mention, TipType } from '@plugins/Common.ts'
+import { TipType } from '@plugins/addon/Tipper.ts'
 import GlobalConfig from '~/config/GlobalConfig.js'
-import User from '@plugins/model/base/user.js'
 import { useRoute, useRouter } from 'vue-router'
 
 const form = ref(null)
@@ -150,7 +149,9 @@ const submitForm = async formName => {
 
       if( res ) {
 
-        await window.$tipper.mention(new MentionTip(editWikiId.value ? "修改成功!" : "创建成功!", 2600, TipType.SUCCESS))
+        await window.$tipper.mention(new MentionTip(editWikiId.value ? "修改成功!" : "创建成功!", {
+          type: TipType.SUCCESS
+        }))
 
         router.back()
 
