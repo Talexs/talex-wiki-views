@@ -22,7 +22,7 @@
         分发型的
         <h1>知识管理系统</h1>
         <p>
-          TalexWiki 助您构建您的下一代 知识系统， 这是一个开源的知识管理系统，让知识管理变得简单而又强大。
+          TalexWiki 助您构建您的下一代 协作知识系统， 这是一个开源的知识管理系统，让知识管理变得简单而又强大。
         </p>
         <div class="Index-Btn">
           <FlatButton @click="loginDialog = true" large>

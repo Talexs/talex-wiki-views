@@ -1,90 +1,136 @@
+<!--
+  - Copyright (c) 2022. TalexDreamSoul
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <div ref="containerRef" class="DocEditor-Container">
-<!--    <div class="DocEditor-inner" ref="inner">-->
-     <el-scrollbar>
-       <VueEditor :editor="editor" />
-     </el-scrollbar>
-<!--    </div>-->
+    <!--    <div class="DocEditor-inner" ref="inner">-->
+    <el-scrollbar>
+      <floating-menu class="TalexEditor-FloatingMenu" :editor="editor" :tippy-options="{ duration: 100 }" v-if="editor">
+        <br/>
+        <div class="floating-main">
+          <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="floating-menu-item heading"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+            H1
+          </button>
+          <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="floating-menu-item heading"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+            H2
+          </button>
+          <button @click="editor.chain().focus().toggleBulletList().run()" class="floating-menu-item heading"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
+            H3
+          </button>
+        </div>
+      </floating-menu>
+      <editor-content :editor="editor"/>
+      <!--      <div class="DocEditor-Editor" ref="editorRef"/>-->
+    </el-scrollbar>
+    <!--    </div>-->
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, onMounted, watch, onBeforeMount, reactive, nextTick } from 'vue'
+import { defineEmits, defineProps, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useModelWrapper } from "~/plugins/Common.ts";
+import { EditorContent, useEditor, FloatingMenu } from "@tiptap/vue-3";
+import { PluginKey } from 'prosemirror-state'
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from '@tiptap/extension-placeholder'
+import FloatingMenuPlugin from '@tiptap/extension-floating-menu'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 
-import '@material-design-icons/font'
-import { VueEditor, useEditor } from '@milkdown/vue'
-import 'katex/dist/katex.min.css'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+// load all highlight.js languages
+import { lowlight } from 'lowlight'
+import BubbleMenu from '@tiptap/extension-bubble-menu'
 
-// import { shiki } from 'milkdown-plugin-shiki'
+lowlight.registerLanguage( 'html', html )
+lowlight.registerLanguage( 'css', css )
+lowlight.registerLanguage( 'js', js )
+lowlight.registerLanguage( 'ts', ts )
 
-import { iframePlugin } from '@plugins/milkdown/plugins/PowerPlugin.ts'
-
-import { useModelWrapper } from '~/plugins/Common.ts'
-import { outline } from '@milkdown/utils'
-import { generateEditor } from '@plugins/milkdown/generator.ts'
-
-const props = defineProps({
+const props = defineProps( {
   tVid: String,
-  modelValue: String
-})
-const emits = defineEmits(['update:modelValue', 'outline'])
+  modelValue: String,
+} );
 
-// const inner = ref(null)
-const editor = generateEditor(props.modelValue, (ctx, editorIns) => {
+const containerRef = ref();
 
-  const getOutline = editorIns.action(outline)
+const emits = defineEmits( [ "update:modelValue", "outline" ] );
+const modelValue = useModelWrapper( props, emits );
 
-  emits('outline', getOutline(ctx))
+const editor = useEditor( {
+  content: modelValue.value,
+  autofocus: true,
+  injectCSS: true,
+  extensions: [
+    StarterKit.configure( {
+      codeBlock: {
+        HTMLAttributes: {
+          class: 'code-block',
+        },
+      },
+      code: {
+        HTMLAttributes: {
+          class: 'code',
+        },
+      },
+    } ),
+    Placeholder.configure( {
+      placeholder: ( { node } ) => {
+        if ( node.type.name === 'heading' ) {
+          return '请输入 头部标题 的内容'
+        }
 
-}, (_ctx, markdown) => {
-  modelValue.value = markdown
-})()
+        return '输入当前文档的内容...'
+      }
+    } ),
+    CodeBlockLowlight.configure( {
+      lowlight
+    } ),
+    FloatingMenuPlugin.configure( {
+      pluginKey: new PluginKey( "TalexEditor-FloatingMenu" ),
+      shouldShow: ( props ) => {
+        console.log( props )
+      }
+    } )
+  ],
+  onUpdate( { editor } ) {
+    modelValue.value = editor.getHTML();
+  },
+} )
 
-const modelValue = useModelWrapper(props, emits)
+watch( () => modelValue.value, () => {
 
-const containerRef = ref()
+  if ( editor.value.getHTML() === props.modelValue )
+    return
 
-// watch(() => modelValue.value, () => {
-//
-//   // if (editor.value.getValue() === props.modelValue) {
-//   //   console.log('turn down')
-//   //
-//   //   return
-//   // }
-//
-// })
+  editor.value.commands.setContent( props.modelValue )
 
-// onMounted(() => {
-//
-//   // editor.value = new Vditor(inner.value, {
-//   //   mode: 'wysiwyg',
-//   //   placeholder: '在这里输入内容以编辑...',
-//   //   tab: '    ',
-//   //   counter: {
-//   //     enable: true
-//   //   },
-//   //   toolbarConfig: {
-//   //     pin: true
-//   //   },
-//   //   cache: {
-//   //     id: `talex-wiki-doc-editor-${props.tVid}`,
-//   //     enable: true
-//   //   },
-//   //   after: () => {
-//   //     editor.value.setValue(props.modelValue)
-//   //   },
-//   //   input: value => {
-//   //     modelValue.value = value
-//   //   }
-//   // })
-// })
+} )
 
 </script>
 
 <script>
 export default {
-  name: 'DocEditor',
-}
+  name: "DocEditor",
+};
 </script>
 
 <style lang="scss" scoped>
@@ -92,17 +138,32 @@ export default {
   :deep(.el-scrollbar__view) {
     height: 100% !important;
   }
-  //.DocEditor-inner {
-  //  position: absolute;
-  //
-  //  width: 100% !important;
-  //  height: calc(100% - 0px) !important;
-  //
-  //  border-radius: 0;
-  //}
-   div {
-    height: 100%;
+
+  :deep(.ProseMirror) {
+    &:focus-visible {
+      outline: none;
+    }
+
+    position: absolute;
+    padding: 1% 2%;
+
+    width: 100%;
+    min-height: 100%;
+
+    box-sizing: border-box;
+
+    //background-color: var(--el-fill-color-darker);
   }
+
+  //.DocEditor-Editor {
+  //
+  //
+  //  position: relative;
+  //
+  //  width: 100%;
+  //  min-height: 100%;
+  //}
+
   position: absolute;
 
   top: 0;
@@ -112,13 +173,5 @@ export default {
 
   cursor: help;
   overflow-y: auto;
-  //:deep(.vditor-reset) {
-  //  p {
-  //    font-size: 17px;
-  //  }
-  //  padding: 2% 4% !important;
-  //  caret-color: var(--el-text-color-primary);
-  //  cursor: url(https://svgsilh.com/png-1024/1297941.png), help;
-  //}
 }
 </style>

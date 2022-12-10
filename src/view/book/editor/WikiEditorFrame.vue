@@ -60,15 +60,16 @@
       <el-tabs v-if="tabs?.length > 0" v-model="tabValue" type="card" class="flat-linear" closable @edit="handleTabsEdit">
         <el-tab-pane @click="currentTab = item" :ref="tabRefs" v-for="item in tabs" :key="item.id" :name="item.id">
           <template #label="scope">
-            <span :title="item.origin_content !== item.content ? '未保存' : '已保存'" class="air-dot" :class="{ 'loading': item.loading }"
+            <span :title="item.origin_content !== item.content ? '未保存' : '已保存'" class="air-dot transition-cubic"
+                  :class="{ 'loading': item.loading }"
                   :style="`--dot-color: var(${item.origin_content !== item.content ? '--el-color-warning' :
                         (tabValue === item.id ? '--el-color-primary' : '--el-color-info')})`">
                   {{ item.title }}
             </span>
           </template>
           <div class="WikiEditor-Content">
-            <DocEditor @outline="initOutline($event, item)" :t-vid="item.id" v-model="item.content">
-            </DocEditor>
+            <talex-editor @outline="initOutline($event, item)" :t-vid="item.id" v-model="item.content">
+            </talex-editor>
             <div @click="updateDoc(currentTab)" class="edit-mention transition-cubic" :class="{ shrink: item.origin_content === item.content }">
               按下 <span class="premium-normal">Ctrl+S</span> 保存!
             </div>
@@ -94,29 +95,17 @@
 </template>
 
 <script setup>
-import {
-  onMounted,
-  ref,
-  reactive,
-  provide,
-  onBeforeMount,
-  watch,
-  readonly,
-  watchEffect,
-  shallowReadonly,
-  markRaw, nextTick
-} from 'vue'
+import { markRaw, onBeforeMount, onMounted, provide, reactive, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
 import { sleep } from '~/plugins/Common.ts'
 import Wiki from '~/plugins/model/wiki'
 import WikiDocument from '~/plugins/model/document.js'
 import WikiListTree from '@components/wiki/tree/WikiListTree.vue'
-import DocEditor from '@components/wiki/DocEditor.vue'
+import TalexEditor from '@components/common/editor/TalexEditor.vue'
 import BookDesc from '~/components/wiki/addon/BookDesc.vue'
 import TalexDropdown from '~/components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '~/components/common/dropdown/talex-drop-item.vue'
-import { Back, Setting, Folder, Document, Share, Delete, CloseBold } from '@element-plus/icons-vue'
+import { Back, Delete, Setting } from '@element-plus/icons-vue'
 import WikiStatus from '~/components/wiki/addon/WikiStatus.vue'
 import { useStore } from '~/plugins/store/index.ts'
 import AsideAdapter from '@components/common/layout/AsideAdapter.vue'
@@ -393,30 +382,32 @@ export default {
 .WikiEditor-Main {
   position: relative;
   padding: 0;
-  margin-top: 1px;
 
   border-radius: 0;
   :deep(.el-tabs) {
     background-color: var(--el-fill-color-lighter);
+
     .el-tabs__header {
-      margin-bottom: 2px;
+      margin-bottom: 0%;
       border-bottom: 1px solid var(--el-border-color);
     }
+
     &.el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
       border-bottom-color: var(--el-fill-color-lighter) !important;
     }
-    height: calc(100% - 2px); // 1px belongs to the border of header and margin
+
+    height: calc(100% - 1px); // 1px belongs to the border of header and margin
     .el-tabs__new-tab {
       margin-right: 20px;
     }
+
     .el-tabs__content {
       //padding: 0 10px;
       //margin: 0;
 
-      top: -2px;
-
-      height: calc(100% - 43px);
+      height: calc(100% - 40px);
     }
+
     .el-tab-pane {
       height: 100%;
     }
@@ -450,7 +441,7 @@ export default {
         padding: 4px 16px 4px 8px;
 
         right: 0;
-        top: 1%;
+        bottom: 5%;
 
         cursor: pointer;
         font-size: 14px;

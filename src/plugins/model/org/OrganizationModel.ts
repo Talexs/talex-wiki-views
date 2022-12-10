@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { get, post } from './../api/axios'
 
-export class BaseModel {
-    readonly #base_prefix: string
+import { BaseModel } from '~/plugins/model/BaseModel'
 
-    get base_prefix() {
-        return this.#base_prefix
+class OrganizationModel extends BaseModel {
+
+    constructor() {
+        super("org")
     }
 
-    constructor(base_prefix: string) {
-        this.#base_prefix = base_prefix
+    info(id: number) {
+        return this._get('info/' + id)
     }
 
-    public async _get(url: string, params = {}) {
-        return get(`${this.base_prefix}/${url}`, params)
+    list() {
+        return this._get('list')
     }
 
-    public async _post(url: string, data = {}, params = {}) {
-        return post(`${this.base_prefix}/${url}`, data, params)
+    create(data: any) {
+        return this._post('create', data)
     }
 
 }
+
+export const organizationModel = new OrganizationModel()

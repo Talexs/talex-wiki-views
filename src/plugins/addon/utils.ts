@@ -120,7 +120,7 @@ export function formatDateDistance (
     }
     // console.log(date, baseDate)
     return formatDistance(date, baseDate, initOptions);
-};
+}
 
 /**
  * @desc 获取当前时间或者某个时间的毫秒级时间戳；

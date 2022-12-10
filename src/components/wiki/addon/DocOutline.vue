@@ -22,7 +22,7 @@
       <p><span>最后更新: </span>{{ time }}</p>
     </div>
     <h5>本页目录</h5>
-    <el-tree @node-click="fixSelect" ref="treeRef" default-expand-all :expand-on-click-node="false" highlight-current :data="treeData" node-key="id" :props="{ label: 'text' }">
+    <el-tree @node-click="fixSelect" ref="treeRef" default-expand-all :expand-on-click-node="false" highlight-current :data="treeData" node-key="id" :props="{ label: 'content', children: 'children' }">
 
     </el-tree>
     <div class="DocOutline-Footer">
@@ -100,28 +100,28 @@ const treeData = computed(() => {
 
 onMounted(() => {
 
-  rootEl = pointerRef.value.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[4].childNodes[0]
-
-  const indexId = route.query.index
-
-  if( indexId ) {
-
-    treeRef.value.setCurrentKey(indexId)
-
-    fixSelect( treeRef.value.getCurrentNode(indexId) )
-
-  }
-
-  let timer
-
-  props.func((e) => {
-
-    clearTimeout(timer)
-
-    timer = setTimeout(() => scrollListener(e), 10)
-    // scrollListener
-
-  })
+  // rootEl = pointerRef.value.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[4].childNodes[0]
+  //
+  // const indexId = route.query.index
+  //
+  // if( indexId ) {
+  //
+  //   treeRef.value.setCurrentKey(indexId)
+  //
+  //   fixSelect( treeRef.value.getCurrentNode(indexId) )
+  //
+  // }
+  //
+  // let timer
+  //
+  // props.func((e) => {
+  //
+  //   clearTimeout(timer)
+  //
+  //   timer = setTimeout(() => scrollListener(e), 10)
+  //   // scrollListener
+  //
+  // })
 
 })
 

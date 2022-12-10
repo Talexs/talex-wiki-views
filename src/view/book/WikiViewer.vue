@@ -245,38 +245,12 @@ onUpdated(render)
 async function render() {
   if (wikiID.value) return
 
-  // for(let i = 0; i < 100; ++i) {
-  //
-  //   const encode = _T_EncodeNumber(i, 0)
-  //   const decode = _T_DecodeNumber(encode, 0)
-  //
-  //   if( i !== decode ) {
-  //
-  //     console.warn(i + " has problem", encode, decode)
-  //
-  //   }
-  //
-  //   const i_encode = _T_EncodeNumber(i, 233)
-  //   const i_decode = _T_DecodeNumber(i_encode, 233)
-  //
-  //   if( i !== i_decode ) {
-  //
-  //     console.warn(i + " has i_problem", i_encode, i_decode)
-  //
-  //   }
-  //
-  // }
-
-  // const tIndex = index
   await nextTick(async () => {
     const { doc } = route.query
     const { id } = route.params
 
-    // tIndex.value = index
     if( doc )
       wikiID.value = _T_DecodeNumber(doc, 18)
-
-    // book.value = { id }
 
     book.value = await Wiki.getBook(_T_DecodeNumber(id, 9)) // TODO 浏览页面无需详情
 

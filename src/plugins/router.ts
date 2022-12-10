@@ -80,6 +80,38 @@ const routes: any = [
                 component: () => import('../view/center/dashboard/Dashboard.vue')
             },
             {
+                path: "/org",
+                name: "组织管理",
+                meta: {
+                    heightUnlimited: true,
+                    loginRequired: true,
+                    largerWidth: false
+                },
+                redirect: "/org/list",
+                children: [
+                    {
+                        path: "/org/create",
+                        name: "创建组织",
+                        meta: {
+                            heightUnlimited: true,
+                            loginRequired: true,
+                            largerWidth: false
+                        },
+                        component: () => import('../view/organization/ApplyOrg.vue')
+                    },
+                    {
+                        path: "/org/list",
+                        name: "创建组织",
+                        meta: {
+                            heightUnlimited: true,
+                            loginRequired: true,
+                            largerWidth: false
+                        },
+                        component: () => import('../view/organization/OrgList.vue')
+                    },
+                ]
+            },
+            {
                 path: "/user/design",
                 name: "外观设计",
                 meta: {
@@ -179,6 +211,11 @@ const routes: any = [
                 component: () => import('../view/admin/log/LogList.vue')
             },
         ]
+    },
+    {
+      path: "/org/view/:id",
+        name: "组织详情",
+        component: () => import('../view/organization/OrgView.vue')
     },
     {
         path: "/user/register",

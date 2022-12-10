@@ -19,7 +19,7 @@
         <div class="HeadBar-Main only-pc-display">
           <TFSelector router-mode>
             <TFSelectorItem plain to="/index" title="主页"></TFSelectorItem>
-            <TFSelectorItem plain disabled to='/team' title="团队"></TFSelectorItem>
+            <TFSelectorItem plain to='/org/list' title="组织"></TFSelectorItem>
             <TFSelectorItem plain disabled to='/template' title="模板"></TFSelectorItem>
             <TFSelectorItem plain :disabled="!store.local.loggedIn" to='/user/security' title="安全" />
             <TFSelectorItem plain to='/about' title="关于" />
