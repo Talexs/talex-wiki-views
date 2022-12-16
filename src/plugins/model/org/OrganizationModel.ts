@@ -34,6 +34,18 @@ class OrganizationModel extends BaseModel {
         return this._post('create', data)
     }
 
+    edit(id: number, data: any) {
+        return this._post('update', {
+            id, ...data
+        })
+    }
+
+    invite(org_id: number, user_id: number) {
+        return this._post('invite/' + org_id, {
+            user_id
+        })
+    }
+
 }
 
 export const organizationModel = new OrganizationModel()

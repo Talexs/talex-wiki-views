@@ -32,7 +32,7 @@ export default {
 
 <script setup>
 import { ref, inject, onMounted } from 'vue'
-import UserModel from '@plugins/model/base/user.js'
+import UserModel from '~/plugins/model/base/user.ts'
 import RegAccount from './RegAccount.vue'
 
 const model = ref('')

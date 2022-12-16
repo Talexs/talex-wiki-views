@@ -55,7 +55,7 @@ import FlatButton from './../../components/common/btn/FlatButton.vue'
 
 import { sleep } from '~/plugins/Common.ts'
 import { reactive, defineEmits } from 'vue'
-import UserModel from '~/plugins/model/base/user.js'
+import { userModel } from '~/plugins/model/base/user.ts'
 import { useStore } from '~/plugins/store/index.ts'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import RotateCaptcha from '~/components/common/captcha/RotateCaptcha.vue'
@@ -115,7 +115,7 @@ async function _login(token) {
 
   try {
 
-    const res = await UserModel.getToken(token, formModel.username, formModel.password)
+    const res = await userModel.getToken(token, formModel.username, formModel.password)
 
     store.local.user = res.user
     store.local.permissions = res.eller.permissions

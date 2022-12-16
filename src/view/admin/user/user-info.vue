@@ -41,7 +41,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import AdminModel from '~/plugins/model/admin/admin.js'
-import UserModel from '~/plugins/model/base/user.js'
+import UserModel from '~/plugins/model/base/user.ts'
 
 export default {
   props: {

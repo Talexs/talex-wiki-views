@@ -1,8 +1,24 @@
+<!--
+  - Copyright (c) 2022. TalexDreamSoul
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <div class="HeadBar-Container">
     <el-row :gutter="20">
       <el-col :span="2">
-        <Logo />
+        <Logo/>
       </el-col>
       <el-col :span="20">
         <MenuIcon class="only-pe-display">
@@ -29,67 +45,70 @@
       <el-col :span="2">
         <div class="HeadBar-Personal">
           <div class="UserPersonal" v-if="store.local.loggedIn">
-            <TalexDropdown hover-trigger style="margin-right: 10px">
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Document /></el-icon>
-                </template>
-                <template #label>
-                  文档
-                </template>
-              </TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Odometer /></el-icon>
-                </template>
-                <template #label>仪表盘</template>
-              </TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><PieChart /></el-icon>
-                </template>
-                <template #label>
-                  数据图
-                </template>
-              </TalexDropItem>
-              <TalexDropItem divider></TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Notebook /></el-icon>
-                </template>
-                <template #label>
-                  维基文档
-                </template>
-              </TalexDropItem>
-              <TalexDropItem divider></TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Compass /></el-icon>
-                </template>
-                <template #label>
-                  指南文档
-                </template>
-              </TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Link /></el-icon>
-                </template>
-                <template #label>
-                  协作组织
-                </template>
-              </TalexDropItem>
-              <TalexDropItem>
-                <template #icon>
-                  <el-icon><Finished /></el-icon>
-                </template>
-                <template #label>
-                  代办审阅
-                </template>
-              </TalexDropItem>
-            </TalexDropdown>
+            <!--            <TalexDropdown :icon="Bell" hover-trigger style="margin-right: 10px">-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Document /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  文档-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Odometer /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>仪表盘</template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><PieChart /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  数据图-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem divider></TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Notebook /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  维基文档-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem divider></TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Compass /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  指南文档-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Link /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  协作组织-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--              <TalexDropItem>-->
+            <!--                <template #icon>-->
+            <!--                  <el-icon><Finished /></el-icon>-->
+            <!--                </template>-->
+            <!--                <template #label>-->
+            <!--                  代办审阅-->
+            <!--                </template>-->
+            <!--              </TalexDropItem>-->
+            <!--            </TalexDropdown>-->
             <TalexDropdown hover-trigger>
               <template #display>
-                <UserAvatar @click="$router.push('/user/dashboard')" :id="store.local.user.id" style="cursor: pointer" />
+                <el-badge :hidden="!notification?.count" is-dot class="headbar-dot">
+                  <UserAvatar @click="$router.push('/user/dashboard')" :id="store.local.user.id"
+                              style="cursor: pointer"/>
+                </el-badge>
               </template>
               <div class="HeadBar-UserPopper">
                 <UserAvatar :id="store.local.user.id" style="cursor: pointer" />
@@ -171,17 +190,30 @@
                   <TalexDropItem disabled>
                     <template #icon>
                       <el-icon>
-                        <MostlyCloudy />
+                        <MostlyCloudy/>
                       </el-icon>
                     </template>
                     <template #label>云镜雾色</template>
                   </TalexDropItem>
                 </template>
               </TalexDropItem>
-              <TalexDropItem divider />
+              <TalexDropItem divider/>
+              <TalexDropItem :badge="notification?.count ? `+${notification?.count}` : null"
+                             @click="globalDialogs.notification.value = true/*$router.push('/user/notifications')*/">
+                <template #icon>
+                  <el-icon>
+                    <Bell/>
+                  </el-icon>
+                </template>
+                <template #label>
+                  通知
+                </template>
+              </TalexDropItem>
               <TalexDropItem @click="$router.push('/user/personal')">
                 <template #icon>
-                  <el-icon><Setting /></el-icon>
+                  <el-icon>
+                    <Setting/>
+                  </el-icon>
                 </template>
                 <template #label>
                   设置
@@ -206,15 +238,24 @@
               </TalexDropItem>
             </TalexDropdown>
           </div>
-          <TalexDialog v-else v-model="headDialogVisible" has-display>
+          <TalexDialog v-else v-model="globalDialogs.login.value" has-display>
             <template #display>
               <el-button type="primary">登录 / 注册</el-button>
             </template>
-            <Login @close="headDialogVisible = false" @success="headDialogVisible = false" />
+            <Login @close="globalDialogs.login.value = false" @success="globalDialogs.login.value = false"/>
           </TalexDialog>
         </div>
       </el-col>
     </el-row>
+
+    <Teleport to="body">
+      <el-drawer
+              v-model="globalDialogs.notification.value"
+              title="消息通知"
+      >
+        <Notification :notification="notification"/>
+      </el-drawer>
+    </Teleport>
   </div>
 </template>
 
@@ -222,7 +263,7 @@
 import Logo from '~/components/common/icon/Logo.vue'
 import TalexDialog from '~/components/common/dialog/TalexDialog.vue'
 import Login from '~/view/base/Login.vue'
-import { provide, ref, toRef } from 'vue'
+import { computed, toRef, toRefs } from 'vue'
 import { useStore } from '~/plugins/store/index'
 import TalexDropdown from '~/components/common/dropdown/talex-dropdown.vue'
 import TalexDropItem from '~/components/common/dropdown/talex-drop-item.vue'
@@ -231,19 +272,42 @@ import UserAvatar from '~/components/common/avatar/UserAvatar.vue'
 import TFSelector from '~/components/common/selector/TFSelector.vue'
 import TFSelectorItem from '~/components/common/selector/TFSelectorItem.vue'
 
-import { MostlyCloudy, Watermelon, Document, Notebook, Odometer, PieChart, Compass, Link, Finished, Sunny, Moon, Cloudy, Coordinate, Collection, Tickets, Setting, Help, SwitchButton } from '@element-plus/icons-vue'
+import {
+  Bell,
+  MostlyCloudy,
+  Watermelon,
+  Document,
+  Notebook,
+  Odometer,
+  PieChart,
+  Compass,
+  Link,
+  Finished,
+  Sunny,
+  Moon,
+  Cloudy,
+  Coordinate,
+  Collection,
+  Tickets,
+  Setting,
+  Help,
+  SwitchButton
+} from '@element-plus/icons-vue'
 import MenuIcon from '~/components/common/icon/MenuIcon.vue'
-import { ThemeAdapt } from '~/plugins/addon/enums'
+import Notification from '~/view/center/Notification.vue'
 
 const store = useStore()
 
-const headDialogVisible = toRef(store.system.global.login, 'dialog')
+const globalDialogs = toRefs( store.system.global.dialog )
 const theme = store.local.theme
 
 // async function changeTheme(themeStr) {
 //   store.local.theme = theme.value = themeStr
 //   await window.$tipper.mention( new MentionTip( "切换成功!", 1400, TipType.SUCCESS ) )
 // }
+
+// const notification = store.system.user.notifications
+const notification = computed( () => store.system.user.notifications )
 
 </script>
 
@@ -253,6 +317,7 @@ const theme = store.local.theme
     width: 64px;
     height: 64px;
   }
+
   position: relative;
   padding-top: 8px;
   display: flex;
@@ -267,12 +332,20 @@ const theme = store.local.theme
 </style>
 
 <style lang="scss" scoped>
+:deep(.headbar-dot) {
+  .el-badge__content {
+
+    transform: translate(6px, 2px);
+    box-shadow: 0 0 4px 2px var(--el-fill-color-lighter);
+  }
+}
 
 .HeadBar-Personal {
   float: right;
   height: 100%;
 
   position: relative;
+
   .UserPersonal {
     height: 100%;
 
@@ -283,6 +356,7 @@ const theme = store.local.theme
     justify-content: center;
     align-items: center;
     vertical-align: center;
+
     :deep(.el-avatar) {
       position: relative;
       top: 3px;
@@ -303,6 +377,7 @@ const theme = store.local.theme
 
       background-color: var(--el-color-primary);
     }
+
     position: relative;
     padding: 0 5px;
     display: inline-flex;
@@ -313,6 +388,7 @@ const theme = store.local.theme
     justify-content: center;
     transition: all .05s;
   }
+
   position: relative;
   display: flex;
 

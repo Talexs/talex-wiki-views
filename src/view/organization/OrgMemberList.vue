@@ -16,7 +16,7 @@
 
 <template>
   <div>
-    <el-table :data="props.members" stripe row-class-name="MemberList-list">
+    <el-table :data="props.members" stripe row-class-name="OrgMemberList-list">
       <el-table-column prop="avatar" label="用户">
         <template #default="scope">
           <div class="user">
@@ -25,6 +25,29 @@
             <p class="username">
               {{ scope.row.user.username }}
             </p>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="avatar" label="成员状态">
+        <template #default="scope">
+          <div>
+            <el-tag type="success" v-if="scope.row.status === 0">
+              正式成员
+            </el-tag>
+            <el-popover v-else-if="scope.row.status === 1" placement="right" :width="200">
+              <template #reference>
+                <el-tag type="warning">
+                  等待接受邀请
+                </el-tag>
+              </template>
+              <el-button type="warning" plain>取消邀请</el-button>
+            </el-popover>
+            <el-tag type="warning" v-else-if="scope.row.status === 2">
+              已拒绝邀请
+            </el-tag>
+            <el-tag type="danger" v-else-if="scope.row.status === 3">
+              该用户账号不可用
+            </el-tag>
           </div>
         </template>
       </el-table-column>
@@ -100,7 +123,7 @@ function handleSearcherSelected( item ) {
 </script>
 
 <style lang="scss" scoped>
-.MemberList-list {
+.OrgMemberList-list {
   .user {
     position: relative;
     display: flex;

@@ -126,8 +126,9 @@ export default {
   background-color: var(--el-fill-color-light);
   transform: rotate3d(.1, 1, 0, 10deg);
   perspective: 1px;
-  transition: .3s cubic-bezier(.25,.8,.25,1);
-  animation: join .25s var(--index) backwards;
+  transition: .3s cubic-bezier(.25, .8, .25, 1);
+  animation: leftLoadIn .25s var(--index) backwards;
+
   span {
     line-height: 32px;
   }
@@ -139,17 +140,6 @@ export default {
 
 .WikiStatus-Line.danger {
   color: var(--el-color-danger);
-}
-
-@keyframes join {
-  from {
-    opacity: 0;
-    left: -100%;
-  }
-  to {
-    opacity: 1;
-    left: 0;
-  }
 }
 
 .WikiStatus-Container {

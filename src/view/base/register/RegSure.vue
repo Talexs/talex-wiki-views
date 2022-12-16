@@ -32,7 +32,7 @@ export default {
 import { ref, inject, onMounted } from 'vue'
 import RotateCaptcha from '@components/common/captcha/RotateCaptcha.vue'
 import FlatButton from '@components/common/btn/FlatButton.vue'
-import UserModel from '@plugins/model/base/user.js'
+import UserModel from '~/plugins/model/base/user.ts'
 import { useStore } from '@plugins/store/index.ts'
 
 const join = inject('join')

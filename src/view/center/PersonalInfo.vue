@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2022. TalexDreamSoul
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <div class="PersonalInfo-Container LayoutCenter-Frame">
     <p class="title">个人信息</p>
@@ -60,7 +76,7 @@ import { useStore } from '~/plugins/store/index'
 import { ref, reactive, computed } from 'vue'
 import { MentionTip } from '~/plugins/addon/MentionerManager.ts'
 import { sleep } from '~/plugins/Common.ts'
-import User from '~/plugins/model/base/user.js'
+import { userModel } from '~/plugins/model/base/user.ts'
 import { useRouter } from 'vue-router'
 import { TipType } from '~/plugins/addon/Tipper.ts'
 
@@ -121,7 +137,7 @@ function submitForm() {
   formRef.value.validate(async valid => {
     // eslint-disable-line
     if (valid) {
-      const res = await User.updatePassword(this.form)
+      const res = await userModel.updatePassword( this.form )
       if (res.code < window.MAX_SUCCESS_CODE) {
         await window.$tipper.mention( new MentionTip( `${ res.message }` ) )
         formRef.value.resetFields()
@@ -152,7 +168,7 @@ async function uploadCover(res) {
 
   store.local.user.avatar = user.value.avatar = avatarUrl.value = GlobalConfig.hostName + url.replace(uuid, "") + encodeURIComponent(uuid)
 
-  const back = await User.updateUserInfo(avatarUrl.value)
+  const back = await userModel.updateUserInfo( avatarUrl.value )
 
   if( back ) {
 

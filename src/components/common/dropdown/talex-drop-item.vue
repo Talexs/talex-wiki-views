@@ -5,6 +5,9 @@
     </div>
     <div class="dropitem-label" v-if="!divider">
       <slot name="label"></slot>
+      <span class="dropitem-badge" v-if="badge">
+        {{ badge }}
+      </span>
     </div>
   </div>
   <div class="Talex-DropItem" :class="{ divider, danger, multi }" v-else>
@@ -36,7 +39,8 @@ const props = defineProps({
     type: String,
     default: null
   },
-  disabled: Boolean
+  disabled: Boolean,
+  badge: String
 })
 
 </script>
@@ -49,6 +53,17 @@ export default {
 
 <style lang="scss" scoped>
 .Talex-DropItem {
+  .dropitem-badge {
+    position: absolute;
+    padding: 0 6px;
+
+    right: 0;
+
+    border-radius: 8px;
+    background-color: var(--el-color-danger);
+    transform: scale(.75);
+  }
+
   .dropitem-multiple {
     position: absolute;
     padding: 6px 4px;

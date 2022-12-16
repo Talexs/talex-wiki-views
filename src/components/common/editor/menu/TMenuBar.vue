@@ -242,9 +242,9 @@ const info = reactive({
   title: '信息',
   render: () => {
     return `
-       ${props.editor?.storage?.characterCount.characters()}/10000 文字
+       ${ props.editor?.storage?.characterCount.characters() }/10000 字
       <br>
-       ${props.editor?.storage?.characterCount.words()} 词
+       ${ props.editor?.storage?.characterCount.words() } 词
     `
   }
 })

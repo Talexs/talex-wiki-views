@@ -37,6 +37,7 @@ import router from '~/plugins/router'
 
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import Logo from '~/components/common/icon/Logo.vue'
+import { userModel } from '~/plugins/model/base/user.ts'
 
 const locale = ref(zhCn)
 

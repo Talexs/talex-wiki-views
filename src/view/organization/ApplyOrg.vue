@@ -16,7 +16,7 @@
 
 <template>
   <div class="ApplyOrg-Container LayoutSub-Frame">
-    <p class="title force">创建组织</p>
+    <p class="title force">{{ editId ? "修改" : "创建" }}组织</p>
 
     <div style="margin-top: -10px;">
       <el-tabs class="flat header-filter">
@@ -48,17 +48,16 @@
                   >
                   </el-input>
                 </el-form-item>
-
                 <el-form-item class="submit">
-                  <el-button type="primary" @click="submitForm">创 建</el-button>
+                  <el-button type="primary" @click="submitForm">{{ editId ? "修 改" : "创 建" }}</el-button>
                   <el-button @click="resetForm">重 置</el-button>
                 </el-form-item>
               </el-form>
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="成员">
-          <member-list :members="org.members" />
+        <el-tab-pane :disabled="!editId" label="成员">
+          <member-list @select="handleAddMember" :members="org._members"/>
         </el-tab-pane>
         <el-tab-pane label="权限" disabled>
 
@@ -76,24 +75,43 @@ export default {
 </script>
 
 <script setup>
-import { reactive, ref, onMounted, onUpdated } from 'vue'
+import { reactive, ref, onMounted, onUpdated, computed, watch, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
 import { organizationModel } from '~/plugins/model/org/OrganizationModel.ts'
 
 import UploadImgs from '~/components/base/upload-image/index.vue'
-import MemberList from '~/view/book/member/MemberList.vue'
+import MemberList from './OrgMemberList.vue'
 import { MentionTip } from '@plugins/addon/MentionerManager.ts'
 import { TipType } from '@plugins/addon/Tipper.ts'
 import GlobalConfig from '~/config/GlobalConfig.js'
 import { useRoute, useRouter } from 'vue-router'
 
-const form = ref(null)
-const loading = ref(false)
-const org = reactive({ name: '', summary: '', cover: '' })
+const form = ref()
+const loading = ref( false )
+const org = reactive( { name: '', summary: '', cover: '' } )
 
-const editWikiId = ref()
+const editId = ref()
 const router = useRouter()
 const route = useRoute()
+
+watchEffect( () => {
+  if ( !org.members ) return
+
+  org._members = [ { status: 0, user: org.owner }, ...org.members ]
+
+})
+
+
+async function handleAddMember( item ) {
+  if ( ! editId.value ) {
+    ElMessage.error( '请先创建组织' )
+    return
+  }
+
+  const result = await organizationModel.invite( editId.value, item.id )
+
+  console.log( result )
+}
 
 /**
  * 表单验证规则
@@ -102,17 +120,17 @@ function getRules() {
   /**
    * 验证回调函数
    */
-  const checkInfo = (rule, value, callback) => {
-    if (!value) {
-      callback(new Error('信息不能为空'))
+  const checkInfo = ( rule, value, callback ) => {
+    if ( ! value ) {
+      callback( new Error( '信息不能为空' ) )
     }
     callback()
   }
   const rules = {
-    name: [{ validator: checkInfo, trigger: 'blur', required: true }],
+    name: [ { validator: checkInfo, trigger: 'blur', required: true } ],
     // permission: [{ validator: checkInfo, trigger: 'blur', required: true }],
-    description: [{ validator: checkInfo, trigger: 'blur', required: true }],
-    cover: [{ validator: checkInfo, trigger: 'blur', required: true }],
+    description: [ { validator: checkInfo, trigger: 'blur', required: true } ],
+    cover: [ { validator: checkInfo, trigger: 'blur', required: true } ],
   }
   return { rules }
 }
@@ -127,26 +145,30 @@ onUpdated(render)
 
 let init = false
 function render() {
-  if( init ) return
+  if ( init ) return
   init = true
 
-  editWikiId.value = route.query.id
-  // getBook()
+  editId.value = route.params.id
+  getOrg()
 }
 
-// const getBook = async () => {
-//   if (!editWikiId.value) return
-//   loading.value = true
-//   const model = await wikiModel.getBook(editWikiId.value)
-//
-//   wiki.title = model.title
-//   wiki.description = model.desc
-//   wiki.cover = model.image
-//   wiki.members = model.members
-//   wiki.permission = model.permission
-//
-//   loading.value = false
-// }
+const getOrg = async () => {
+  if ( ! editId.value ) return
+  loading.value = true
+  const model = await organizationModel.info( editId.value )
+
+  // console.log( model )
+
+  org.id = model.id
+  org.name = model.name
+  org.summary = model.summary
+  org.cover = model.avatar
+  org._members = org.members = model.members
+  org.owner = model.owner
+  org.owner_id = model.owner_id
+
+  loading.value = false
+}
 
 // 重置表单
 const resetForm = () => {
@@ -157,23 +179,23 @@ const submitForm = async formName => {
   form.value.validate(async valid => {
     if (valid) {
       let res = {}
-      if (editWikiId.value) {
-        // res = await wikiModel.editBook(editWikiId.value, wiki)
+      if ( editId.value ) {
+        res = await organizationModel.edit( editId.value, org )
       } else {
-        res = await organizationModel.create(org)
+        res = await organizationModel.create( org )
         // res = await wikiModel.createBook(wiki)
-        resetForm(formName)
+        resetForm( formName )
       }
 
-      console.log(res)
+      console.log( res )
 
-      if( res ) {
+      if ( res ) {
 
-        await window.$tipper.mention(new MentionTip(editWikiId.value ? "修改成功!" : "创建成功!", {
+        await window.$tipper.mention( new MentionTip( editId.value ? "修改成功!" : "创建成功!", {
           type: TipType.SUCCESS
-        }))
+        } ) )
 
-        if( editWikiId.value ) router.back()
+        if ( editId.value ) router.back()
         else await router.push( '/org/' + res.id )
 
       }

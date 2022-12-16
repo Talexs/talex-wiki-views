@@ -208,6 +208,7 @@ export default {
 
 .TalexDropdown-Displayer {
   position: relative;
+
 }
 
 .TalexDialog-Wrapper {

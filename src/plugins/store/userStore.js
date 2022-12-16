@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ThemeAdapt, ViewerLayout } from '~/plugins/addon/enums.ts'
 import { TipType } from '~/plugins/addon/Tipper'
 import { sleep } from '~/plugins/Common'
-import UserModel from '~/plugins/model/base/user'
+import { userModel } from '~/plugins/model/base/user'
 
 const store = defineStore('user', {
     state: () => {
@@ -128,13 +128,12 @@ export default () => {
 
             } else if( mutation.events.key === 'adapt') {
 
-                UserModel.updateThemeOption(tStore.theme)
+                userModel.updateThemeOption(tStore.theme)
 
             }
             else changeTheme( state.theme.name )
 
         })
-
 
     }
 
@@ -144,11 +143,11 @@ export default () => {
 
             if( !(tStore.theme instanceof Object) ) tStore.theme = { name: 'light', adapt: ThemeAdapt.NONE }
 
-            let res = await UserModel.getUserOption('theme')
+            let res = await userModel.getUserOption('theme')
 
             if( !res ) {
 
-                res = await UserModel.updateThemeOption(tStore.theme)
+                res = await userModel.updateThemeOption(tStore.theme)
 
             }
 

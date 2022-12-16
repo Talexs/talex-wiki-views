@@ -30,7 +30,7 @@ export default {
 import { ref, inject, onMounted } from 'vue'
 import CodeInput from '@components/common/input/CodeInput.vue'
 import RegSure from './RegSure.vue'
-import UserModel from '@plugins/model/base/user.js'
+import UserModel from '~/plugins/model/base/user.ts'
 import { useStore } from '@plugins/store/index.ts'
 
 const model = ref('')

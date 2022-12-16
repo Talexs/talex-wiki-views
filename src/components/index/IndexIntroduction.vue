@@ -25,13 +25,13 @@
           TalexWiki 助您构建您的下一代 协作知识系统， 这是一个开源的知识管理系统，让知识管理变得简单而又强大。
         </p>
         <div class="Index-Btn">
-          <FlatButton @click="loginDialog = true" large>
+          <FlatButton large>
             <el-icon>
-              <Position />
+              <Position/>
             </el-icon>
             开始使用
           </FlatButton>
-          <FlatButton plain large>
+          <FlatButton @click="loginDialog = true" plain large>
             登录账号
           </FlatButton>
         </div>
@@ -59,7 +59,8 @@ import { toRef } from 'vue'
 
 const store = useStore()
 
-const loginDialog = toRef(store.system.global.login, 'dialog')
+const loginDialog = toRef( store.system.global.dialog, 'login' )
+
 </script>
 
 <style lang="scss" scoped>

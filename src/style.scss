@@ -1,3 +1,19 @@
+/*!
+ * Copyright (c) 2022. TalexDreamSoul
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @font-face {
   font-family: "HarmonyOS Sans";
   src: url("assets/fonts/harmony/HarmonyOS_Sans_Regular.ttf");
@@ -529,6 +545,15 @@ span.premium-end {
   border-radius: 8px;
 }
 
+span.badge {
+  margin: 0 2px;
+  padding: 1px 2px;
+
+  color: #ffffff;
+  border-radius: 8px;
+  background-color: var(--el-color-danger);
+}
+
 .LayoutCenter-Frame {
   & > span.title-info, span.title-info.force {
     position: relative;
@@ -537,6 +562,7 @@ span.premium-end {
     font-size: 15px;
     opacity: .85;
   }
+
   & > p.title, p.title.force {
     position: relative;
     margin-bottom: 20px;

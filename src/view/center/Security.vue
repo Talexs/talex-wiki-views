@@ -38,7 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import UserModel from '~/plugins/model/base/user.js'
+import UserModel from '~/plugins/model/base/user.ts'
 import { formatDateDistance } from '../../plugins/addon/utils.ts'
 // import { CopyDocument } from '@element-plus/icons-vue'
 import UAParser from 'ua-parser-js'

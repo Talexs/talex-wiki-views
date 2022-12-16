@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { get, post } from './../api/axios'
+import { get, post, put } from './../api/axios'
 
 export class BaseModel {
     readonly #base_prefix: string
@@ -32,6 +32,10 @@ export class BaseModel {
 
     public async _post(url: string, data = {}, params = {}) {
         return post(`${this.base_prefix}/${url}`, data, params)
+    }
+
+    public async _put(url: string, data = {}, params = {}) {
+        return put(`${this.base_prefix}/${url}`, data, params)
     }
 
 }

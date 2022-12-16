@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2022. TalexDreamSoul
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from '~/plugins/store'
 import GlobalConfig from '~/config/GlobalConfig'
@@ -92,6 +108,16 @@ const routes: any = [
                     {
                         path: "/org/create",
                         name: "创建组织",
+                        meta: {
+                            heightUnlimited: true,
+                            loginRequired: true,
+                            largerWidth: false
+                        },
+                        component: () => import('../view/organization/ApplyOrg.vue')
+                    },
+                    {
+                        path: "/org/edit/:id",
+                        name: "编辑组织",
                         meta: {
                             heightUnlimited: true,
                             loginRequired: true,
@@ -213,10 +239,15 @@ const routes: any = [
         ]
     },
     {
-      path: "/org/view/:id",
+        path: "/org/view/:id",
         name: "组织详情",
         component: () => import('../view/organization/OrgView.vue')
     },
+    // {
+    //     path: "/user/notifications",
+    //     name: "消息通知",
+    //     component: () => import('../view/center/Notification.vue')
+    // },
     {
         path: "/user/register",
         name: "注册",
