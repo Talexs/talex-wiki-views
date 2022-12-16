@@ -30,7 +30,7 @@ export default {
 import { ref, inject, onMounted } from 'vue'
 import CodeInput from '@components/common/input/CodeInput.vue'
 import RegSure from './RegSure.vue'
-import UserModel from '~/plugins/model/base/user.ts'
+import { userModel } from '~/plugins/model/base/user.ts'
 import { useStore } from '@plugins/store/index.ts'
 
 const model = ref('')
@@ -59,7 +59,7 @@ onMounted(async () => {
 
   const data = getData()
 
-  const res = await UserModel.registerCode(data['email'], data['user'], data['password'])
+  const res = await userModel.registerCode( data['email'], data['user'], data['password'] )
 
   setData('res', res)
 

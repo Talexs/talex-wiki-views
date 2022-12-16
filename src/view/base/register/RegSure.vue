@@ -32,7 +32,7 @@ export default {
 import { ref, inject, onMounted } from 'vue'
 import RotateCaptcha from '@components/common/captcha/RotateCaptcha.vue'
 import FlatButton from '@components/common/btn/FlatButton.vue'
-import UserModel from '~/plugins/model/base/user.ts'
+import { userModel } from '~/plugins/model/base/user.ts'
 import { useStore } from '@plugins/store/index.ts'
 
 const join = inject('join')
@@ -59,7 +59,7 @@ async function nextStep(token) {
 
     const data = getData()
 
-    const res = await UserModel.register(token, Number(data['code']), data['res'])
+    const res = await userModel.register( token, Number( data['code'] ), data['res'] )
 
     loading.value = false
 

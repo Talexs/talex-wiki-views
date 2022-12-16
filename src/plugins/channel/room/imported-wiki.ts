@@ -15,7 +15,7 @@
  */
 
 import { BaseRoom } from '~/plugins/channel/room-channel'
-import { forWikiTip, TipType } from '~/plugins/Common'
+import { forWikiTip, TipType } from '~/plugins/addon/Tipper'
 
 export class DefaultRoom extends BaseRoom {
     name: string = 'imported-wiki'

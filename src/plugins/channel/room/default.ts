@@ -17,7 +17,7 @@
 import { BaseRoom, sendActionMsg } from '~/plugins/channel/room-channel'
 import ws, { LIFE_HANDLER_CONNECTION, registerLifeHandler } from '~/plugins/channel/connection'
 import RefreshConfig from '~/config/RefreshConfig'
-import { forWikiTip, TipType } from '~/plugins/Common'
+import { forWikiTip, TipType } from '~/plugins/addon/Tipper'
 
 export class DefaultRoom extends BaseRoom {
     name: string = 'default'

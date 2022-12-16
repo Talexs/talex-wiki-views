@@ -32,7 +32,7 @@ export default {
 
 <script setup>
 import { ref, inject, onMounted } from 'vue'
-import UserModel from '~/plugins/model/base/user.ts'
+import { userModel } from '~/plugins/model/base/user.ts'
 import RegPassword from './RegPassword.vue'
 
 const model = ref('')
@@ -47,7 +47,7 @@ async function nextStep() {
 
   join(async (func) => {
 
-    const res = await UserModel.hasIdentifier(model.value)
+    const res = await userModel.hasIdentifier( model.value )
 
     if( res ) {
 
