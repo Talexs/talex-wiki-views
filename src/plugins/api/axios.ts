@@ -24,6 +24,7 @@ import ErrorCode from '~/config/ErrorCode.js'
 import { useStore } from '~/plugins/store'
 import { MentionTip } from '~/plugins/addon/MentionerManager'
 import { TipType } from '~/plugins/addon/Tipper'
+import { GLOBAL } from '@antv/g2plot/lib/core/global'
 
 const config = {
     baseURL: `${GlobalConfig.hostName}:${GlobalConfig.endsPort}/`,
@@ -313,6 +314,12 @@ export function _delete(url: string, params = {}) {
         url,
         params,
     })
+}
+
+declare module 'axios' {
+    export interface AxiosRequestConfig {
+        hideError?: boolean
+    }
 }
 
 export default _axios

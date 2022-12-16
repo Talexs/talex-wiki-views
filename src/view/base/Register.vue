@@ -31,7 +31,7 @@
 <script setup>
 import RegEmail from './register/RegEmail.vue'
 import { reactive, onMounted, onUpdated, provide, ref } from 'vue'
-import { sleep } from '../../plugins/Common.ts'
+import { sleep } from '~/plugins/Common'
 import { useRouter } from 'vue-router'
 
 const wholeDom = ref()
@@ -68,7 +68,7 @@ async function mention(text, styles, resetTime) {
     await sleep(200)
 
     style.opacity = '0'
-    style.transform = 'translateY(-5px)'
+    style.transform = 'translateX(5px)'
 
     await sleep(100)
 
@@ -76,7 +76,7 @@ async function mention(text, styles, resetTime) {
 
     await sleep(50)
 
-    dom.style.transform = 'scale(.65, .85) translateY(-10px)'
+    dom.style.transform = 'scale(.65, .85) translateX(10px)'
 
     await sleep(50)
 
@@ -100,14 +100,14 @@ async function mention(text, styles, resetTime) {
 
   await sleep(50)
 
-  dom.style.transform = 'scale(.65, .85) translateY(0)'
+  dom.style.transform = 'scale(.65, .85) translateX(0)'
 
   await sleep(100)
 
-  dom.style.transform = 'scale(1) translateY(0)'
+  dom.style.transform = 'scale(1) translateX(0)'
 
   style.opacity = '0'
-  style.transform = 'translateX(5px)'
+  style.transform = 'translateX(10px)'
 
   await sleep(100)
 

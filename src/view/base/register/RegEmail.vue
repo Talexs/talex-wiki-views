@@ -47,6 +47,15 @@ async function nextStep() {
 
   join(async (func) => {
 
+    // match regx
+    const regx = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+    if ( model.value.match(regx) == null ) {
+      func(false, "邮箱格式不正确!", {
+        color: 'var(--el-color-warning)'
+      })
+      return
+    }
+
     const res = await userModel.hasIdentifier( model.value )
 
     if( res ) {

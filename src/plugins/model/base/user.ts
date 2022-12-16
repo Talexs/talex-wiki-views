@@ -125,7 +125,7 @@ class UserModel extends BaseModel {
    *
    */
   hasIdentifier(identifier: string) {
-    return this._get('has_user/' + identifier, {
+    return _axios('has_user/' + identifier, {
       hideError: true
     })
   }
